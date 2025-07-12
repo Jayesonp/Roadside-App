@@ -688,6 +688,656 @@ body {
   overflow-x: hidden;
 }
 
+/* Dashboard Role Styles */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 12px;
+  color: white;
+}
+
+.role-badge {
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-indicator.online {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* Jobs Section - Technician Dashboard */
+.jobs-section {
+  margin-bottom: 2rem;
+}
+
+.jobs-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.job-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.job-card.urgent {
+  border-left: 4px solid #ef4444;
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.job-type {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.job-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.job-status.urgent {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.job-status.normal {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.job-details p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.job-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Tools Section */
+.tools-section, .admin-tools-section, .partner-tools-section, .security-tools-section {
+  margin-bottom: 2rem;
+}
+
+.tools-grid, .admin-tools-grid, .partner-tools-grid, .security-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.tool-card, .admin-tool, .partner-tool, .security-tool {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover, .admin-tool:hover, .partner-tool:hover, .security-tool:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: var(--primary);
+}
+
+.tool-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Overview Section - Admin Dashboard */
+.overview-section {
+  margin-bottom: 2rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.overview-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.overview-icon {
+  font-size: 2.5rem;
+}
+
+.overview-content {
+  flex: 1;
+}
+
+.overview-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.overview-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0;
+}
+
+.overview-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.overview-change.positive {
+  color: #22c55e;
+}
+
+.overview-change.negative {
+  color: #ef4444;
+}
+
+.overview-change.neutral {
+  color: var(--text-secondary);
+}
+
+/* Activity Feed - Admin Dashboard */
+.activity-section {
+  margin-bottom: 2rem;
+}
+
+.activity-feed {
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-type {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.activity-type.success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.activity-type.info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.activity-type.warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+/* Partner Dashboard Styles */
+.partner-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.verified {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.metrics-section {
+  margin-bottom: 2rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metric-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.metric-icon {
+  font-size: 2rem;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0;
+}
+
+.metric-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.metric-change.positive {
+  color: #22c55e;
+}
+
+/* Service Areas */
+.areas-section {
+  margin-bottom: 2rem;
+}
+
+.areas-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.area-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.area-card.active {
+  border-left: 4px solid var(--primary);
+}
+
+.area-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.area-stats {
+  display: flex;
+  gap: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.area-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.area-status.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.area-status.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+/* Contracts Section */
+.contracts-section {
+  margin-bottom: 2rem;
+}
+
+.contracts-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.contract-item {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contract-info {
+  flex: 1;
+}
+
+.contract-type {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.contract-details {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.contract-value {
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0 1rem;
+}
+
+.contract-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.contract-status.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.contract-status.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+/* Security Dashboard Styles */
+.security-status {
+  display: flex;
+  align-items: center;
+}
+
+.threat-level {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.threat-level.low {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* Security Alerts */
+.alerts-section {
+  margin-bottom: 2rem;
+}
+
+.alerts-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.alert-item {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.alert-item.low {
+  border-left: 4px solid #3b82f6;
+}
+
+.alert-item.medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.alert-item.high {
+  border-left: 4px solid #ef4444;
+}
+
+.alert-item.resolved {
+  border-left: 4px solid #22c55e;
+  opacity: 0.7;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.alert-details {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.alert-time {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.alert-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.alert-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+/* System Monitoring */
+.monitoring-section {
+  margin-bottom: 2rem;
+}
+
+.monitoring-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.monitor-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.monitor-title {
+  font-weight: 600;
+}
+
+.monitor-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.monitor-status.healthy {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.monitor-metrics {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.metric {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Access Control */
+.access-control-section {
+  margin-bottom: 2rem;
+}
+
+.access-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.access-item {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.access-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.access-info {
+  flex: 1;
+}
+
+.access-info h4 {
+  margin: 0 0 0.25rem 0;
+  font-weight: 600;
+}
+
+.access-info p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Responsive Design for New Dashboards */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .job-actions {
+    flex-direction: column;
+  }
+  
+  .overview-grid,
+  .metrics-grid,
+  .monitoring-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .contract-item,
+  .area-card,
+  .access-item {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .alert-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .alert-actions {
+    align-self: stretch;
+  }
+}
+
 /* Loading Screen */
 .loading-screen {
   position: fixed;

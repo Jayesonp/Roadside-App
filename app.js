@@ -172,28 +172,726 @@ class RoadSideApp {
         this.updateRecentServices();
     }
 
-    showDashboard(type) {
-        this.currentDashboard = type;
+    // Enhanced dashboard switching with role-specific content
+    showDashboard(role) {
+        console.log(`Switching to ${role} dashboard`);
         
-        // Update dashboard tabs
-        const tabs = document.querySelectorAll('.dashboard-tabs .tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
+        // Update active tab
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         
-        // Find and activate the correct tab
-        tabs.forEach(tab => {
-            const tabText = tab.textContent.toLowerCase();
-            if (tabText.includes(type)) {
-                tab.classList.add('active');
-            }
-        });
-
-        // Update dashboard content based on type
+        // Find and activate the correct tab and nav item
+        const targetTab = Array.from(document.querySelectorAll('.tab')).find(tab => 
+            tab.textContent.toLowerCase().includes(role.toLowerCase())
+        );
+        if (targetTab) targetTab.classList.add('active');
+        
+        const targetNavItem = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+            item.textContent.toLowerCase().includes(role.toLowerCase())
+        );
+        if (targetNavItem) targetNavItem.classList.add('active');
+        
+        // Update dashboard content based on role
+        this.updateDashboardContent(role);
+        
+        // Show dashboard view
+        this.showView('dashboard');
+        
+        // Close navigation drawer
+        this.closeNavDrawer();
+        
+        // Update user context
+        this.currentUserRole = role;
+        this.updateUserRoleDisplay(role);
+    }
+    
+    updateDashboardContent(role) {
         const dashboardView = document.getElementById('dashboard-view');
-        if (dashboardView) {
-            dashboardView.innerHTML = this.getDashboardContent(type);
+        if (!dashboardView) return;
+        
+        // Clear existing content
+        dashboardView.innerHTML = '';
+        
+        // Add role-specific content
+        switch(role.toLowerCase()) {
+            case 'customer':
+                this.renderCustomerDashboard(dashboardView);
+                break;
+            case 'technician':
+                this.renderTechnicianDashboard(dashboardView);
+                break;
+            case 'admin':
+                this.renderAdminDashboard(dashboardView);
+                break;
+            case 'partner':
+                this.renderPartnerDashboard(dashboardView);
+                break;
+            case 'security':
+                this.renderSecurityDashboard(dashboardView);
+                break;
+            default:
+                this.renderCustomerDashboard(dashboardView);
         }
+    }
+    
+    renderCustomerDashboard(container) {
+        container.innerHTML = `
+            <!-- Emergency Banner -->
+            <div class="emergency-banner">
+                <div class="emergency-content">
+                    <span class="emergency-icon">🚨</span>
+                    <div class="emergency-text">
+                        <h3>Emergency Assistance</h3>
+                        <p>24/7 immediate response</p>
+                    </div>
+                    <button class="emergency-btn" onclick="App.emergencyCall()">SOS</button>
+                </div>
+            </div>
 
-        console.log(`Switched to ${type} dashboard`);
+            <!-- Services Grid -->
+            <div class="services-section">
+                <h2>Select Service</h2>
+                <div class="services-grid">
+                    <div class="service-card" onclick="App.selectService(1, 'Towing', 150)">
+                        <div class="service-icon">🚛</div>
+                        <h3>Towing</h3>
+                        <p class="service-price">$150</p>
+                        <p class="service-time">45 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="App.selectService(2, 'Battery Jump', 75)">
+                        <div class="service-icon">🔋</div>
+                        <h3>Battery Jump</h3>
+                        <p class="service-price">$75</p>
+                        <p class="service-time">20 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="App.selectService(3, 'Tire Change', 100)">
+                        <div class="service-icon">🛞</div>
+                        <h3>Tire Change</h3>
+                        <p class="service-price">$100</p>
+                        <p class="service-time">30 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="App.selectService(4, 'Lockout', 85)">
+                        <div class="service-icon">🔓</div>
+                        <h3>Lockout</h3>
+                        <p class="service-price">$85</p>
+                        <p class="service-time">20 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="App.selectService(5, 'Fuel Delivery', 60)">
+                        <div class="service-icon">⛽</div>
+                        <h3>Fuel Delivery</h3>
+                        <p class="service-price">$60</p>
+                        <p class="service-time">15 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="App.selectService(6, 'Winch Recovery', 200)">
+                        <div class="service-icon">🪝</div>
+                        <h3>Winch Recovery</h3>
+                        <p class="service-price">$200</p>
+                        <p class="service-time">60 min • 45 min response</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Services -->
+            <div class="recent-section">
+                <h2>Recent Services</h2>
+                <div id="recent-services" class="service-history">
+                    ${this.generateRecentServices()}
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="stats-section">
+                <h2>Your Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Total Services</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$1,250</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    renderTechnicianDashboard(container) {
+        container.innerHTML = `
+            <!-- Technician Header -->
+            <div class="dashboard-header">
+                <div class="role-badge">🔧 Technician Dashboard</div>
+                <div class="status-indicator online">● Online</div>
+            </div>
+
+            <!-- Active Jobs -->
+            <div class="jobs-section">
+                <h2>Active Service Requests</h2>
+                <div class="jobs-grid">
+                    <div class="job-card urgent">
+                        <div class="job-header">
+                            <div class="job-type">🚛 Towing Required</div>
+                            <div class="job-status urgent">URGENT</div>
+                        </div>
+                        <div class="job-details">
+                            <p><strong>Customer:</strong> Sarah Johnson</p>
+                            <p><strong>Location:</strong> 1234 Main St, Downtown</p>
+                            <p><strong>Issue:</strong> Engine failure, needs towing to nearest garage</p>
+                            <p><strong>ETA:</strong> 15 minutes away</p>
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn--primary btn--sm" onclick="App.acceptJob(1)">Accept Job</button>
+                            <button class="btn btn--outline btn--sm" onclick="App.callCustomer('555-0123')">📞 Call</button>
+                        </div>
+                    </div>
+                    
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="job-type">🔋 Battery Jump</div>
+                            <div class="job-status normal">NORMAL</div>
+                        </div>
+                        <div class="job-details">
+                            <p><strong>Customer:</strong> Mike Chen</p>
+                            <p><strong>Location:</strong> 567 Oak Ave, Uptown</p>
+                            <p><strong>Issue:</strong> Car won't start, battery appears dead</p>
+                            <p><strong>ETA:</strong> 8 minutes away</p>
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn--primary btn--sm" onclick="App.acceptJob(2)">Accept Job</button>
+                            <button class="btn btn--outline btn--sm" onclick="App.callCustomer('555-0456')">📞 Call</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technician Stats -->
+            <div class="stats-section">
+                <h2>Your Performance</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">Jobs Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">4.9</div>
+                        <div class="stat-label">Customer Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value">12min</div>
+                        <div class="stat-label">Avg Response</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$2,340</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Tools -->
+            <div class="tools-section">
+                <h2>Quick Tools</h2>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="App.openGPSNavigation()">
+                        <div class="tool-icon">🗺️</div>
+                        <h3>GPS Navigation</h3>
+                    </div>
+                    <div class="tool-card" onclick="App.openInventory()">
+                        <div class="tool-icon">📦</div>
+                        <h3>Inventory Check</h3>
+                    </div>
+                    <div class="tool-card" onclick="App.reportIssue()">
+                        <div class="tool-icon">⚠️</div>
+                        <h3>Report Issue</h3>
+                    </div>
+                    <div class="tool-card" onclick="App.emergencyDispatch()">
+                        <div class="tool-icon">🚨</div>
+                        <h3>Emergency Dispatch</h3>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    renderAdminDashboard(container) {
+        container.innerHTML = `
+            <!-- Admin Header -->
+            <div class="dashboard-header">
+                <div class="role-badge">⚙️ Admin Dashboard</div>
+                <div class="admin-controls">
+                    <button class="btn btn--outline btn--sm" onclick="App.exportReports()">📊 Export Reports</button>
+                    <button class="btn btn--primary btn--sm" onclick="App.systemSettings()">⚙️ System Settings</button>
+                </div>
+            </div>
+
+            <!-- System Overview -->
+            <div class="overview-section">
+                <h2>System Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <div class="overview-icon">👥</div>
+                        <div class="overview-content">
+                            <div class="overview-value">1,247</div>
+                            <div class="overview-label">Total Users</div>
+                            <div class="overview-change positive">+12% this month</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">🔧</div>
+                        <div class="overview-content">
+                            <div class="overview-value">89</div>
+                            <div class="overview-label">Active Technicians</div>
+                            <div class="overview-change positive">+5 online</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">📋</div>
+                        <div class="overview-content">
+                            <div class="overview-value">324</div>
+                            <div class="overview-label">Services Today</div>
+                            <div class="overview-change positive">+18% vs yesterday</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="overview-icon">💰</div>
+                        <div class="overview-content">
+                            <div class="overview-value">$48,532</div>
+                            <div class="overview-label">Revenue Today</div>
+                            <div class="overview-change positive">+23% vs yesterday</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Activity -->
+            <div class="activity-section">
+                <h2>Live Activity Feed</h2>
+                <div class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-time">2 min ago</div>
+                        <div class="activity-content">
+                            <span class="activity-type success">Service Completed</span>
+                            Technician Mike R. completed towing service for Customer #1247
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">5 min ago</div>
+                        <div class="activity-content">
+                            <span class="activity-type info">New Registration</span>
+                            New customer Sarah K. registered from mobile app
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">8 min ago</div>
+                        <div class="activity-content">
+                            <span class="activity-type warning">Service Delayed</span>
+                            Battery jump service delayed due to traffic - ETA updated
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">12 min ago</div>
+                        <div class="activity-content">
+                            <span class="activity-type success">Payment Processed</span>
+                            Payment of $150 processed successfully for Service #4521
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tools -->
+            <div class="admin-tools-section">
+                <h2>Management Tools</h2>
+                <div class="admin-tools-grid">
+                    <div class="admin-tool" onclick="App.manageUsers()">
+                        <div class="tool-icon">👥</div>
+                        <h3>User Management</h3>
+                        <p>Manage customer accounts and permissions</p>
+                    </div>
+                    <div class="admin-tool" onclick="App.manageTechnicians()">
+                        <div class="tool-icon">🔧</div>
+                        <h3>Technician Management</h3>
+                        <p>Oversee technician performance and assignments</p>
+                    </div>
+                    <div class="admin-tool" onclick="App.viewReports()">
+                        <div class="tool-icon">📊</div>
+                        <h3>Analytics & Reports</h3>
+                        <p>Detailed insights and performance reports</p>
+                    </div>
+                    <div class="admin-tool" onclick="App.systemConfig()">
+                        <div class="tool-icon">⚙️</div>
+                        <h3>System Configuration</h3>
+                        <p>Configure system settings and preferences</p>
+                    </div>
+                    <div class="admin-tool" onclick="App.billingManagement()">
+                        <div class="tool-icon">💳</div>
+                        <h3>Billing Management</h3>
+                        <p>Manage payments and financial operations</p>
+                    </div>
+                    <div class="admin-tool" onclick="App.auditLogs()">
+                        <div class="tool-icon">📋</div>
+                        <h3>Audit Logs</h3>
+                        <p>Review system activity and security logs</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    renderPartnerDashboard(container) {
+        container.innerHTML = `
+            <!-- Partner Header -->
+            <div class="dashboard-header">
+                <div class="role-badge">🤝 Partner Dashboard</div>
+                <div class="partner-status">
+                    <span class="status-badge verified">✓ Verified Partner</span>
+                </div>
+            </div>
+
+            <!-- Partner Metrics -->
+            <div class="metrics-section">
+                <h2>Performance Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📈</div>
+                        <div class="metric-content">
+                            <div class="metric-value">$12,450</div>
+                            <div class="metric-label">Monthly Revenue</div>
+                            <div class="metric-change positive">+15% vs last month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🚗</div>
+                        <div class="metric-content">
+                            <div class="metric-value">168</div>
+                            <div class="metric-label">Services Provided</div>
+                            <div class="metric-change positive">+8% this month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⭐</div>
+                        <div class="metric-content">
+                            <div class="metric-value">4.7</div>
+                            <div class="metric-label">Partner Rating</div>
+                            <div class="metric-change neutral">Same as last month</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⏱️</div>
+                        <div class="metric-content">
+                            <div class="metric-value">18min</div>
+                            <div class="metric-label">Avg Response Time</div>
+                            <div class="metric-change positive">-3min improvement</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Areas -->
+            <div class="areas-section">
+                <h2>Service Areas</h2>
+                <div class="areas-grid">
+                    <div class="area-card active">
+                        <div class="area-name">Downtown District</div>
+                        <div class="area-stats">
+                            <span class="area-count">45 services</span>
+                            <span class="area-revenue">$3,240</span>
+                        </div>
+                        <div class="area-status active">Active</div>
+                    </div>
+                    <div class="area-card active">
+                        <div class="area-name">Highway Corridor</div>
+                        <div class="area-stats">
+                            <span class="area-count">67 services</span>
+                            <span class="area-revenue">$5,120</span>
+                        </div>
+                        <div class="area-status active">Active</div>
+                    </div>
+                    <div class="area-card">
+                        <div class="area-name">Suburban North</div>
+                        <div class="area-stats">
+                            <span class="area-count">23 services</span>
+                            <span class="area-revenue">$1,890</span>
+                        </div>
+                        <div class="area-status pending">Pending Approval</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Contracts -->
+            <div class="contracts-section">
+                <h2>Recent Service Contracts</h2>
+                <div class="contracts-list">
+                    <div class="contract-item">
+                        <div class="contract-info">
+                            <div class="contract-type">🚛 Emergency Towing Contract</div>
+                            <div class="contract-details">Downtown District • 24/7 Coverage</div>
+                        </div>
+                        <div class="contract-value">$2,500/month</div>
+                        <div class="contract-status active">Active</div>
+                    </div>
+                    <div class="contract-item">
+                        <div class="contract-info">
+                            <div class="contract-type">🔋 Battery Service Agreement</div>
+                            <div class="contract-details">Highway Corridor • Peak Hours</div>
+                        </div>
+                        <div class="contract-value">$1,800/month</div>
+                        <div class="contract-status active">Active</div>
+                    </div>
+                    <div class="contract-item">
+                        <div class="contract-info">
+                            <div class="contract-type">🛞 Tire Change Service</div>
+                            <div class="contract-details">Multiple Areas • Standard Hours</div>
+                        </div>
+                        <div class="contract-value">$1,200/month</div>
+                        <div class="contract-status pending">Under Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partner Tools -->
+            <div class="partner-tools-section">
+                <h2>Partner Tools</h2>
+                <div class="partner-tools-grid">
+                    <div class="partner-tool" onclick="App.viewServiceRequests()">
+                        <div class="tool-icon">📋</div>
+                        <h3>Service Requests</h3>
+                        <p>View and manage incoming service requests</p>
+                    </div>
+                    <div class="partner-tool" onclick="App.invoiceManagement()">
+                        <div class="tool-icon">💰</div>
+                        <h3>Invoice Management</h3>
+                        <p>Create and track invoices</p>
+                    </div>
+                    <div class="partner-tool" onclick="App.partnerReports()">
+                        <div class="tool-icon">📊</div>
+                        <h3>Performance Reports</h3>
+                        <p>Detailed performance analytics</p>
+                    </div>
+                    <div class="partner-tool" onclick="App.resourceManagement()">
+                        <div class="tool-icon">🚛</div>
+                        <h3>Resource Management</h3>
+                        <p>Manage vehicles and equipment</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    renderSecurityDashboard(container) {
+        container.innerHTML = `
+            <!-- Security Header -->
+            <div class="dashboard-header">
+                <div class="role-badge">🛡️ Security Dashboard</div>
+                <div class="security-status">
+                    <div class="threat-level low">🟢 Threat Level: LOW</div>
+                </div>
+            </div>
+
+            <!-- Security Alerts -->
+            <div class="alerts-section">
+                <h2>Security Alerts</h2>
+                <div class="alerts-list">
+                    <div class="alert-item low">
+                        <div class="alert-icon">🔵</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Failed Login Attempt</div>
+                            <div class="alert-details">Multiple failed login attempts from IP 192.168.1.100</div>
+                            <div class="alert-time">5 minutes ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn btn--outline btn--sm" onclick="App.investigateAlert(1)">Investigate</button>
+                        </div>
+                    </div>
+                    <div class="alert-item medium">
+                        <div class="alert-icon">🟡</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Unusual API Activity</div>
+                            <div class="alert-details">High frequency API calls detected from user account #4521</div>
+                            <div class="alert-time">12 minutes ago</div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn btn--outline btn--sm" onclick="App.investigateAlert(2)">Investigate</button>
+                        </div>
+                    </div>
+                    <div class="alert-item resolved">
+                        <div class="alert-icon">✅</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Resolved: Database Connection Issue</div>
+                            <div class="alert-details">Database connectivity restored after brief outage</div>
+                            <div class="alert-time">45 minutes ago</div>
+                        </div>
+                        <div class="alert-status">Resolved</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Monitoring -->
+            <div class="monitoring-section">
+                <h2>System Monitoring</h2>
+                <div class="monitoring-grid">
+                    <div class="monitor-card">
+                        <div class="monitor-header">
+                            <span class="monitor-title">Server Health</span>
+                            <span class="monitor-status healthy">🟢 Healthy</span>
+                        </div>
+                        <div class="monitor-metrics">
+                            <div class="metric">CPU: 23%</div>
+                            <div class="metric">Memory: 45%</div>
+                            <div class="metric">Disk: 67%</div>
+                        </div>
+                    </div>
+                    <div class="monitor-card">
+                        <div class="monitor-header">
+                            <span class="monitor-title">Database</span>
+                            <span class="monitor-status healthy">🟢 Online</span>
+                        </div>
+                        <div class="monitor-metrics">
+                            <div class="metric">Connections: 142/200</div>
+                            <div class="metric">Query Time: 45ms avg</div>
+                            <div class="metric">Uptime: 99.9%</div>
+                        </div>
+                    </div>
+                    <div class="monitor-card">
+                        <div class="monitor-header">
+                            <span class="monitor-title">API Gateway</span>
+                            <span class="monitor-status healthy">🟢 Operating</span>
+                        </div>
+                        <div class="monitor-metrics">
+                            <div class="metric">Requests/min: 1,247</div>
+                            <div class="metric">Error Rate: 0.02%</div>
+                            <div class="metric">Avg Response: 120ms</div>
+                        </div>
+                    </div>
+                    <div class="monitor-card">
+                        <div class="monitor-header">
+                            <span class="monitor-title">User Sessions</span>
+                            <span class="monitor-status healthy">🟢 Normal</span>
+                        </div>
+                        <div class="monitor-metrics">
+                            <div class="metric">Active Users: 1,089</div>
+                            <div class="metric">Session Duration: 24min avg</div>
+                            <div class="metric">Bounce Rate: 3.2%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Access Control -->
+            <div class="access-control-section">
+                <h2>Access Control</h2>
+                <div class="access-grid">
+                    <div class="access-item">
+                        <div class="access-icon">👥</div>
+                        <div class="access-info">
+                            <h4>User Permissions</h4>
+                            <p>1,247 users • 89 roles</p>
+                        </div>
+                        <button class="btn btn--outline btn--sm" onclick="App.managePermissions()">Manage</button>
+                    </div>
+                    <div class="access-item">
+                        <div class="access-icon">🔐</div>
+                        <div class="access-info">
+                            <h4>API Security</h4>
+                            <p>45 active tokens • 12 API keys</p>
+                        </div>
+                        <button class="btn btn--outline btn--sm" onclick="App.manageAPIKeys()">Manage</button>
+                    </div>
+                    <div class="access-item">
+                        <div class="access-icon">🔒</div>
+                        <div class="access-info">
+                            <h4>Data Encryption</h4>
+                            <p>AES-256 • SSL/TLS enabled</p>
+                        </div>
+                        <button class="btn btn--outline btn--sm" onclick="App.viewEncryption()">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Tools -->
+            <div class="security-tools-section">
+                <h2>Security Tools</h2>
+                <div class="security-tools-grid">
+                    <div class="security-tool" onclick="App.auditTrail()">
+                        <div class="tool-icon">📋</div>
+                        <h3>Audit Trail</h3>
+                        <p>Complete system activity logs</p>
+                    </div>
+                    <div class="security-tool" onclick="App.threatDetection()">
+                        <div class="tool-icon">🔍</div>
+                        <h3>Threat Detection</h3>
+                        <p>AI-powered security monitoring</p>
+                    </div>
+                    <div class="security-tool" onclick="App.vulnerabilityScanning()">
+                        <div class="tool-icon">🛡️</div>
+                        <h3>Vulnerability Scanning</h3>
+                        <p>Automated security assessments</p>
+                    </div>
+                    <div class="security-tool" onclick="App.incidentResponse()">
+                        <div class="tool-icon">🚨</div>
+                        <h3>Incident Response</h3>
+                        <p>Emergency response protocols</p>
+                    </div>
+                    <div class="security-tool" onclick="App.complianceReports()">
+                        <div class="tool-icon">📊</div>
+                        <h3>Compliance Reports</h3>
+                        <p>Regulatory compliance tracking</p>
+                    </div>
+                    <div class="security-tool" onclick="App.backupManagement()">
+                        <div class="tool-icon">💾</div>
+                        <h3>Backup Management</h3>
+                        <p>Data backup and recovery</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    updateUserRoleDisplay(role) {
+        // Update navbar to reflect current role
+        const navTitle = document.querySelector('.logo-nav');
+        if (navTitle) {
+            const roleEmoji = {
+                'customer': '👤',
+                'technician': '🔧',
+                'admin': '⚙️',
+                'partner': '🤝',
+                'security': '🛡️'
+            };
+            navTitle.textContent = `${roleEmoji[role] || '🚗'} RoadSide+`;
+        }
+        
+        // Show role-appropriate notifications
+        this.showToast(`Switched to ${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`);
+    }
+    
+    generateRecentServices() {
+        const services = [
+            { type: 'Towing', date: '2024-01-15', price: '$150', status: 'Completed' },
+            { type: 'Battery Jump', date: '2024-01-10', price: '$75', status: 'Completed' },
+            { type: 'Tire Change', date: '2024-01-05', price: '$100', status: 'Completed' }
+        ];
+        
+        return services.map(service => `
+            <div class="service-history-item">
+                <div class="service-icon">${service.type === 'Towing' ? '🚛' : service.type === 'Battery Jump' ? '🔋' : '🛞'}</div>
+                <div class="service-details">
+                    <h4>${service.type}</h4>
+                    <p>${service.date}</p>
+                </div>
+                <div class="service-status">${service.status}</div>
+                <div class="service-price">${service.price}</div>
+            </div>
+        `).join('');
     }
 
     getDashboardContent(type) {
@@ -697,6 +1395,7 @@ class RoadSideApp {
         }
     }
 
+    // Emergency call functionality
     emergencyCall() {
         this.showToast('Connecting to emergency services...', 'warning');
         setTimeout(() => {
@@ -1678,142 +2377,11 @@ class RoadSideApp {
         registerScreen.style.display = 'block';
     }
 
-    // Emergency and Support Functions
-    emergencyCall() {
-        this.showToast('🚨 Emergency services contacted!', 'error');
-    }
-}
-
-// Edit Profile Modal Functions
-function openEditProfileModal() {
-    const modal = document.getElementById('edit-profile-modal');
-    if (modal) {
-        // Pre-populate with current profile data
-        document.getElementById('edit-profile-name').value = 'John Doe';
-        document.getElementById('edit-profile-email').value = 'john.doe@email.com';
-        document.getElementById('edit-profile-phone').value = '+1 (555) 123-4567';
-        document.getElementById('edit-profile-address').value = '123 Main Street, City, State 12345';
-        
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeEditProfileModal() {
-    const modal = document.getElementById('edit-profile-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-function saveEditProfile() {
-    const name = document.getElementById('edit-profile-name').value;
-    const email = document.getElementById('edit-profile-email').value;
-    const phone = document.getElementById('edit-profile-phone').value;
-    const address = document.getElementById('edit-profile-address').value;
-    
-    if (!name || !email) {
-        showToast('Please fill in required fields', 'error');
-        return;
-    }
-    
-    // Update profile data
-    console.log('Saving profile:', { name, email, phone, address });
-    
-    // Update UI with new data
-    const profileNameElements = document.querySelectorAll('.user-name, .profile-name');
-    profileNameElements.forEach(el => {
-        if (el) el.textContent = name;
-    });
-    
-    showToast('Profile updated successfully!', 'success');
-    closeEditProfileModal();
-}
-
-// Settings Modal Functions
-function openSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (modal) {
-        // Load current settings
-        loadCurrentSettings();
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-function loadCurrentSettings() {
-    // Load settings from localStorage or default values
-    const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
-    
-    document.getElementById('setting-push-notifications').checked = settings.pushNotifications !== false;
-    document.getElementById('setting-email-notifications').checked = settings.emailNotifications !== false;
-    document.getElementById('setting-sms-notifications').checked = settings.smsNotifications || false;
-    document.getElementById('setting-location-sharing').checked = settings.locationSharing !== false;
-    document.getElementById('setting-data-analytics').checked = settings.dataAnalytics || false;
-    document.getElementById('setting-theme').value = settings.theme || 'dark';
-    document.getElementById('setting-emergency-contact').value = settings.emergencyContact || '';
-}
-
-function saveSettings() {
-    const settings = {
-        pushNotifications: document.getElementById('setting-push-notifications').checked,
-        emailNotifications: document.getElementById('setting-email-notifications').checked,
-        smsNotifications: document.getElementById('setting-sms-notifications').checked,
-        locationSharing: document.getElementById('setting-location-sharing').checked,
-        dataAnalytics: document.getElementById('setting-data-analytics').checked,
-        theme: document.getElementById('setting-theme').value,
-        emergencyContact: document.getElementById('setting-emergency-contact').value
-    };
-    
-    // Save to localStorage
-    localStorage.setItem('userSettings', JSON.stringify(settings));
-    
-    // Apply theme setting
-    document.body.setAttribute('data-color-scheme', settings.theme);
-    
-    console.log('Settings saved:', settings);
-    showToast('Settings saved successfully!', 'success');
-    closeSettingsModal();
-}
-
-// Logout Function
-function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        console.log('User logging out...');
-        
-        // Clear user data
-        localStorage.removeItem('userSession');
-        localStorage.removeItem('userData');
-        sessionStorage.clear();
-        
-        // Show logout message
-        showToast('Logged out successfully', 'success');
-        
-        // Redirect to login screen after a short delay
-        setTimeout(() => {
-            // Hide main app
-            const mainApp = document.getElementById('main-app');
-            const loginScreen = document.getElementById('login-screen');
-            
-            if (mainApp) mainApp.style.display = 'none';
-            if (loginScreen) loginScreen.style.display = 'flex';
-            
-            // Reset login form
-            const loginForm = loginScreen.querySelector('.auth-form');
-            if (loginForm) {
-                const inputs = loginForm.querySelectorAll('input');
-                inputs.forEach(input => input.value = '');
-            }
-        }, 1000);
+    closeNavDrawer() {
+        const drawer = document.getElementById('nav-drawer');
+        if (drawer) {
+            drawer.classList.remove('open');
+        }
     }
 }
 
@@ -1873,31 +2441,6 @@ function confirmBooking() {
         App.showToast('Booking confirmed! Technician dispatched.', 'success');
         closeBookingModal();
     }
-}
-
-// Emergency Call Function
-function emergencyCall() {
-    console.log('Emergency SOS activated!');
-    
-    // Show emergency alert
-    const emergencyAlert = document.createElement('div');
-    emergencyAlert.className = 'emergency-alert';
-    emergencyAlert.innerHTML = `
-        <div class="emergency-content">
-            <h2>🚨 EMERGENCY ACTIVATED</h2>
-            <p>Emergency services have been contacted</p>
-            <p>Help is on the way!</p>
-            <button onclick="this.parentElement.parentElement.remove()">Close</button>
-        </div>
-    `;
-    document.body.appendChild(emergencyAlert);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (emergencyAlert.parentElement) {
-            emergencyAlert.remove();
-        }
-    }, 5000);
 }
 
 // Initialize app when DOM is ready
