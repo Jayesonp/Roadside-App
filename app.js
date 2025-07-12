@@ -507,6 +507,105 @@ class RoadSideApp {
         });
     }
 
+    loadServiceHistory() {
+        const historyContainer = document.getElementById('history-view');
+        if (historyContainer) {
+            historyContainer.innerHTML = `
+                <div class="history-content">
+                    <h2>Service History</h2>
+                    <div class="service-history-list">
+                        ${this.serviceHistory.map(service => `
+                            <div class="history-item">
+                                <div class="service-info">
+                                    <h4>${service.service}</h4>
+                                    <p><strong>Date:</strong> ${service.date}</p>
+                                    <p><strong>Location:</strong> ${service.location}</p>
+                                    <p><strong>Technician:</strong> ${service.technician}</p>
+                                    <p><strong>Cost:</strong> $${service.cost}</p>
+                                </div>
+                                <div class="service-status ${service.status.toLowerCase()}">${service.status}</div>
+                                <div class="service-rating">
+                                    ${'★'.repeat(service.rating)}${'☆'.repeat(5 - service.rating)}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    loadSupportContent() {
+        const supportContainer = document.getElementById('support-view');
+        if (supportContainer) {
+            supportContainer.innerHTML = `
+                <div class="support-content">
+                    <h2>Support Center</h2>
+                    <div class="support-options">
+                        <div class="support-card" onclick="App.openNewSupportRequest()">
+                            <div class="support-icon">🎫</div>
+                            <h3>New Support Request</h3>
+                            <p>Submit a ticket for assistance</p>
+                        </div>
+                        <div class="support-card" onclick="App.openEmergencyContact()">
+                            <div class="support-icon">🚨</div>
+                            <h3>Emergency Contact</h3>
+                            <p>24/7 emergency assistance</p>
+                        </div>
+                        <div class="support-card" onclick="App.openFAQ()">
+                            <div class="support-icon">❓</div>
+                            <h3>FAQ</h3>
+                            <p>Frequently asked questions</p>
+                        </div>
+                        <div class="support-card" onclick="App.openLiveChat()">
+                            <div class="support-icon">💬</div>
+                            <h3>Live Chat</h3>
+                            <p>Chat with support agent</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    loadProfileContent() {
+        const profileContainer = document.getElementById('profile-view');
+        if (profileContainer) {
+            profileContainer.innerHTML = `
+                <div class="profile-content">
+                    <h2>My Profile</h2>
+                    <div class="profile-info">
+                        <div class="profile-avatar">👤</div>
+                        <div class="profile-details">
+                            <h3>John Doe</h3>
+                            <p>john.doe@email.com</p>
+                            <p>Customer since: January 2024</p>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Services</span>
+                            <span class="stat-value">${this.serviceHistory.length}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Spent</span>
+                            <span class="stat-value">$${this.getTotalSpent()}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Average Rating</span>
+                            <span class="stat-value">${this.getAverageRating()}★</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn--primary">Edit Profile</button>
+                        <button class="btn btn--outline">Settings</button>
+                        <button class="btn btn--outline">Logout</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     selectService(id, name, price) {
         console.log(`Service selected: ${name} - $${price}`);
         
