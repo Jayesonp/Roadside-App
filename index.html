@@ -635,10 +635,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Small delay to ensure styles are loaded
             setTimeout(() => {
-                // App will be initialized by client.js
+                window.App = new RoadSideApp();
             }, 100);
         });
     </script>
-    <script src="client.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
