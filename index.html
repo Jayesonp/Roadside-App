@@ -631,12 +631,20 @@
     </div>
 
     <script>
-        // Ensure DOM is loaded before initializing app
+        // Initialize app immediately when script loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Small delay to ensure styles are loaded
-            setTimeout(() => {
+            console.log('DOM loaded, initializing app...');
+            window.App = new RoadSideApp();
+            window.App.init();
+        });
+        
+        // Fallback initialization
+        window.addEventListener('load', function() {
+            if (!window.App) {
+                console.log('Fallback app initialization...');
                 window.App = new RoadSideApp();
-            }, 100);
+                window.App.init();
+            }
         });
     </script>
     <script src="app.js"></script>

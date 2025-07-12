@@ -4,50 +4,39 @@ class RoadSideApp {
         this.currentView = 'dashboard';
         this.serviceHistory = [];
         this.supportTickets = [];
-        this.init();
+        // Don't auto-init, wait for explicit call
     }
 
     init() {
         console.log('Initializing RoadSide+ App...');
         
-        // Wait for DOM to be fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.startApp();
-            });
-        } else {
-            this.startApp();
-        }
+        // Force immediate startup
+        this.startApp();
     }
 
     startApp() {
         try {
-            // Hide loading screen and show main app
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                const mainApp = document.getElementById('main-app');
-                
-                if (loadingScreen) {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                    }, 500);
-                }
-                
-                if (mainApp) {
-                    mainApp.style.display = 'block';
-                    setTimeout(() => {
-                        mainApp.style.opacity = '1';
-                    }, 100);
-                }
-                
-                // Initialize app features
-                this.setupEventListeners();
-                this.loadInitialData();
-                this.showDashboard('customer');
-                
-                console.log('✅ RoadSide+ App loaded successfully');
-            }, 1500);
+            console.log('Starting app immediately...');
+            
+            // Hide loading screen immediately
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainApp = document.getElementById('main-app');
+            
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            
+            if (mainApp) {
+                mainApp.style.display = 'block';
+                mainApp.style.opacity = '1';
+            }
+            
+            // Initialize app features
+            this.setupEventListeners();
+            this.loadInitialData();
+            this.showDashboard('customer');
+            
+            console.log('✅ RoadSide+ App loaded successfully');
         } catch (error) {
             console.error('Error starting app:', error);
             // Force show main app even if there's an error
@@ -56,6 +45,7 @@ class RoadSideApp {
     }
 
     forceShowApp() {
+        console.log('Force showing app...');
         const loadingScreen = document.getElementById('loading-screen');
         const mainApp = document.getElementById('main-app');
         
