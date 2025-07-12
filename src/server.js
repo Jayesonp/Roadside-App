@@ -1,6 +1,12 @@
 import app from './app.js';
 import { config } from './config/index.js';
 import logger from './utils/logger.js';
+import express from 'express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Create logs directory if it doesn't exist
 import { mkdirSync } from 'fs';
@@ -9,6 +15,14 @@ try {
 } catch (error) {
   // Directory already exists
 }
+
+// Serve static files from root directory (for the frontend)
+app.use(express.static(join(__dirname, '..')));
+
+// Serve index.html for frontend routes (SPA support)
+app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, '..', 'index.html'));
+});
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
@@ -25,6 +39,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // Start server
 const server = app.listen(config.port, () => {
   logger.info(`🚀 Server running on port ${config.port}`);
+  logger.info(`🎨 Frontend: http://localhost:${config.port}`);
   logger.info(`📚 API Documentation: http://localhost:${config.port}/api-docs`);
   logger.info(`🏥 Health Check: http://localhost:${config.port}/api/${config.api.version}/health`);
   logger.info(`🌍 Environment: ${config.nodeEnv}`);
