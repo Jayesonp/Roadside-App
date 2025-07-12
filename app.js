@@ -1435,17 +1435,577 @@ function callCustomer(phoneNumber) {
 }
 
 function manageUsers() {
-  showToast('Opening user management panel...', 'info');
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>👤 User Management</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'active-users')">Active Users</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'user-analytics')">Analytics</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'user-actions')">Actions</div>
+        </div>
+        
+        <div id="active-users" class="admin-tab-content active">
+          <div class="search-bar">
+            <input type="text" placeholder="Search users..." class="form-control" onkeyup="searchUsers(this.value)">
+          </div>
+          <div class="user-list" id="user-management-list">
+            <div class="user-item">
+              <div class="user-avatar">JD</div>
+              <div class="user-details">
+                <h4>John Doe</h4>
+                <p>john.doe@email.com • Member since 2023</p>
+                <span class="status active">Active</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-123')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-123')">Details</button>
+              </div>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar">SM</div>
+              <div class="user-details">
+                <h4>Sarah Miller</h4>
+                <p>sarah.m@email.com • Member since 2023</p>
+                <span class="status active">Active</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-124')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-124')">Details</button>
+              </div>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar">MC</div>
+              <div class="user-details">
+                <h4>Mike Chen</h4>
+                <p>mike.chen@email.com • Member since 2024</p>
+                <span class="status pending">Pending</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-125')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-125')">Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="user-analytics" class="admin-tab-content">
+          <div class="analytics-grid">
+            <div class="metric-card">
+              <h3>1,247</h3>
+              <p>Total Users</p>
+              <span class="trend up">+12% this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>1,156</h3>
+              <p>Active Users</p>
+              <span class="trend up">+8% this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>91</h3>
+              <p>New This Month</p>
+              <span class="trend up">+15% vs last month</span>
+            </div>
+            <div class="metric-card">
+              <h3>4.8</h3>
+              <p>Avg User Rating</p>
+              <span class="trend stable">Stable</span>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <h4>User Growth Trends</h4>
+            <p>📈 User registration and activity trends would be displayed here</p>
+          </div>
+        </div>
+        
+        <div id="user-actions" class="admin-tab-content">
+          <div class="bulk-actions">
+            <h3>Bulk Actions</h3>
+            <div class="action-buttons">
+              <button class="btn btn--primary" onclick="exportUserData()">📄 Export User Data</button>
+              <button class="btn btn--outline" onclick="sendBulkNotification()">📢 Send Notification</button>
+              <button class="btn btn--outline" onclick="generateUserReport()">📊 Generate Report</button>
+            </div>
+          </div>
+          <div class="system-actions">
+            <h3>System Actions</h3>
+            <div class="action-buttons">
+              <button class="btn btn--outline" onclick="purgeInactiveUsers()">🗑️ Purge Inactive Users</button>
+              <button class="btn btn--outline" onclick="resetUserPasswords()">🔑 Bulk Password Reset</button>
+              <button class="btn btn--outline" onclick="auditUserActivity()">🔍 Audit User Activity</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 
 function manageTechnicians() {
-  showToast('Opening technician management panel...', 'info');
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>🔧 Technician Management</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'active-techs')">Active Technicians</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'tech-performance')">Performance</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'tech-scheduling')">Scheduling</div>
+        </div>
+        
+        <div id="active-techs" class="admin-tab-content active">
+          <div class="tech-controls">
+            <button class="btn btn--primary" onclick="addNewTechnician()">➕ Add Technician</button>
+            <div class="filter-controls">
+              <select class="form-control" onchange="filterTechnicians(this.value)">
+                <option value="all">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="busy">Busy</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
+          </div>
+          <div class="technician-list">
+            <div class="tech-item">
+              <div class="tech-status available"></div>
+              <div class="tech-avatar">MR</div>
+              <div class="tech-details">
+                <h4>Mike Rodriguez</h4>
+                <p>Certified Technician • ID: TECH-001</p>
+                <div class="tech-stats">
+                  <span>Rating: 4.9★</span>
+                  <span>Jobs Today: 8</span>
+                  <span>Status: Available</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm btn--outline" onclick="assignJob('TECH-001')">Assign Job</button>
+                <button class="btn btn--sm btn--primary" onclick="viewTechDetails('TECH-001')">Details</button>
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="tech-status busy"></div>
+              <div class="tech-avatar">SJ</div>
+              <div class="tech-details">
+                <h4>Sarah Johnson</h4>
+                <p>Senior Technician • ID: TECH-002</p>
+                <div class="tech-stats">
+                  <span>Rating: 4.8★</span>
+                  <span>Jobs Today: 6</span>
+                  <span>Status: On Job</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm btn--outline" disabled>Busy</button>
+                <button class="btn btn--sm btn--primary" onclick="viewTechDetails('TECH-002')">Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-performance" class="admin-tab-content">
+          <div class="performance-metrics">
+            <div class="metric-card">
+              <h3>89</h3>
+              <p>Active Technicians</p>
+              <span class="trend up">+3 this week</span>
+            </div>
+            <div class="metric-card">
+              <h3>4.7</h3>
+              <p>Avg Rating</p>
+              <span class="trend up">+0.2 this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>12.5</h3>
+              <p>Avg Response Time (min)</p>
+              <span class="trend down">-1.2 this week</span>
+            </div>
+            <div class="metric-card">
+              <h3>98.2%</h3>
+              <p>Success Rate</p>
+              <span class="trend stable">Stable</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-scheduling" class="admin-tab-content">
+          <div class="schedule-controls">
+            <h3>Shift Management</h3>
+            <div class="schedule-grid">
+              <div class="time-slot">
+                <span class="time">6:00 AM - 2:00 PM</span>
+                <span class="tech-count">24 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+              <div class="time-slot">
+                <span class="time">2:00 PM - 10:00 PM</span>
+                <span class="tech-count">32 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+              <div class="time-slot">
+                <span class="time">10:00 PM - 6:00 AM</span>
+                <span class="tech-count">18 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 
 function viewAnalytics() {
-  showToast('Loading detailed analytics...', 'info');
+  const modal = document.createElement('div');
+  modal.className = 'modal active analytics-modal';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>📈 System Analytics</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'revenue-analytics')">Revenue</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'service-analytics')">Services</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'performance-analytics')">Performance</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'geographic-analytics')">Geographic</div>
+        </div>
+        
+        <div id="revenue-analytics" class="admin-tab-content active">
+          <div class="revenue-summary">
+            <div class="revenue-card">
+              <h3>$45,680</h3>
+              <p>Today's Revenue</p>
+              <span class="trend up">+15.2% vs yesterday</span>
+            </div>
+            <div class="revenue-card">
+              <h3>$1.2M</h3>
+              <p>Monthly Revenue</p>
+              <span class="trend up">+8.7% vs last month</span>
+            </div>
+            <div class="revenue-card">
+              <h3>$13.8M</h3>
+              <p>Annual Revenue</p>
+              <span class="trend up">+22.1% vs last year</span>
+            </div>
+          </div>
+          <div class="chart-section">
+            <h4>Revenue Trends (Last 30 Days)</h4>
+            <div class="chart-placeholder">
+              <p>📊 Interactive revenue charts would be displayed here</p>
+              <div class="mini-chart-data">
+                <span>Peak Day: $52,400 (July 8th)</span>
+                <span>Avg Daily: $41,200</span>
+                <span>Growth Rate: +12.5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="service-analytics" class="admin-tab-content">
+          <div class="service-breakdown">
+            <div class="service-stat">
+              <span class="service-icon">🚛</span>
+              <div class="stat-details">
+                <h4>Towing Services</h4>
+                <p>142 services • $21,300 revenue</p>
+                <span class="percentage">32% of total</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <span class="service-icon">🔋</span>
+              <div class="stat-details">
+                <h4>Battery Jump</h4>
+                <p>98 services • $7,350 revenue</p>
+                <span class="percentage">22% of total</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <span class="service-icon">🛞</span>
+              <div class="stat-details">
+                <h4>Tire Change</h4>
+                <p>76 services • $7,600 revenue</p>
+                <span class="percentage">18% of total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="performance-analytics" class="admin-tab-content">
+          <div class="performance-grid">
+            <div class="performance-metric">
+              <h4>Response Time</h4>
+              <div class="metric-value">12.3 min</div>
+              <span class="trend down">-8% improvement</span>
+            </div>
+            <div class="performance-metric">
+              <h4>Success Rate</h4>
+              <div class="metric-value">98.2%</div>
+              <span class="trend up">+0.5% this month</span>
+            </div>
+            <div class="performance-metric">
+              <h4>Customer Satisfaction</h4>
+              <div class="metric-value">4.8/5</div>
+              <span class="trend up">+0.2 this month</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="geographic-analytics" class="admin-tab-content">
+          <div class="geographic-data">
+            <h4>Service Distribution by Region</h4>
+            <div class="region-list">
+              <div class="region-item">
+                <span class="region-name">Downtown</span>
+                <span class="region-services">89 services</span>
+                <span class="region-revenue">$13,400</span>
+              </div>
+              <div class="region-item">
+                <span class="region-name">Suburbs North</span>
+                <span class="region-services">67 services</span>
+                <span class="region-revenue">$10,050</span>
+              </div>
+              <div class="region-item">
+                <span class="region-name">Highway Corridor</span>
+                <span class="region-services">124 services</span>
+                <span class="region-revenue">$18,600</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 
 function systemSettings() {
-  showToast('Opening system settings...', 'info');
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>⚙️ System Settings</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'general-settings')">General</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'service-settings')">Services</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'notification-settings')">Notifications</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'security-settings')">Security</div>
+        </div>
+        
+        <div id="general-settings" class="admin-tab-content active">
+          <div class="settings-section">
+            <h3>System Configuration</h3>
+            <div class="setting-item">
+              <label>System Name</label>
+              <input type="text" class="form-control" value="RoadSide+ Emergency">
+            </div>
+            <div class="setting-item">
+              <label>Maintenance Mode</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="maintenance-mode">
+                <label for="maintenance-mode" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Max Response Time (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            <div class="setting-item">
+              <label>Emergency Contact Number</label>
+              <input type="tel" class="form-control" value="1-800-ROADSIDE">
+            </div>
+          </div>
+        </div>
+        
+        <div id="service-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Service Configuration</h3>
+            <div class="service-pricing">
+              <div class="price-item">
+                <span>🚛 Towing</span>
+                <input type="number" class="form-control price-input" value="150">
+                <span>USD</span>
+              </div>
+              <div class="price-item">
+                <span>🔋 Battery Jump</span>
+                <input type="number" class="form-control price-input" value="75">
+                <span>USD</span>
+              </div>
+              <div class="price-item">
+                <span>🛞 Tire Change</span>
+                <input type="number" class="form-control price-input" value="100">
+                <span>USD</span>
+              </div>
+            </div>
+            <button class="btn btn--primary" onclick="updateServicePricing()">Update Pricing</button>
+          </div>
+        </div>
+        
+        <div id="notification-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Notification Preferences</h3>
+            <div class="notification-item">
+              <label>Email Notifications</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="email-notifications" checked>
+                <label for="email-notifications" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="notification-item">
+              <label>SMS Alerts</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="sms-alerts" checked>
+                <label for="sms-alerts" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="notification-item">
+              <label>Push Notifications</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="push-notifications" checked>
+                <label for="push-notifications" class="toggle-label"></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="security-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Security Configuration</h3>
+            <div class="setting-item">
+              <label>Session Timeout (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            <div class="setting-item">
+              <label>Two-Factor Authentication</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="two-factor" checked>
+                <label for="two-factor" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Password Expiry (days)</label>
+              <input type="number" class="form-control" value="90">
+            </div>
+            <button class="btn btn--primary" onclick="updateSecuritySettings()">Update Security</button>
+          </div>
+        </div>
+        
+        <div class="settings-actions">
+          <button class="btn btn--primary" onclick="saveSystemSettings()">Save All Settings</button>
+          <button class="btn btn--outline" onclick="resetToDefaults()">Reset to Defaults</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+// Helper functions for admin controls
+function switchAdminTab(tabElement, contentId) {
+  // Remove active class from all tabs and content
+  tabElement.parentNode.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+  tabElement.closest('.modal-body').querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+  
+  // Add active class to clicked tab and corresponding content
+  tabElement.classList.add('active');
+  document.getElementById(contentId).classList.add('active');
+}
+
+function searchUsers(query) {
+  const userItems = document.querySelectorAll('.user-item');
+  userItems.forEach(item => {
+    const userName = item.querySelector('h4').textContent.toLowerCase();
+    const userEmail = item.querySelector('p').textContent.toLowerCase();
+    if (userName.includes(query.toLowerCase()) || userEmail.includes(query.toLowerCase())) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function editUser(userId) {
+  showToast(`Opening edit dialog for user ${userId}`, 'info');
+}
+
+function viewUserDetails(userId) {
+  showToast(`Loading detailed view for user ${userId}`, 'info');
+}
+
+function exportUserData() {
+  showToast('Exporting user data to CSV...', 'success');
+}
+
+function sendBulkNotification() {
+  showToast('Opening bulk notification composer...', 'info');
+}
+
+function generateUserReport() {
+  showToast('Generating comprehensive user report...', 'success');
+}
+
+function purgeInactiveUsers() {
+  if (confirm('Are you sure you want to purge inactive users? This cannot be undone.')) {
+    showToast('Purging inactive users...', 'success');
+  }
+}
+
+function resetUserPasswords() {
+  if (confirm('Reset passwords for selected users?')) {
+    showToast('Password reset emails sent to selected users', 'success');
+  }
+}
+
+function auditUserActivity() {
+  showToast('Generating user activity audit report...', 'info');
+}
+
+function addNewTechnician() {
+  showToast('Opening new technician registration form...', 'info');
+}
+
+function filterTechnicians(status) {
+  showToast(`Filtering technicians by status: ${status}`, 'info');
+}
+
+function assignJob(techId) {
+  showToast(`Opening job assignment for technician ${techId}`, 'info');
+}
+
+function viewTechDetails(techId) {
+  showToast(`Loading detailed view for technician ${techId}`, 'info');
+}
+
+function updateServicePricing() {
+  showToast('Service pricing updated successfully', 'success');
+}
+
+function updateSecuritySettings() {
+  showToast('Security settings updated successfully', 'success');
+}
+
+function saveSystemSettings() {
+  showToast('All system settings saved successfully', 'success');
+}
+
+function resetToDefaults() {
+  if (confirm('Reset all settings to defaults? This cannot be undone.')) {
+    showToast('Settings reset to default values', 'success');
+  }
 }
