@@ -926,23 +926,47 @@ window.addEventListener('load', () => {
 function showDashboard(dashboardType) {
   // Update active tab
   $all('.dashboard-tabs .tab').forEach(tab => tab.classList.remove('active'));
-  const activeTab = $(`.dashboard-tabs .tab[onclick="showDashboard('${dashboardType}')"]`);
-  if (activeTab) activeTab.classList.add('active');
+  
+  // Find and activate the correct tab based on the dashboard type
+  $all('.dashboard-tabs .tab').forEach(tab => {
+    const onclick = tab.getAttribute('onclick');
+    if (onclick && onclick.includes(`'${dashboardType}'`)) {
+      tab.classList.add('active');
+    }
+  });
   
   // Update nav drawer active item
   $all('.nav-drawer .nav-item').forEach(item => item.classList.remove('active'));
-  const activeNavItem = $(`.nav-drawer .nav-item[onclick="showDashboard('${dashboardType}')"]`);
-  if (activeNavItem) activeNavItem.classList.add('active');
+  
+  // Find and activate the correct nav item
+  $all('.nav-drawer .nav-item').forEach(item => {
+    const onclick = item.getAttribute('onclick');
+    if (onclick && onclick.includes(`'${dashboardType}'`)) {
+      item.classList.add('active');
+    }
+  });
   
   // Update dashboard content
   updateDashboardContent(dashboardType);
   
   // Store current dashboard type
   appState.currentDashboard = dashboardType;
+  
+  // Close navigation drawer after selection
+  closeNavDrawer();
+  
+  // Show visual feedback
+  showToast(`Switched to ${dashboardType.charAt(0).toUpperCase() + dashboardType.slice(1)} Dashboard`, 'success');
 }
 
 function updateDashboardContent(dashboardType) {
   const dashboardView = $('#dashboard-view');
+  
+  if (!dashboardView) {
+    console.error('Dashboard view not found');
+    return;
+  }
+  
   let content = '';
   
   switch(dashboardType) {
