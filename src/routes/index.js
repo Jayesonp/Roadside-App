@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoutes from './authRoutes.js';
 import taskRoutes from './taskRoutes.js';
+import adminRoutes from './adminRoutes.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/health', (req, res) => {
 // API routes
 router.use('/auth', authRoutes);
 router.use('/tasks', taskRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;

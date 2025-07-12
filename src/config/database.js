@@ -2,70 +2,66 @@ import { createClient } from '@supabase/supabase-js';
 import { config } from './index.js';
 import logger from '../utils/logger.js';
 
-// Validate Supabase configuration
-if (!config.supabase.url || !config.supabase.serviceRoleKey || 
-    config.supabase.url === 'your_supabase_url_here' || 
-    config.supabase.serviceRoleKey === 'your_supabase_service_role_key_here') {
-  console.warn('⚠️  Supabase not configured - using mock client for demo');
-  // Create a mock client for demo purposes
-  const mockSupabase = {
-    from: () => ({
-      select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
-      insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: {}, error: null }) }) }),
-      update: () => ({ eq: () => ({ select: () => ({ single: () => Promise.resolve({ data: {}, error: null }) }) }) }),
-      delete: () => ({ eq: () => Promise.resolve({ error: null }) })
-    })
-  };
-  
-  export const testConnection = async () => {
-    console.log('📍 Using mock Supabase client for demo');
-    return true;
-  };
-  
-  export default mockSupabase;
-} else {
-  // Create real Supabase client
-  const supabase = createClient(
-    config.supabase.url,
-    config.supabase.serviceRoleKey,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      },
-      db: {
-        schema: 'public'
-      }
+// Create Supabase client with service role for full access
+const supabase = createClient(
+  config.supabase.url || 'https://placeholder.supabase.co',
+  config.supabase.serviceRoleKey || 'placeholder-service-role-key',
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    },
+    db: {
+      schema: 'public'
     }
-  );
-  
-  // Test database connection
-  export const testConnection = async () => {
-    try {
-      logger.info('Testing Supabase connection...');
-      
-      const { data, error } = await supabase
-        .from('pg_tables')
-        .select('tablename')
-        .eq('schemaname', 'public')
-        .limit(1);
-      
-      if (error) {
-        logger.error('Supabase connection test failed:', error);
-        throw error;
-      }
-      
-      logger.info('✅ Supabase connection successful');
-      return true;
-    } catch (error) {
-      logger.error('❌ Supabase connection failed:', {
-        message: error.message,
-        details: error.details || 'No additional details',
-        hint: error.hint || 'Check your Supabase URL and service role key'
-      });
+  }
+);
+
+// Create client-side Supabase client for authentication
+export const supabaseAuth = createClient(
+  config.supabase.url || 'https://placeholder.supabase.co',
+  config.supabase.anonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true
+    }
+  }
+);
+
+// Test database connection
+export const testConnection = async () => {
+  try {
+    logger.info('Testing Supabase connection...');
+    
+    if (!config.supabase.url || config.supabase.url === 'https://placeholder.supabase.co') {
+      logger.warn('⚠️  Supabase not configured - please set up your credentials');
       return false;
     }
-  };
-  
-  export default supabase;
-}
+    
+    const { data, error } = await supabase
+      .from('users')
+      .select('id')
+      .limit(1);
+    
+    if (error && error.code !== 'PGRST116') {
+      logger.error('Supabase connection test failed:', error);
+      throw error;
+    }
+    
+    logger.info('✅ Supabase connection successful');
+    return true;
+  } catch (error) {
+    logger.error('❌ Supabase connection failed:', {
+      message: error.message,
+      details: error.details || 'No additional details',
+      hint: error.hint || 'Check your Supabase URL and service role key'
+    });
+    return false;
+  }
+};
+
+// Helper function to bypass RLS for admin operations
+export const supabaseAdmin = supabase;
+
+export default supabase;
