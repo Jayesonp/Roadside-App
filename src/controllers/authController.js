@@ -19,15 +19,7 @@ const generateToken = (userId) => {
  * Register new user
  */
 export const register = asyncHandler(async (req, res) => {
-  const { 
-    email, 
-    password, 
-    firstName, 
-    lastName, 
-    phoneNumber, 
-    emergencyContact,
-    preferences = {} 
-  } = req.body;
+  const { email, password, firstName, lastName } = req.body;
 
   // Check if user already exists
   const existingUser = await User.findByEmail(email);
@@ -40,10 +32,7 @@ export const register = asyncHandler(async (req, res) => {
     email,
     password,
     firstName,
-    lastName,
-    phoneNumber,
-    emergencyContact,
-    preferences
+    lastName
   });
 
   // Generate token
@@ -86,10 +75,6 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const user = new User(userData);
-  
-  // Update last login timestamp
-  await user.updateLastLogin();
-  
   const token = generateToken(user.id);
 
   logger.info(`User logged in: ${email}`);
@@ -119,13 +104,7 @@ export const getProfile = asyncHandler(async (req, res) => {
  * Update user profile
  */
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { 
-    firstName, 
-    lastName, 
-    phoneNumber, 
-    emergencyContact, 
-    preferences 
-  } = req.body;
+  const { firstName, lastName } = req.body;
   
   const user = await User.findById(req.user.id);
   if (!user) {
@@ -133,11 +112,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
   }
 
   await user.update({
-    firstName,
-    lastName,
-    phoneNumber,
-    emergencyContact,
-    preferences
+    first_name: firstName,
+    last_name: lastName,
+    updated_at: new Date().toISOString()
   });
 
   logger.info(`User profile updated: ${user.email}`);
@@ -147,48 +124,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * Change user password
- */
-export const changePassword = asyncHandler(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-  
-  // Get user with password hash
-  const { data: userData, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', req.user.id)
-    .single();
-
-  if (error || !userData) {
-    return ApiResponse.notFound(res, 'User not found');
-  }
-
-  // Verify current password
-  const isValidPassword = await User.verifyPassword(currentPassword, userData.password_hash);
-  if (!isValidPassword) {
-    return ApiResponse.unauthorized(res, 'Current password is incorrect');
-  }
-
-  // Hash new password
-  const bcrypt = await import('bcryptjs');
-  const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-  // Update password
-  const { error: updateError } = await supabase
-    .from('users')
-    .update({ 
-      password_hash: hashedPassword,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', req.user.id);
-
-  if (updateError) throw updateError;
-
-  logger.info(`Password changed for user: ${userData.email}`);
-
-  return ApiResponse.success(res, 'Password changed successfully');
-});
 /**
  * Logout user (client-side token removal)
  */

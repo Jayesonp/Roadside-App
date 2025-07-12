@@ -24,23 +24,7 @@ export const registerValidation = [
     .isLength({ min: 2, max: 50 })
     .withMessage('Last name must be between 2 and 50 characters')
     .matches(/^[a-zA-Z\s]+$/)
-    .withMessage('Last name can only contain letters and spaces'),
-
-  body('phoneNumber')
-    .optional()
-    .isMobilePhone()
-    .withMessage('Please provide a valid phone number'),
-
-  body('emergencyContact')
-    .optional()
-    .isString()
-    .isLength({ max: 500 })
-    .withMessage('Emergency contact information cannot exceed 500 characters'),
-
-  body('preferences')
-    .optional()
-    .isObject()
-    .withMessage('Preferences must be a valid object')
+    .withMessage('Last name can only contain letters and spaces')
 ];
 
 export const loginValidation = [
@@ -52,4 +36,4 @@ export const loginValidation = [
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-]
+];

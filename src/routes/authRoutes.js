@@ -4,17 +4,11 @@ import {
   login,
   getProfile,
   updateProfile,
-  changePassword,
   logout
 } from '../controllers/authController.js';
 import { authenticate } from '../middleware/auth.js';
 import { handleValidation } from '../middleware/validation.js';
-import { 
-  registerValidation, 
-  loginValidation, 
-  updateProfileValidation,
-  changePasswordValidation 
-} from '../validators/authValidators.js';
+import { registerValidation, loginValidation } from '../validators/authValidators.js';
 import { authRateLimiter } from '../middleware/security.js';
 
 const router = express.Router();
@@ -47,7 +41,7 @@ const router = express.Router();
  *           description: User last name
  *         role:
  *           type: string
- *           enum: [user, technician, support, manager, admin]
+ *           enum: [user, admin]
  *           description: User role
  *         isActive:
  *           type: boolean
@@ -90,12 +84,6 @@ const router = express.Router();
  *                 type: string
  *               lastName:
  *                 type: string
- *               phoneNumber:
- *                 type: string
- *               emergencyContact:
- *                 type: string
- *               preferences:
- *                 type: object
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -170,50 +158,13 @@ router.get('/profile', authenticate, getProfile);
  *                 type: string
  *               lastName:
  *                 type: string
- *               phoneNumber:
- *                 type: string
- *               emergencyContact:
- *                 type: string
- *               preferences:
- *                 type: object
  *     responses:
  *       200:
  *         description: Profile updated successfully
  *       401:
  *         description: Unauthorized
  */
-router.put('/profile', authenticate, updateProfileValidation, handleValidation, updateProfile);
-
-/**
- * @swagger
- * /api/v1/auth/change-password:
- *   put:
- *     summary: Change user password
- *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - currentPassword
- *               - newPassword
- *             properties:
- *               currentPassword:
- *                 type: string
- *               newPassword:
- *                 type: string
- *                 minLength: 8
- *     responses:
- *       200:
- *         description: Password changed successfully
- *       401:
- *         description: Unauthorized or current password incorrect
- */
-router.put('/change-password', authenticate, authRateLimiter, changePasswordValidation, handleValidation, changePassword);
+router.put('/profile', authenticate, updateProfile);
 
 /**
  * @swagger

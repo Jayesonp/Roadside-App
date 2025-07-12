@@ -5,64 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoadSide+ Emergency Assistance</title>
     <link rel="stylesheet" href="style.css">
-    <script>
-        // Prevent console errors from blocking app load
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Error:', msg, 'at', url, ':', lineNo);
-            return false;
-        };
-        
-        // Ensure DOM is loaded before initializing
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing app...');
-            
-            // Initialize app after a short delay to ensure all resources are loaded
-            setTimeout(() => {
-                if (window.App && typeof window.App.initialize === 'function') {
-                    window.App.initialize();
-                } else {
-                    console.warn('App not found, loading basic interface...');
-                    showBasicInterface();
-                }
-            }, 100);
-        });
-        
-        function showBasicInterface() {
-            // Hide loading screen
-            const loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen) {
-                loadingScreen.classList.remove('active');
-                loadingScreen.style.display = 'none';
-            }
-            
-            // Show main app
-            const mainApp = document.getElementById('main-app');
-            if (mainApp) {
-                mainApp.classList.remove('hidden');
-                mainApp.style.display = 'block';
-            }
-            
-            console.log('Basic interface loaded');
-        }
-    </script>
 </head>
 <body data-color-scheme="dark">
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen active">
+    <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
             <div class="logo">🚗 RoadSide+</div>
             <div class="loading-spinner"></div>
-            <p id="loading-text">Initializing Emergency Assistance...</p>
+            <p>Emergency Assistance Ready</p>
         </div>
     </div>
 
-    <!-- Error Boundary -->
-    <div id="error-boundary" class="error-boundary hidden">
-        <div class="error-content">
-            <div class="error-icon">⚠️</div>
-            <h2>Application Error</h2>
-            <p id="error-message">Something went wrong. Please refresh the page.</p>
-            <button onclick="location.reload()" class="btn btn--primary">Reload Application</button>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen hidden">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>🚗 RoadSide+</h1>
+                <p>Emergency Roadside Assistance</p>
+            </div>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" placeholder="Enter your password">
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="login()">Sign In</button>
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+                <button class="btn btn--outline btn--full-width" onclick="showRegister()">Create Account</button>
+            </div>
         </div>
     </div>
 
@@ -82,6 +57,55 @@
             </div>
         </nav>
 
+        <!-- Navigation Drawer -->
+        <div id="nav-drawer" class="nav-drawer">
+            <div class="nav-drawer-header">
+                <h3>Navigation</h3>
+                <button class="close-btn" onclick="closeNavDrawer()">×</button>
+            </div>
+            <div class="nav-drawer-content">
+                <div class="nav-item active" onclick="showDashboard('customer')">
+                    <span class="nav-icon">👤</span>
+                    <span>Customer Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('technician')">
+                    <span class="nav-icon">🔧</span>
+                    <span>Technician Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('admin')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Admin Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('partner')">
+                    <span class="nav-icon">🤝</span>
+                    <span>Partner Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('security')">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Security Dashboard</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tabs -->
+        <div class="dashboard-tabs">
+            <div class="tab active" onclick="showDashboard('customer')" role="button" tabindex="0">
+                <span>👤</span> Customer
+            </div>
+            <div class="tab" onclick="showDashboard('technician')" role="button" tabindex="0">
+                <span>🔧</span> Technician
+            </div>
+            <div class="tab" onclick="showDashboard('admin')" role="button" tabindex="0">
+                <span>⚙️</span> Admin
+            </div>
+            <div class="tab" onclick="showDashboard('partner')" role="button" tabindex="0">
+                <span>🤝</span> Partner
+            </div>
+            <div class="tab" onclick="showDashboard('security')" role="button" tabindex="0">
+                <span>🛡️</span> Security
+            </div>
+        </div>
+
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view active">
             <!-- Emergency Banner -->
@@ -92,7 +116,7 @@
                         <h3>Emergency Assistance</h3>
                         <p>24/7 immediate response</p>
                     </div>
-                    <button class="emergency-btn" onclick="alert('Emergency SOS activated!')">SOS</button>
+                    <button class="emergency-btn" onclick="emergencyCall()">SOS</button>
                 </div>
             </div>
 
@@ -100,30 +124,50 @@
             <div class="services-section">
                 <h2>Select Service</h2>
                 <div class="services-grid">
-                    <div class="service-card" onclick="alert('Towing service selected')">
+                    <div class="service-card" onclick="selectService(1, 'Towing', 150)">
                         <div class="service-icon">🚛</div>
                         <h3>Towing</h3>
                         <p class="service-price">$150</p>
                         <p class="service-time">45 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="alert('Battery jump service selected')">
+                    <div class="service-card" onclick="selectService(2, 'Battery Jump', 75)">
                         <div class="service-icon">🔋</div>
                         <h3>Battery Jump</h3>
                         <p class="service-price">$75</p>
                         <p class="service-time">20 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="alert('Tire change service selected')">
+                    <div class="service-card" onclick="selectService(3, 'Tire Change', 100)">
                         <div class="service-icon">🛞</div>
                         <h3>Tire Change</h3>
                         <p class="service-price">$100</p>
                         <p class="service-time">30 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="alert('Lockout service selected')">
+                    <div class="service-card" onclick="selectService(4, 'Lockout', 85)">
                         <div class="service-icon">🔓</div>
                         <h3>Lockout</h3>
                         <p class="service-price">$85</p>
                         <p class="service-time">20 min • 30 min response</p>
                     </div>
+                    <div class="service-card" onclick="selectService(5, 'Fuel Delivery', 60)">
+                        <div class="service-icon">⛽</div>
+                        <h3>Fuel Delivery</h3>
+                        <p class="service-price">$60</p>
+                        <p class="service-time">15 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(6, 'Winch Recovery', 200)">
+                        <div class="service-icon">🪝</div>
+                        <h3>Winch Recovery</h3>
+                        <p class="service-price">$200</p>
+                        <p class="service-time">60 min • 45 min response</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Services -->
+            <div class="recent-section">
+                <h2>Recent Services</h2>
+                <div id="recent-services" class="service-history">
+                    <!-- Recent services will be populated by JavaScript -->
                 </div>
             </div>
 
@@ -133,18 +177,430 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">📊</div>
-                        <div class="stat-value">12</div>
+                        <div class="stat-value" id="total-services">0</div>
                         <div class="stat-label">Total Services</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">💰</div>
-                        <div class="stat-value">$1,250</div>
+                        <div class="stat-value" id="total-spent">$0</div>
                         <div class="stat-label">Total Spent</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">⭐</div>
-                        <div class="stat-value">4.9</div>
+                        <div class="stat-value" id="avg-rating">0.0</div>
                         <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div id="history-view" class="view">
+            <div class="view-header">
+                <h2>Service History</h2>
+                <p>Your complete service record</p>
+            </div>
+            <div id="service-history-list" class="history-list">
+                <!-- Service history will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profile-view" class="view">
+            <div class="view-header">
+                <h2>Profile Settings</h2>
+                <p>Manage your account and preferences</p>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Services</span>
+                        <span class="stat-value" id="profile-total-services">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Spent</span>
+                        <span class="stat-value" id="profile-total-spent">$0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Rating</span>
+                        <span class="stat-value" id="profile-avg-rating">0.0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Member Since</span>
+                        <span class="stat-value" id="profile-member-since">2023</span>
+                    </div>
+                </div>
+                
+                <div class="profile-form">
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="profile-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="profile-email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" id="profile-phone" class="form-control">
+                    </div>
+                    
+                    <h3>Emergency Contact</h3>
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" id="emergency-contact-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="tel" id="emergency-contact-phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Relationship</label>
+                        <select id="emergency-contact-relationship" class="form-control">
+                            <option value="Spouse">Spouse</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Child">Child</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <h3>Preferences</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notifications-enabled"> Enable push notifications
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="location-enabled"> Share location for faster service
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dark-mode-enabled"> Dark mode
+                        </label>
+                    </div>
+                    
+                    <button onclick="saveProfile()" class="btn btn--primary btn--full-width">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support View -->
+        <div id="support-view" class="view">
+            <div class="view-header">
+                <h2>Support Center</h2>
+                <p>Get help when you need it</p>
+                <button onclick="App.openNewSupportRequest()" class="btn btn--primary">New Support Request</button>
+            </div>
+            
+            <div class="support-content">
+                <div class="support-quick-actions">
+                    <div class="quick-action" onclick="App.openEmergencyContact()">
+                        <div class="action-icon">📞</div>
+                        <h4>Emergency Contact</h4>
+                        <p>Get immediate assistance</p>
+                    </div>
+                    <div class="quick-action" onclick="App.openFAQ()">
+                        <div class="action-icon">❓</div>
+                        <h4>FAQ</h4>
+                        <p>Common questions</p>
+                    </div>
+                    <div class="quick-action" onclick="App.openLiveChat()">
+                        <div class="action-icon">💬</div>
+                        <h4>Live Chat</h4>
+                        <p>Chat with support</p>
+                    </div>
+                </div>
+                
+                <div class="support-tickets-section">
+                    <h3>Your Support Tickets</h3>
+                    <div id="support-tickets">
+                        <!-- Support tickets will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div id="booking-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Book Service</h2>
+                    <button class="close-btn" onclick="closeBookingModal()">×</button>
+                </div>
+                <div class="booking-steps">
+                    <div class="step active" data-step="1">Service</div>
+                    <div class="step" data-step="2">Location</div>
+                    <div class="step" data-step="3">Payment</div>
+                    <div class="step" data-step="4">Confirm</div>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: Service Selection -->
+                    <div id="booking-step-1" class="booking-step active">
+                        <div class="selected-service">
+                            <div class="service-icon" id="selected-service-icon">🚛</div>
+                            <div class="service-details">
+                                <h3 id="selected-service-name">Towing</h3>
+                                <p id="selected-service-price">$150</p>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 2: Location & Description -->
+                    <div id="booking-step-2" class="booking-step">
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="location-input" class="form-control" placeholder="Enter your location" value="1234 Main St, City, State">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Describe the problem</label>
+                            <textarea id="problem-description" class="form-control" rows="3" placeholder="Tell us what happened..."></textarea>
+                        </div>
+                        <div class="service-info">
+                            <p><strong>Service:</strong> <span id="service-description">Professional roadside assistance</span></p>
+                            <p><strong>Estimated Time:</strong> <span id="estimated-time">30 min</span></p>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 3: Payment -->
+                    <div id="booking-step-3" class="booking-step">
+                        <div class="payment-methods">
+                            <div class="payment-method active" onclick="selectPaymentMethod(this)">
+                                <div class="payment-icon">💳</div>
+                                <span>Credit Card ending in 4242</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod(this)">
+                                <div class="payment-icon">💰</div>
+                                <span>Cash Payment</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 4: Confirmation -->
+                    <div id="booking-step-4" class="booking-step">
+                        <div class="booking-summary">
+                            <h3>Booking Summary</h3>
+                            <div class="summary-item">
+                                <span>Service:</span>
+                                <span id="summary-service">Towing</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Location:</span>
+                                <span>1234 Main St, City, State</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Payment:</span>
+                                <span>Credit Card ••••4242</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span id="summary-total">$150</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="confirmBooking()">Confirm Booking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracking Modal -->
+        <div id="tracking-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Service Tracking</h2>
+                    <button class="close-btn" onclick="closeTrackingModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="tracking-status">
+                        <div class="status-icon">🚗</div>
+                        <h3>Technician En Route</h3>
+                        <p>ETA: <span id="eta-time">15 minutes</span></p>
+                    </div>
+                    <div class="tracking-map">
+                        <div class="map-placeholder">
+                            <div class="map-marker">📍</div>
+                            <p>GPS Tracking Active</p>
+                        </div>
+                    </div>
+                    <div class="technician-info">
+                        <div class="tech-avatar">👨‍🔧</div>
+                        <div class="tech-details">
+                            <h4>Mike Rodriguez</h4>
+                            <p>Certified Technician • 4.9★</p>
+                        </div>
+                        <button class="btn btn--outline btn--sm" onclick="callTechnician()">📞 Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Request Modal -->
+        <div id="support-request-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>New Support Request</h2>
+                    <button class="close-btn" onclick="App.closeSupportRequestModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="support-request-form">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="support-category" class="form-control">
+                                <option value="technical">Technical Issue</option>
+                                <option value="billing">Billing & Payment</option>
+                                <option value="service">Service Request</option>
+                                <option value="account">Account & Profile</option>
+                                <option value="feedback">Feedback & Suggestions</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select id="support-priority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" id="support-subject" class="form-control" placeholder="Brief description of your issue">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="support-description" class="form-control" rows="4" placeholder="Please provide detailed information about your issue..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Attachments (Optional)</label>
+                            <input type="file" id="support-attachments" class="form-control" multiple accept="image/*,.pdf,.doc,.docx">
+                        </div>
+                        <button onclick="App.submitSupportRequest()" class="btn btn--primary btn--full-width">Submit Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact Modal -->
+        <div id="emergency-contact-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Emergency Contact</h2>
+                    <button class="close-btn" onclick="App.closeEmergencyContactModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="emergency-contacts">
+                        <div class="emergency-alert">
+                            <div class="alert-icon">🚨</div>
+                            <div class="alert-text">
+                                <h3>Life-Threatening Emergency?</h3>
+                                <p>Call 911 immediately for medical, fire, or police emergencies</p>
+                            </div>
+                            <button onclick="App.callEmergencyNumber('911', '911')" class="btn btn--danger">Call 911</button>
+                        </div>
+                        
+                        <div class="contact-section">
+                            <h3>RoadSide+ Emergency Line</h3>
+                            <div class="contact-card">
+                                <div class="contact-icon">📞</div>
+                                <div class="contact-info">
+                                    <h4>24/7 Roadside Assistance</h4>
+                                    <p>1-800-ROADSIDE (762-3743)</p>
+                                    <p class="contact-note">Average response time: 2 minutes</p>
+                                </div>
+                                <button onclick="App.callEmergencyNumber('RoadSide+ Emergency', '1-800-762-3743')" class="btn btn--primary">Call Now</button>
+                            </div>
+                        </div>
+
+                        <div class="contact-section">
+                            <h3>Additional Support</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item">
+                                    <div class="contact-icon">💬</div>
+                                    <h4>Live Chat</h4>
+                                    <p>Instant messaging support</p>
+                                    <button onclick="App.openLiveChat(); App.closeEmergencyContactModal();" class="btn btn--outline btn--sm">Start Chat</button>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon">📧</div>
+                                    <h4>Email Support</h4>
+                                    <p>support@roadsideplus.com</p>
+                                    <button onclick="App.callEmergencyNumber('Email', 'support@roadsideplus.com')" class="btn btn--outline btn--sm">Send Email</button>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon">🆘</div>
+                                    <h4>Emergency SOS</h4>
+                                    <p>In-app emergency dispatch</p>
+                                    <button onclick="App.closeEmergencyContactModal(); App.emergencyCall();" class="btn btn--danger btn--sm">Use SOS</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Modal -->
+        <div id="faq-modal" class="modal">
+            <div class="modal-content modal-content--large">
+                <div class="modal-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <button class="close-btn" onclick="App.closeFAQModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="faq-search">
+                        <input type="text" placeholder="Search FAQ..." class="form-control">
+                    </div>
+                    <div id="faq-content" class="faq-container">
+                        <!-- FAQ content will be dynamically loaded -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Chat Modal -->
+        <div id="live-chat-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="chat-header-info">
+                        <div class="chat-status">
+                            <div class="status-indicator online"></div>
+                            <div class="status-text">
+                                <h3>Live Chat Support</h3>
+                                <p>Sarah • Support Agent • Online</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="App.closeLiveChatModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-container">
+                        <div id="chat-messages" class="chat-messages">
+                            <!-- Messages will be dynamically added -->
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." onkeypress="if(event.key==='Enter') App.sendChatMessage()">
+                            <button onclick="App.sendChatMessage()" class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Control Modal -->
+        <div id="system-control-modal" class="modal">
+            <div class="system-control-content">
+                <div class="system-control-header">
+                    <h2 id="system-control-title">System Control</h2>
+                    <button class="close-btn" onclick="App.closeSystemControlModal()">×</button>
+                </div>
+                <div class="system-control-body">
+                    <div id="system-control-content">
+                        <!-- Dynamic content will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -152,45 +608,28 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active">
+            <div class="nav-item active" data-view="dashboard">
                 <div class="nav-icon">👤</div>
                 <span>Dashboard</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="history">
                 <div class="nav-icon">📋</div>
                 <span>History</span>
             </div>
-            <div class="emergency-sos" onclick="alert('Emergency SOS activated!')">
+            <div class="emergency-sos" onclick="emergencyCall()">
                 <div class="sos-button">SOS</div>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="support">
                 <div class="nav-icon">💬</div>
                 <span>Support</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="profile">
                 <div class="nav-icon">👤</div>
                 <span>Profile</span>
             </div>
         </div>
     </div>
 
-    <!-- Load JavaScript -->
-    <script src="app.js" defer></script>
-    
-    <!-- Fallback for missing JavaScript -->
-    <script>
-        // Fallback function if main JavaScript fails to load
-        setTimeout(() => {
-            if (!window.App) {
-                console.log('Main JavaScript not loaded, using fallback...');
-                showBasicInterface();
-            }
-        }, 2000);
-        
-        // Basic navigation functions as fallback
-        function toggleNavDrawer() {
-            alert('Navigation drawer feature');
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

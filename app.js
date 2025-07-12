@@ -5,7 +5,6 @@ const App = {
     currentUser: null,
     currentView: 'dashboard',
     currentDashboard: 'customer',
-    chartsInitialized: false,
     services: [
         { id: 1, name: 'Towing', price: 150, icon: '🚛', time: '45 min', response: '30 min response' },
         { id: 2, name: 'Battery Jump', price: 75, icon: '🔋', time: '20 min', response: '30 min response' },
@@ -604,21 +603,10 @@ const App = {
     },
 
     closeSystemControlModal() {
-        // Clean up user management interval if it exists
-        if (this.userManagementInterval) {
-            clearInterval(this.userManagementInterval);
-            this.userManagementInterval = null;
-        }
-        
-        // Reset filtered users
-        this.currentFilteredUsers = null;
-        this.currentUserTab = null;
-        
         const modal = document.getElementById('system-control-modal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-        
-        console.log('✅ Post-implementation test: System control modal closed successfully');
+        if (modal) {
+            modal.classList.remove('active');
+        }
     },
 
     // Support Center functions
@@ -782,287 +770,6 @@ const App = {
 
         input.value = '';
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    },
-
-    // Initialize charts when analytics tab is shown
-    showAnalyticsTab() {
-        this.initializeCharts();
-    },
-
-    // Initialize all BI dashboard charts
-    initializeCharts() {
-        // Ensure charts are only initialized once
-        if (this.chartsInitialized) return;
-        
-        setTimeout(() => {
-            this.renderUserGrowthChart();
-            this.renderRoleDistributionChart();
-            this.renderUserEngagementChart();
-            this.renderLoginActivityChart();
-            this.chartsInitialized = true;
-        }, 100);
-    },
-
-    // User Growth Trend Chart
-    renderUserGrowthChart() {
-        const canvas = document.getElementById('userGrowthChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = [150, 180, 220, 280, 350, 420, 500, 580, 650, 720, 800, 900];
-        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        this.drawLineChart(ctx, canvas.width, canvas.height, data, labels, '#4CAF50');
-    },
-
-    // Role Distribution Pie Chart
-    renderRoleDistributionChart() {
-        const canvas = document.getElementById('roleDistributionChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = [
-            { label: 'Customer', value: 850, color: '#2196F3' },
-            { label: 'Technician', value: 120, color: '#FF9800' },
-            { label: 'Support', value: 80, color: '#9C27B0' },
-            { label: 'Manager', value: 25, color: '#4CAF50' },
-            { label: 'Admin', value: 8, color: '#F44336' }
-        ];
-        
-        this.drawPieChart(ctx, canvas.width, canvas.height, data);
-    },
-
-    // User Engagement Bar Chart
-    renderUserEngagementChart() {
-        const canvas = document.getElementById('userEngagementChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = [75, 85, 65, 90, 80, 70, 95];
-        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        
-        this.drawBarChart(ctx, canvas.width, canvas.height, data, labels, '#FF5722');
-    },
-
-    // Login Activity Chart
-    renderLoginActivityChart() {
-        const canvas = document.getElementById('loginActivityChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const data = [45, 52, 38, 65, 78, 85, 92, 88, 76, 69, 58, 48];
-        const labels = ['12AM', '2AM', '4AM', '6AM', '8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM', '10PM'];
-        
-        this.drawAreaChart(ctx, canvas.width, canvas.height, data, labels, '#9C27B0');
-    },
-
-    // Line Chart Drawing Function
-    drawLineChart(ctx, width, height, data, labels, color) {
-        ctx.clearRect(0, 0, width, height);
-        
-        const padding = 40;
-        const chartWidth = width - (padding * 2);
-        const chartHeight = height - (padding * 2);
-        const maxValue = Math.max(...data);
-        const stepX = chartWidth / (data.length - 1);
-        
-        // Draw grid lines
-        ctx.strokeStyle = '#eee';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 5; i++) {
-            const y = padding + (chartHeight / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
-        }
-        
-        // Draw line
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        
-        data.forEach((value, index) => {
-            const x = padding + (stepX * index);
-            const y = padding + chartHeight - (value / maxValue * chartHeight);
-            
-            if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        
-        ctx.stroke();
-        
-        // Draw points
-        ctx.fillStyle = color;
-        data.forEach((value, index) => {
-            const x = padding + (stepX * index);
-            const y = padding + chartHeight - (value / maxValue * chartHeight);
-            
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, 2 * Math.PI);
-            ctx.fill();
-        });
-        
-        // Draw labels
-        ctx.fillStyle = '#666';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        labels.forEach((label, index) => {
-            const x = padding + (stepX * index);
-            ctx.fillText(label, x, height - 10);
-        });
-    },
-
-    // Pie Chart Drawing Function
-    drawPieChart(ctx, width, height, data) {
-        ctx.clearRect(0, 0, width, height);
-        
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const radius = Math.min(width, height) / 2 - 60;
-        const total = data.reduce((sum, item) => sum + item.value, 0);
-        
-        let currentAngle = -Math.PI / 2;
-        
-        data.forEach(item => {
-            const sliceAngle = (item.value / total) * 2 * Math.PI;
-            
-            // Draw slice
-            ctx.fillStyle = item.color;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw label
-            const labelAngle = currentAngle + sliceAngle / 2;
-            const labelX = centerX + Math.cos(labelAngle) * (radius + 20);
-            const labelY = centerY + Math.sin(labelAngle) * (radius + 20);
-            
-            ctx.fillStyle = '#333';
-            ctx.font = '12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(item.label, labelX, labelY);
-            ctx.fillText(item.value, labelX, labelY + 15);
-            
-            currentAngle += sliceAngle;
-        });
-    },
-
-    // Bar Chart Drawing Function
-    drawBarChart(ctx, width, height, data, labels, color) {
-        ctx.clearRect(0, 0, width, height);
-        
-        const padding = 40;
-        const chartWidth = width - (padding * 2);
-        const chartHeight = height - (padding * 2);
-        const maxValue = Math.max(...data);
-        const barWidth = chartWidth / data.length * 0.8;
-        const barSpacing = chartWidth / data.length * 0.2;
-        
-        // Draw grid lines
-        ctx.strokeStyle = '#eee';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 5; i++) {
-            const y = padding + (chartHeight / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
-        }
-        
-        // Draw bars
-        ctx.fillStyle = color;
-        data.forEach((value, index) => {
-            const x = padding + (chartWidth / data.length * index) + barSpacing / 2;
-            const barHeight = (value / maxValue) * chartHeight;
-            const y = padding + chartHeight - barHeight;
-            
-            ctx.fillRect(x, y, barWidth, barHeight);
-        });
-        
-        // Draw labels
-        ctx.fillStyle = '#666';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        labels.forEach((label, index) => {
-            const x = padding + (chartWidth / data.length * index) + (chartWidth / data.length) / 2;
-            ctx.fillText(label, x, height - 10);
-        });
-    },
-
-    // Area Chart Drawing Function
-    drawAreaChart(ctx, width, height, data, labels, color) {
-        ctx.clearRect(0, 0, width, height);
-        
-        const padding = 40;
-        const chartWidth = width - (padding * 2);
-        const chartHeight = height - (padding * 2);
-        const maxValue = Math.max(...data);
-        const stepX = chartWidth / (data.length - 1);
-        
-        // Draw grid lines
-        ctx.strokeStyle = '#eee';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 5; i++) {
-            const y = padding + (chartHeight / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(width - padding, y);
-            ctx.stroke();
-        }
-        
-        // Draw area
-        const gradient = ctx.createLinearGradient(0, 0, 0, height);
-        gradient.addColorStop(0, color + '80');
-        gradient.addColorStop(1, color + '20');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.moveTo(padding, padding + chartHeight);
-        
-        data.forEach((value, index) => {
-            const x = padding + (stepX * index);
-            const y = padding + chartHeight - (value / maxValue * chartHeight);
-            ctx.lineTo(x, y);
-        });
-        
-        ctx.lineTo(padding + chartWidth, padding + chartHeight);
-        ctx.closePath();
-        ctx.fill();
-        
-        // Draw line
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        data.forEach((value, index) => {
-            const x = padding + (stepX * index);
-            const y = padding + chartHeight - (value / maxValue * chartHeight);
-            
-            if (index === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-        
-        ctx.stroke();
-        
-        // Draw labels
-        ctx.fillStyle = '#666';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'center';
-        labels.forEach((label, index) => {
-            if (index % 2 === 0) { // Show every other label to avoid crowding
-                const x = padding + (stepX * index);
-                ctx.fillText(label, x, height - 10);
-            }
-        });
     },
 
     // Utility functions
@@ -1301,24 +1008,27 @@ const App = {
                         <div id="users-analytics" class="admin-tab-content">
                             <div class="analytics-dashboard">
                                 <h4>User Growth Analytics</h4>
-                                <div class="analytics-grid">
-                                    <div class="analytics-card">
-                                        <h3>User Growth Trend</h3>
-                                        <canvas id="userGrowthChart" width="400" height="200"></canvas>
-                                    </div>
-                                    <div class="analytics-card">
-                                        <h3>Role Distribution</h3>
-                                        <canvas id="roleDistributionChart" width="400" height="200"></canvas>
-                                    </div>
-                                    <div class="analytics-card">
-                                        <h3>User Engagement</h3>
-                                        <canvas id="userEngagementChart" width="400" height="200"></canvas>
-                                    </div>
-                                    <div class="analytics-card">
-                                        <h3>Login Activity</h3>
-                                        <canvas id="loginActivityChart" width="400" height="200"></canvas>
+                                <div class="chart-container">
+                                    <div class="chart-placeholder">
+                                        <div class="chart-bars">
+                                            <div class="chart-bar" style="height: 60%"></div>
+                                            <div class="chart-bar" style="height: 80%"></div>
+                                            <div class="chart-bar" style="height: 45%"></div>
+                                            <div class="chart-bar" style="height: 90%"></div>
+                                            <div class="chart-bar" style="height: 75%"></div>
+                                            <div class="chart-bar" style="height: 100%"></div>
+                                        </div>
+                                        <div class="chart-labels">
+                                            <span>Jan</span>
+                                            <span>Feb</span>
+                                            <span>Mar</span>
+                                            <span>Apr</span>
+                                            <span>May</span>
+                                            <span>Jun</span>
+                                        </div>
                                     </div>
                                 </div>
+                                
                                 <div class="analytics-metrics">
                                     <div class="metric-card">
                                         <h5>Registration Rate</h5>
@@ -1663,7 +1373,6 @@ const App = {
         // In real app, this would remove the user from the list
     },
 
-    // Enhanced export functionality
     exportUserData() {
         this.showToast('Exporting user data...');
         // Simulate export
@@ -3054,129 +2763,8 @@ const App = {
             answer.style.display = 'block';
             toggle.textContent = '-';
         }
-    },
-
-    showModal(title, content) {
-        const modal = document.getElementById('system-control-modal');
-        const titleElement = document.getElementById('system-control-title');
-        const contentElement = document.getElementById('system-control-content');
-        
-        titleElement.textContent = title;
-        contentElement.innerHTML = content;
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    },
-
-    closeModal() {
-        this.closeSystemControlModal();
     }
 };
-
-// Initialize stats with error handling
-function initializeStats() {
-  try {
-    // Mock data for demonstration
-    const stats = {
-      totalServices: 42,
-      totalSpent: 1250,
-      avgRating: 4.8
-    };
-    
-    // Update DOM elements safely
-    const elements = {
-      'total-services': stats.totalServices,
-      'total-spent': `$${stats.totalSpent}`,
-      'avg-rating': stats.avgRating,
-      'profile-total-services': stats.totalServices,
-      'profile-total-spent': `$${stats.totalSpent}`,
-      'profile-avg-rating': stats.avgRating
-    };
-    
-    Object.entries(elements).forEach(([id, value]) => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.textContent = value;
-      }
-    });
-    
-    console.log('✅ Stats initialized successfully');
-    
-  } catch (error) {
-    App.handleError(error, 'Stats Initialization');
-  }
-}
-
-// Load recent services with error handling
-function loadRecentServices() {
-  try {
-    const recentServicesContainer = document.getElementById('recent-services');
-    if (!recentServicesContainer) return;
-    
-    // Mock recent services data
-    const recentServices = [
-      {
-        id: 'svc_001',
-        type: 'Towing',
-        date: '2024-01-15',
-        cost: 150,
-        status: 'completed',
-        technician: 'Mike Rodriguez'
-      },
-      {
-        id: 'svc_002', 
-        type: 'Battery Jump',
-        date: '2024-01-10',
-        cost: 75,
-        status: 'completed',
-        technician: 'Sarah Johnson'
-      }
-    ];
-    
-    const servicesHTML = recentServices.map(service => `
-      <div class="service-item">
-        <div class="service-icon">${getServiceIcon(service.type)}</div>
-        <div class="service-details">
-          <h4>${service.type}</h4>
-          <p>Date: ${formatDate(service.date)}</p>
-          <p>Technician: ${service.technician}</p>
-        </div>
-        <div class="service-cost">$${service.cost}</div>
-      </div>
-    `).join('');
-    
-    recentServicesContainer.innerHTML = servicesHTML;
-    console.log('✅ Recent services loaded successfully');
-    
-  } catch (error) {
-    App.handleError(error, 'Load Recent Services');
-  }
-}
-
-// Helper functions
-function getServiceIcon(type) {
-  const icons = {
-    'Towing': '🚛',
-    'Battery Jump': '🔋', 
-    'Tire Change': '🛞',
-    'Lockout': '🔓',
-    'Fuel Delivery': '⛽',
-    'Winch Recovery': '🪝'
-  };
-  return icons[type] || '🔧';
-}
-
-function formatDate(dateString) {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short', 
-      day: 'numeric'
-    });
-  } catch (error) {
-    return dateString;
-  }
-}
 
 // Global functions for HTML onclick handlers
 function login() {
@@ -3287,29 +2875,6 @@ function showDashboard(type) {
 function openSystemControl(controlType) {
     App.openSystemControl(controlType);
 }
-
-// Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    App.chartsInitialized = false;
-    App.init();
-});
-
-// Setup tab event listeners for analytics initialization
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabName = this.textContent.toLowerCase().trim();
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            App.showUserManagementTab(tabName);
-            
-            // Initialize charts if analytics tab is selected
-            if (tabName === 'analytics') {
-                App.initializeCharts();
-            }
-        });
-    });
-});
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
