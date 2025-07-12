@@ -50,6 +50,19 @@ export const validateConfig = () => {
   const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
   
   if (missing.length > 0) {
+    console.error('❌ Missing required environment variables:', missing);
+    console.error('📝 Please create a .env file with the following variables:');
+    missing.forEach(envVar => {
+      console.error(`   ${envVar}=your_${envVar.toLowerCase()}_here`);
+    });
+    console.error('\n🔗 Get your Supabase credentials from: https://app.supabase.com/project/YOUR_PROJECT/settings/api');
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+  
+  // Validate Supabase URL format
+  if (process.env.SUPABASE_URL && !process.env.SUPABASE_URL.startsWith('https://')) {
+    throw new Error('SUPABASE_URL must start with https://');
+  }
+  
+  console.log('✅ Environment configuration validated');
 };
