@@ -291,22 +291,22 @@
             <div class="view-header">
                 <h2>Support Center</h2>
                 <p>Get help when you need it</p>
-                <button onclick="createSupportTicket()" class="btn btn--primary">New Support Request</button>
+                <button onclick="App.openNewSupportRequest()" class="btn btn--primary">New Support Request</button>
             </div>
             
             <div class="support-content">
                 <div class="support-quick-actions">
-                    <div class="quick-action" onclick="alert('Emergency: Call 911\nRoadSide+: 1-800-ROADSIDE')">
+                    <div class="quick-action" onclick="App.openEmergencyContact()">
                         <div class="action-icon">📞</div>
                         <h4>Emergency Contact</h4>
                         <p>Get immediate assistance</p>
                     </div>
-                    <div class="quick-action" onclick="alert('FAQ topics:\n• Service pricing\n• Coverage areas\n• How to book\n• Cancellation policy')">
+                    <div class="quick-action" onclick="App.openFAQ()">
                         <div class="action-icon">❓</div>
                         <h4>FAQ</h4>
                         <p>Common questions</p>
                     </div>
-                    <div class="quick-action" onclick="alert('Live chat available 24/7\nAverage response: 2 minutes')">
+                    <div class="quick-action" onclick="App.openLiveChat()">
                         <div class="action-icon">💬</div>
                         <h4>Live Chat</h4>
                         <p>Chat with support</p>
@@ -433,6 +433,159 @@
                             <p>Certified Technician • 4.9★</p>
                         </div>
                         <button class="btn btn--outline btn--sm" onclick="callTechnician()">📞 Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Request Modal -->
+        <div id="support-request-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>New Support Request</h2>
+                    <button class="close-btn" onclick="App.closeSupportRequestModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="support-request-form">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="support-category" class="form-control">
+                                <option value="technical">Technical Issue</option>
+                                <option value="billing">Billing & Payment</option>
+                                <option value="service">Service Request</option>
+                                <option value="account">Account & Profile</option>
+                                <option value="feedback">Feedback & Suggestions</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select id="support-priority" class="form-control">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" id="support-subject" class="form-control" placeholder="Brief description of your issue">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="support-description" class="form-control" rows="4" placeholder="Please provide detailed information about your issue..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Attachments (Optional)</label>
+                            <input type="file" id="support-attachments" class="form-control" multiple accept="image/*,.pdf,.doc,.docx">
+                        </div>
+                        <button onclick="App.submitSupportRequest()" class="btn btn--primary btn--full-width">Submit Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact Modal -->
+        <div id="emergency-contact-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Emergency Contact</h2>
+                    <button class="close-btn" onclick="App.closeEmergencyContactModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="emergency-contacts">
+                        <div class="emergency-alert">
+                            <div class="alert-icon">🚨</div>
+                            <div class="alert-text">
+                                <h3>Life-Threatening Emergency?</h3>
+                                <p>Call 911 immediately for medical, fire, or police emergencies</p>
+                            </div>
+                            <button onclick="App.callEmergencyNumber('911', '911')" class="btn btn--danger">Call 911</button>
+                        </div>
+                        
+                        <div class="contact-section">
+                            <h3>RoadSide+ Emergency Line</h3>
+                            <div class="contact-card">
+                                <div class="contact-icon">📞</div>
+                                <div class="contact-info">
+                                    <h4>24/7 Roadside Assistance</h4>
+                                    <p>1-800-ROADSIDE (762-3743)</p>
+                                    <p class="contact-note">Average response time: 2 minutes</p>
+                                </div>
+                                <button onclick="App.callEmergencyNumber('RoadSide+ Emergency', '1-800-762-3743')" class="btn btn--primary">Call Now</button>
+                            </div>
+                        </div>
+
+                        <div class="contact-section">
+                            <h3>Additional Support</h3>
+                            <div class="contact-grid">
+                                <div class="contact-item">
+                                    <div class="contact-icon">💬</div>
+                                    <h4>Live Chat</h4>
+                                    <p>Instant messaging support</p>
+                                    <button onclick="App.openLiveChat(); App.closeEmergencyContactModal();" class="btn btn--outline btn--sm">Start Chat</button>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon">📧</div>
+                                    <h4>Email Support</h4>
+                                    <p>support@roadsideplus.com</p>
+                                    <button onclick="App.callEmergencyNumber('Email', 'support@roadsideplus.com')" class="btn btn--outline btn--sm">Send Email</button>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-icon">🆘</div>
+                                    <h4>Emergency SOS</h4>
+                                    <p>In-app emergency dispatch</p>
+                                    <button onclick="App.closeEmergencyContactModal(); App.emergencyCall();" class="btn btn--danger btn--sm">Use SOS</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Modal -->
+        <div id="faq-modal" class="modal">
+            <div class="modal-content modal-content--large">
+                <div class="modal-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <button class="close-btn" onclick="App.closeFAQModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="faq-search">
+                        <input type="text" placeholder="Search FAQ..." class="form-control">
+                    </div>
+                    <div id="faq-content" class="faq-container">
+                        <!-- FAQ content will be dynamically loaded -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Chat Modal -->
+        <div id="live-chat-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="chat-header-info">
+                        <div class="chat-status">
+                            <div class="status-indicator online"></div>
+                            <div class="status-text">
+                                <h3>Live Chat Support</h3>
+                                <p>Sarah • Support Agent • Online</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="close-btn" onclick="App.closeLiveChatModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-container">
+                        <div id="chat-messages" class="chat-messages">
+                            <!-- Messages will be dynamically added -->
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." onkeypress="if(event.key==='Enter') App.sendChatMessage()">
+                            <button onclick="App.sendChatMessage()" class="chat-send-btn">Send</button>
+                        </div>
                     </div>
                 </div>
             </div>
