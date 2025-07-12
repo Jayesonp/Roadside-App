@@ -136,6 +136,1025 @@ class AppState {
       this.saveToStorage('supportTickets', this.supportTickets);
     }
   }
+
+  // Enhanced System Controls with comprehensive interfaces
+  openSystemControl: function(controlType) {
+    const modal = document.getElementById('system-control-modal');
+    const title = document.getElementById('system-control-title');
+    const content = document.getElementById('system-control-content');
+    
+    title.textContent = this.getControlTitle(controlType);
+    content.innerHTML = this.getControlContent(controlType);
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Initialize control-specific functionality
+    this.initializeControlFunctions(controlType);
+  },
+
+  getControlTitle: function(controlType) {
+    const titles = {
+      'user-management': '👤 User Management System',
+      'technician-management': '🔧 Technician Management System', 
+      'analytics': '📈 System Analytics Dashboard',
+      'system-settings': '⚙️ System Settings & Configuration'
+    };
+    return titles[controlType] || 'System Control';
+  },
+
+  getControlContent: function(controlType) {
+    switch(controlType) {
+      case 'user-management':
+        return this.getUserManagementContent();
+      case 'technician-management':
+        return this.getTechnicianManagementContent();
+      case 'analytics':
+        return this.getAnalyticsContent();
+      case 'system-settings':
+        return this.getSystemSettingsContent();
+      default:
+        return '<p>Control panel content loading...</p>';
+    }
+  },
+
+  getUserManagementContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('users-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('users-accounts')">User Accounts</div>
+          <div class="control-tab" onclick="showControlTab('users-permissions')">Permissions</div>
+          <div class="control-tab" onclick="showControlTab('users-analytics')">Analytics</div>
+        </div>
+        
+        <div id="users-overview" class="control-content active">
+          <div class="overview-stats">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-details">
+                <h3>Total Users</h3>
+                <div class="stat-value">2,847</div>
+                <div class="stat-change positive">+12.5% this month</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-details">
+                <h3>Active Users</h3>
+                <div class="stat-value">2,156</div>
+                <div class="stat-change positive">+8.3% this week</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🆕</div>
+              <div class="stat-details">
+                <h3>New Registrations</h3>
+                <div class="stat-value">89</div>
+                <div class="stat-change">Last 7 days</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="recent-activities">
+            <h3>Recent User Activities</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">👤</div>
+                <div class="activity-details">
+                  <p><strong>Sarah Johnson</strong> updated profile</p>
+                  <small>2 minutes ago</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🆕</div>
+                <div class="activity-details">
+                  <p><strong>Mike Chen</strong> registered new account</p>
+                  <small>15 minutes ago</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🚗</div>
+                <div class="activity-details">
+                  <p><strong>Emma Davis</strong> requested towing service</p>
+                  <small>23 minutes ago</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="users-accounts" class="control-content">
+          <div class="search-section">
+            <input type="text" placeholder="Search users..." class="search-input">
+            <button class="btn btn--primary">🔍 Search</button>
+            <button class="btn btn--outline">+ Add User</button>
+          </div>
+          
+          <div class="users-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">SJ</div>
+                      <span>Sarah Johnson</span>
+                    </div>
+                  </td>
+                  <td>sarah@email.com</td>
+                  <td><span class="role-badge customer">Customer</span></td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                    <button class="btn-icon" title="View">👁️</button>
+                    <button class="btn-icon" title="Delete">🗑️</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">MC</div>
+                      <span>Mike Chen</span>
+                    </div>
+                  </td>
+                  <td>mike@email.com</td>
+                  <td><span class="role-badge technician">Technician</span></td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                    <button class="btn-icon" title="View">👁️</button>
+                    <button class="btn-icon" title="Delete">🗑️</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="users-permissions" class="control-content">
+          <div class="permissions-grid">
+            <div class="permission-group">
+              <h3>Customer Permissions</h3>
+              <div class="permission-list">
+                <label class="permission-item">
+                  <input type="checkbox" checked> Book Services
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> View History
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Emergency SOS
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox"> Cancel Services
+                </label>
+              </div>
+            </div>
+            
+            <div class="permission-group">
+              <h3>Technician Permissions</h3>
+              <div class="permission-list">
+                <label class="permission-item">
+                  <input type="checkbox" checked> View Assignments
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Update Status
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Contact Customers
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox"> Override Pricing
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="users-analytics" class="control-content">
+          <div class="analytics-charts">
+            <div class="chart-container">
+              <h3>User Growth Trend</h3>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 60%"></div>
+                <div class="chart-bar" style="height: 75%"></div>
+                <div class="chart-bar" style="height: 85%"></div>
+                <div class="chart-bar" style="height: 90%"></div>
+                <div class="chart-bar" style="height: 100%"></div>
+              </div>
+            </div>
+            
+            <div class="chart-container">
+              <h3>User Activity Distribution</h3>
+              <div class="pie-chart-placeholder">
+                <div class="pie-segment" style="--percentage: 60%; --color: #4CAF50;">Active (60%)</div>
+                <div class="pie-segment" style="--percentage: 25%; --color: #FF9800;">Inactive (25%)</div>
+                <div class="pie-segment" style="--percentage: 15%; --color: #f44336;">Suspended (15%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getTechnicianManagementContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('tech-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('tech-active')">Active Technicians</div>
+          <div class="control-tab" onclick="showControlTab('tech-assignments')">Assignments</div>
+          <div class="control-tab" onclick="showControlTab('tech-performance')">Performance</div>
+        </div>
+        
+        <div id="tech-overview" class="control-content active">
+          <div class="overview-stats">
+            <div class="stat-card">
+              <div class="stat-icon">🔧</div>
+              <div class="stat-details">
+                <h3>Total Technicians</h3>
+                <div class="stat-value">47</div>
+                <div class="stat-change positive">+3 this month</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🟢</div>
+              <div class="stat-details">
+                <h3>Online Now</h3>
+                <div class="stat-value">32</div>
+                <div class="stat-change">Available for service</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⚡</div>
+              <div class="stat-details">
+                <h3>Active Jobs</h3>
+                <div class="stat-value">18</div>
+                <div class="stat-change">In progress</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tech-status-map">
+            <h3>Technician Locations</h3>
+            <div class="map-placeholder">
+              <div class="map-marker online" style="top: 20%; left: 30%;">🔧</div>
+              <div class="map-marker online" style="top: 40%; left: 60%;">🔧</div>
+              <div class="map-marker busy" style="top: 60%; left: 45%;">🔧</div>
+              <div class="map-marker online" style="top: 35%; left: 75%;">🔧</div>
+              <p>Real-time technician GPS tracking</p>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-active" class="control-content">
+          <div class="search-section">
+            <input type="text" placeholder="Search technicians..." class="search-input">
+            <select class="filter-select">
+              <option>All Status</option>
+              <option>Online</option>
+              <option>Busy</option>
+              <option>Offline</option>
+            </select>
+            <button class="btn btn--primary">Filter</button>
+          </div>
+          
+          <div class="technicians-grid">
+            <div class="tech-card">
+              <div class="tech-header">
+                <div class="tech-avatar">MR</div>
+                <div class="tech-info">
+                  <h4>Mike Rodriguez</h4>
+                  <p>Senior Technician</p>
+                </div>
+                <div class="tech-status online">Online</div>
+              </div>
+              <div class="tech-stats">
+                <div class="stat">
+                  <span class="label">Rating:</span>
+                  <span class="value">4.9 ⭐</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Jobs Today:</span>
+                  <span class="value">8</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Response Time:</span>
+                  <span class="value">12 min</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm">Assign Job</button>
+                <button class="btn btn--outline btn--sm">Contact</button>
+              </div>
+            </div>
+            
+            <div class="tech-card">
+              <div class="tech-header">
+                <div class="tech-avatar">JS</div>
+                <div class="tech-info">
+                  <h4>Jennifer Smith</h4>
+                  <p>Towing Specialist</p>
+                </div>
+                <div class="tech-status busy">Busy</div>
+              </div>
+              <div class="tech-stats">
+                <div class="stat">
+                  <span class="label">Rating:</span>
+                  <span class="value">4.8 ⭐</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Jobs Today:</span>
+                  <span class="value">6</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Response Time:</span>
+                  <span class="value">15 min</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm" disabled>Busy</button>
+                <button class="btn btn--outline btn--sm">Contact</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-assignments" class="control-content">
+          <div class="assignments-header">
+            <h3>Current Assignments</h3>
+            <button class="btn btn--primary">+ New Assignment</button>
+          </div>
+          
+          <div class="assignments-list">
+            <div class="assignment-card priority-high">
+              <div class="assignment-header">
+                <span class="priority-badge high">High Priority</span>
+                <span class="assignment-id">#A-2024-001</span>
+              </div>
+              <div class="assignment-details">
+                <h4>Emergency Towing Service</h4>
+                <p>Customer: Sarah Johnson • Location: Downtown Plaza</p>
+                <p>Assigned to: Mike Rodriguez • Status: En Route</p>
+              </div>
+              <div class="assignment-actions">
+                <button class="btn btn--sm">Track</button>
+                <button class="btn btn--outline btn--sm">Reassign</button>
+              </div>
+            </div>
+            
+            <div class="assignment-card priority-medium">
+              <div class="assignment-header">
+                <span class="priority-badge medium">Medium Priority</span>
+                <span class="assignment-id">#A-2024-002</span>
+              </div>
+              <div class="assignment-details">
+                <h4>Battery Jump Service</h4>
+                <p>Customer: David Wilson • Location: Shopping Center</p>
+                <p>Assigned to: Jennifer Smith • Status: In Progress</p>
+              </div>
+              <div class="assignment-actions">
+                <button class="btn btn--sm">Track</button>
+                <button class="btn btn--outline btn--sm">Reassign</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-performance" class="control-content">
+          <div class="performance-metrics">
+            <div class="metric-card">
+              <h3>Average Response Time</h3>
+              <div class="metric-value">14.2 min</div>
+              <div class="metric-trend positive">-2.1 min from last month</div>
+            </div>
+            
+            <div class="metric-card">
+              <h3>Customer Satisfaction</h3>
+              <div class="metric-value">4.7 ⭐</div>
+              <div class="metric-trend positive">+0.2 from last month</div>
+            </div>
+            
+            <div class="metric-card">
+              <h3>Job Completion Rate</h3>
+              <div class="metric-value">97.3%</div>
+              <div class="metric-trend positive">+1.2% from last month</div>
+            </div>
+          </div>
+          
+          <div class="performance-chart">
+            <h3>Monthly Performance Trends</h3>
+            <div class="chart-placeholder">
+              <div class="chart-line">
+                <div class="line-point" style="left: 10%; bottom: 60%"></div>
+                <div class="line-point" style="left: 30%; bottom: 70%"></div>
+                <div class="line-point" style="left: 50%; bottom: 75%"></div>
+                <div class="line-point" style="left: 70%; bottom: 85%"></div>
+                <div class="line-point" style="left: 90%; bottom: 90%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getAnalyticsContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('analytics-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('analytics-revenue')">Revenue</div>
+          <div class="control-tab" onclick="showControlTab('analytics-services')">Services</div>
+          <div class="control-tab" onclick="showControlTab('analytics-geographic')">Geographic</div>
+        </div>
+        
+        <div id="analytics-overview" class="control-content active">
+          <div class="kpi-dashboard">
+            <div class="kpi-card">
+              <div class="kpi-icon">💰</div>
+              <div class="kpi-details">
+                <h3>Total Revenue</h3>
+                <div class="kpi-value">$234,567</div>
+                <div class="kpi-change positive">+15.2% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">🚗</div>
+              <div class="kpi-details">
+                <h3>Services Completed</h3>
+                <div class="kpi-value">1,847</div>
+                <div class="kpi-change positive">+8.7% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">⭐</div>
+              <div class="kpi-details">
+                <h3>Customer Satisfaction</h3>
+                <div class="kpi-value">4.8/5.0</div>
+                <div class="kpi-change positive">+0.1 vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">⚡</div>
+              <div class="kpi-details">
+                <h3>Avg Response Time</h3>
+                <div class="kpi-value">14.2 min</div>
+                <div class="kpi-change positive">-2.1 min vs last month</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="analytics-charts-grid">
+            <div class="chart-container">
+              <h3>Revenue Trend (Last 6 Months)</h3>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 70%"><span>Jan</span></div>
+                <div class="chart-bar" style="height: 75%"><span>Feb</span></div>
+                <div class="chart-bar" style="height: 65%"><span>Mar</span></div>
+                <div class="chart-bar" style="height: 85%"><span>Apr</span></div>
+                <div class="chart-bar" style="height: 90%"><span>May</span></div>
+                <div class="chart-bar" style="height: 100%"><span>Jun</span></div>
+              </div>
+            </div>
+            
+            <div class="chart-container">
+              <h3>Service Distribution</h3>
+              <div class="service-pie-chart">
+                <div class="pie-slice" style="--percentage: 35%; --color: #FF6B6B;">
+                  <span>Towing (35%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 25%; --color: #4ECDC4;">
+                  <span>Battery Jump (25%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 20%; --color: #45B7D1;">
+                  <span>Tire Change (20%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 20%; --color: #FFA07A;">
+                  <span>Other (20%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-revenue" class="control-content">
+          <div class="revenue-summary">
+            <div class="revenue-period">
+              <h3>Today</h3>
+              <div class="revenue-amount">$8,247</div>
+              <div class="revenue-services">67 services</div>
+            </div>
+            
+            <div class="revenue-period">
+              <h3>This Week</h3>
+              <div class="revenue-amount">$47,892</div>
+              <div class="revenue-services">398 services</div>
+            </div>
+            
+            <div class="revenue-period">
+              <h3>This Month</h3>
+              <div class="revenue-amount">$234,567</div>
+              <div class="revenue-services">1,847 services</div>
+            </div>
+          </div>
+          
+          <div class="revenue-breakdown">
+            <h3>Revenue by Service Type</h3>
+            <div class="breakdown-list">
+              <div class="breakdown-item">
+                <span class="service-name">🚛 Towing</span>
+                <span class="service-revenue">$82,098</span>
+                <span class="service-percentage">35%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🔋 Battery Jump</span>
+                <span class="service-revenue">$58,642</span>
+                <span class="service-percentage">25%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🛞 Tire Change</span>
+                <span class="service-revenue">$46,913</span>
+                <span class="service-percentage">20%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🔓 Lockout</span>
+                <span class="service-revenue">$28,148</span>
+                <span class="service-percentage">12%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">⛽ Fuel Delivery</span>
+                <span class="service-revenue">$18,766</span>
+                <span class="service-percentage">8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-services" class="control-content">
+          <div class="services-analytics">
+            <div class="service-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Most Requested Service</span>
+                <span class="metric-value">🚛 Towing (647 requests)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Fastest Service</span>
+                <span class="metric-value">⛽ Fuel Delivery (8.5 min avg)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Highest Rated Service</span>
+                <span class="metric-value">🔋 Battery Jump (4.9⭐)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Peak Hours</span>
+                <span class="metric-value">8:00 AM - 10:00 AM, 5:00 PM - 7:00 PM</span>
+              </div>
+            </div>
+            
+            <div class="hourly-demand-chart">
+              <h3>Hourly Service Demand</h3>
+              <div class="demand-bars">
+                <div class="demand-bar" style="height: 20%"><span>12AM</span></div>
+                <div class="demand-bar" style="height: 15%"><span>3AM</span></div>
+                <div class="demand-bar" style="height: 25%"><span>6AM</span></div>
+                <div class="demand-bar" style="height: 85%"><span>9AM</span></div>
+                <div class="demand-bar" style="height: 60%"><span>12PM</span></div>
+                <div class="demand-bar" style="height: 70%"><span>3PM</span></div>
+                <div class="demand-bar" style="height: 95%"><span>6PM</span></div>
+                <div class="demand-bar" style="height: 40%"><span>9PM</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-geographic" class="control-content">
+          <div class="geographic-analytics">
+            <div class="region-stats">
+              <h3>Service Coverage by Region</h3>
+              <div class="region-list">
+                <div class="region-item">
+                  <span class="region-name">Downtown</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 85%"></div>
+                  </div>
+                  <span class="region-percentage">85%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Suburbs</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 70%"></div>
+                  </div>
+                  <span class="region-percentage">70%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Industrial</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 55%"></div>
+                  </div>
+                  <span class="region-percentage">55%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Rural</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 30%"></div>
+                  </div>
+                  <span class="region-percentage">30%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="heat-map">
+              <h3>Service Request Heat Map</h3>
+              <div class="map-container">
+                <div class="heat-zone high" style="top: 20%; left: 25%; width: 30%; height: 20%">
+                  <span>High Activity</span>
+                </div>
+                <div class="heat-zone medium" style="top: 50%; left: 60%; width: 25%; height: 15%">
+                  <span>Medium Activity</span>
+                </div>
+                <div class="heat-zone low" style="top: 70%; left: 20%; width: 40%; height: 25%">
+                  <span>Low Activity</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getSystemSettingsContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('settings-general')">General</div>
+          <div class="control-tab" onclick="showControlTab('settings-services')">Services</div>
+          <div class="control-tab" onclick="showControlTab('settings-notifications')">Notifications</div>
+          <div class="control-tab" onclick="showControlTab('settings-security')">Security</div>
+        </div>
+        
+        <div id="settings-general" class="control-content active">
+          <div class="settings-section">
+            <h3>General System Settings</h3>
+            
+            <div class="setting-group">
+              <label class="setting-label">System Name</label>
+              <input type="text" class="form-control" value="RoadSide+ Emergency System">
+            </div>
+            
+            <div class="setting-group">
+              <label class="setting-label">Default Response Time (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            
+            <div class="setting-group">
+              <label class="setting-label">Maximum Service Radius (miles)</label>
+              <input type="number" class="form-control" value="50">
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                Enable 24/7 Operations
+              </label>
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                Automatic Technician Assignment
+              </label>
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                GPS Tracking for All Services
+              </label>
+            </div>
+          </div>
+          
+          <div class="settings-section">
+            <h3>Maintenance Mode</h3>
+            <div class="maintenance-controls">
+              <p>Schedule system maintenance or enable emergency maintenance mode</p>
+              <button class="btn btn--outline">Schedule Maintenance</button>
+              <button class="btn btn--warning">Enable Maintenance Mode</button>
+            </div>
+          </div>
+        </div>
+        
+        <div id="settings-services" class="control-content">
+          <div class="services-pricing">
+            <h3>Service Pricing Configuration</h3>
+            
+            <div class="pricing-grid">
+              <div class="pricing-item">
+                <div class="service-icon">🚛</div>
+                <div class="service-details">
+                  <h4>Towing Service</h4>
+                  <div class="pricing-controls">
+                    <label>Base Price: $<input type="number" value="150" class="price-input"></label>
+                    <label>Per Mile: $<input type="number" value="3.50" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🔋</div>
+                <div class="service-details">
+                  <h4>Battery Jump</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="75" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🛞</div>
+                <div class="service-details">
+                  <h4>Tire Change</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="100" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🔓</div>
+                <div class="service-details">
+                  <h4>Lockout Service</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="85" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="service-areas">
+            <h3>Service Areas</h3>
+            <div class="area-list">
+              <div class="area-item">
+                <span class="area-name">Downtown Metro</span>
+                <span class="area-status active">Active</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+              <div class="area-item">
+                <span class="area-name">Suburban District</span>
+                <span class="area-status active">Active</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+              <div class="area-item">
+                <span class="area-name">Industrial Zone</span>
+                <span class="area-status limited">Limited</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+            </div>
+            <button class="btn btn--primary">+ Add Service Area</button>
+          </div>
+        </div>
+        
+        <div id="settings-notifications" class="control-content">
+          <div class="notification-settings">
+            <h3>Notification Configuration</h3>
+            
+            <div class="notification-section">
+              <h4>Email Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Service Request Notifications
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Emergency Alert Notifications
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                  Daily Summary Reports
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  System Status Updates
+                </label>
+              </div>
+            </div>
+            
+            <div class="notification-section">
+              <h4>SMS Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Emergency Alerts Only
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                  Service Confirmations
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Critical System Alerts
+                </label>
+              </div>
+            </div>
+            
+            <div class="notification-section">
+              <h4>Push Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Real-time Service Updates
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Technician Assignments
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Customer Communications
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="settings-security" class="control-content">
+          <div class="security-settings">
+            <h3>Security Configuration</h3>
+            
+            <div class="security-section">
+              <h4>Authentication Settings</h4>
+              <div class="security-controls">
+                <div class="setting-group">
+                  <label class="setting-label">Password Minimum Length</label>
+                  <input type="number" class="form-control" value="8">
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Require Two-Factor Authentication
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Auto-logout After Inactivity
+                  </label>
+                </div>
+                
+                <div class="setting-group">
+                  <label class="setting-label">Session Timeout (minutes)</label>
+                  <input type="number" class="form-control" value="30">
+                </div>
+              </div>
+            </div>
+            
+            <div class="security-section">
+              <h4>Data Protection</h4>
+              <div class="security-controls">
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Encrypt All Data Transmissions
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Log All Access Attempts
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                    Enable Data Backup Encryption
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="security-section">
+              <h4>Access Control</h4>
+              <div class="access-logs">
+                <h5>Recent Security Events</h5>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 14:23:45</span>
+                  <span class="log-event">Admin login from 192.168.1.100</span>
+                  <span class="log-status success">✓ Allowed</span>
+                </div>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 13:45:12</span>
+                  <span class="log-event">Failed login attempt from 203.45.67.89</span>
+                  <span class="log-status warning">⚠ Blocked</span>
+                </div>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 12:30:56</span>
+                  <span class="log-event">Password reset request</span>
+                  <span class="log-status success">✓ Completed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  initializeControlFunctions: function(controlType) {
+    // Add event listeners for interactive elements
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!this.disabled) {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 100);
+        }
+      });
+    });
+    
+    // Initialize toggle switches
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.closest('.toggle-label') || this.closest('.permission-item');
+        if (label) {
+          label.style.opacity = this.checked ? '1' : '0.7';
+        }
+      });
+    });
+  },
+
+  closeSystemControlModal: function() {
+    const modal = document.getElementById('system-control-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
 }
 
 // Initialize app state
@@ -2008,4 +3027,14 @@ function resetToDefaults() {
   if (confirm('Reset all settings to defaults? This cannot be undone.')) {
     showToast('Settings reset to default values', 'success');
   }
+}
+
+function showControlTab(tabId) {
+  // Remove active class from all tabs and content
+  document.querySelectorAll('.control-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.control-content').forEach(content => content.classList.remove('active'));
+  
+  // Add active class to clicked tab and corresponding content
+  event.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
 }
