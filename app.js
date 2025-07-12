@@ -265,115 +265,47 @@ class RoadSideApp {
                 <div class="dashboard-header">
                     <h2>🔧 Technician Dashboard</h2>
                     <p>Manage your service assignments and performance</p>
-                    <div class="tech-status">
-                        <div class="status-indicator online"></div>
-                        <span>On Duty</span>
-                        <button onclick="App.toggleTechnicianStatus()" class="btn btn--sm btn--outline">Toggle Status</button>
-                    </div>
                 </div>
                 
                 <div class="tech-stats-grid">
-                    <div class="stat-card clickable" onclick="App.viewTechnicianJobs()">
+                    <div class="stat-card">
                         <div class="stat-icon">📋</div>
-                        <div class="stat-value" id="tech-active-jobs">8</div>
+                        <div class="stat-value">8</div>
                         <div class="stat-label">Active Jobs</div>
-                        <div class="stat-trend">+2 today</div>
                     </div>
-                    <div class="stat-card clickable" onclick="App.viewResponseMetrics()">
+                    <div class="stat-card">
                         <div class="stat-icon">⚡</div>
-                        <div class="stat-value" id="tech-avg-response">12 min</div>
+                        <div class="stat-value">12 min</div>
                         <div class="stat-label">Avg Response</div>
-                        <div class="stat-trend">-3 min this week</div>
                     </div>
-                    <div class="stat-card clickable" onclick="App.viewRatings()">
+                    <div class="stat-card">
                         <div class="stat-icon">⭐</div>
-                        <div class="stat-value" id="tech-rating">4.9</div>
+                        <div class="stat-value">4.9</div>
                         <div class="stat-label">Rating</div>
-                        <div class="stat-trend">+0.1 this month</div>
                     </div>
-                    <div class="stat-card clickable" onclick="App.viewEarnings()">
+                    <div class="stat-card">
                         <div class="stat-icon">💰</div>
-                        <div class="stat-value" id="tech-earnings">$2,450</div>
+                        <div class="stat-value">$2,450</div>
                         <div class="stat-label">This Week</div>
-                        <div class="stat-trend">+15% vs last week</div>
-                    </div>
-                </div>
-
-                <div class="quick-actions-section">
-                    <h3>Quick Actions</h3>
-                    <div class="quick-actions-grid">
-                        <button onclick="App.acceptNextJob()" class="action-btn accept">
-                            <div class="action-icon">✅</div>
-                            <span>Accept Next Job</span>
-                        </button>
-                        <button onclick="App.reportIssue()" class="action-btn report">
-                            <div class="action-icon">⚠️</div>
-                            <span>Report Issue</span>
-                        </button>
-                        <button onclick="App.requestSupport()" class="action-btn support">
-                            <div class="action-icon">🆘</div>
-                            <span>Request Support</span>
-                        </button>
-                        <button onclick="App.updateLocation()" class="action-btn location">
-                            <div class="action-icon">📍</div>
-                            <span>Update Location</span>
-                        </button>
                     </div>
                 </div>
 
                 <div class="active-jobs-section">
-                    <div class="section-header">
-                        <h3>Active Assignments</h3>
-                        <div class="job-filters">
-                            <button onclick="App.filterJobs('all')" class="filter-btn active">All</button>
-                            <button onclick="App.filterJobs('high')" class="filter-btn">High Priority</button>
-                            <button onclick="App.filterJobs('medium')" class="filter-btn">Medium</button>
-                            <button onclick="App.filterJobs('low')" class="filter-btn">Low</button>
-                        </div>
-                    </div>
-                    <div class="job-cards" id="technician-job-cards">
-                        ${this.getTechnicianJobCards()}
-                    </div>
-                </div>
-
-                <div class="completed-jobs-section">
-                    <h3>Recent Completions</h3>
-                    <div class="completed-jobs-list">
-                        ${this.getCompletedJobsHTML()}
-                    </div>
-                </div>
-
-                <div class="performance-section">
-                    <h3>Performance Metrics</h3>
-                    <div class="performance-grid">
-                        <div class="metric-card">
-                            <h4>Today's Performance</h4>
-                            <div class="metric-item">
-                                <span>Jobs Completed:</span>
-                                <span class="metric-value">6</span>
+                    <h3>Active Assignments</h3>
+                    <div class="job-cards">
+                        <div class="job-card priority-high">
+                            <div class="job-header">
+                                <span class="job-type">🚛 Towing</span>
+                                <span class="priority">High Priority</span>
                             </div>
-                            <div class="metric-item">
-                                <span>Customer Rating:</span>
-                                <span class="metric-value">4.8★</span>
+                            <div class="job-details">
+                                <p><strong>Location:</strong> 1234 Main St</p>
+                                <p><strong>Customer:</strong> John Smith</p>
+                                <p><strong>ETA:</strong> 15 minutes</p>
                             </div>
-                            <div class="metric-item">
-                                <span>Response Time:</span>
-                                <span class="metric-value">11 min avg</span>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <h4>This Week</h4>
-                            <div class="metric-item">
-                                <span>Total Jobs:</span>
-                                <span class="metric-value">34</span>
-                            </div>
-                            <div class="metric-item">
-                                <span>Earnings:</span>
-                                <span class="metric-value">$2,450</span>
-                            </div>
-                            <div class="metric-item">
-                                <span>Efficiency:</span>
-                                <span class="metric-value">95%</span>
+                            <div class="job-actions">
+                                <button class="btn btn--primary btn--sm">Navigate</button>
+                                <button class="btn btn--outline btn--sm">Call Customer</button>
                             </div>
                         </div>
                     </div>
@@ -1054,37 +986,265 @@ class RoadSideApp {
         if (modal) modal.style.display = 'none';
     }
 
+    // Technician Dashboard Methods
     getTechnicianJobCards() {
-        return `
-            <div class="job-card priority-high">
+        const jobs = [
+            {
+                id: 'TW-001',
+                type: 'Towing',
+                icon: '🚛',
+                priority: 'high',
+                customer: 'John Smith',
+                location: '1234 Main St, City, State',
+                phone: '(555) 123-4567',
+                eta: '15 minutes',
+                distance: '2.3 miles',
+                price: '$150',
+                description: 'Vehicle won\'t start, needs towing to nearest garage',
+                status: 'assigned'
+            },
+            {
+                id: 'BJ-002',
+                type: 'Battery Jump',
+                icon: '🔋',
+                priority: 'medium',
+                customer: 'Sarah Johnson',
+                location: '5678 Oak Ave, City, State',
+                phone: '(555) 987-6543',
+                eta: '25 minutes',
+                distance: '4.1 miles',
+                price: '$75',
+                description: 'Car battery died in parking lot',
+                status: 'en_route'
+            },
+            {
+                id: 'TC-003',
+                type: 'Tire Change',
+                icon: '🛞',
+                priority: 'high',
+                customer: 'Mike Rodriguez',
+                location: '9012 Pine St, City, State',
+                phone: '(555) 456-7890',
+                eta: '10 minutes',
+                distance: '1.5 miles',
+                price: '$100',
+                description: 'Flat tire on highway, spare available',
+                status: 'arriving'
+            }
+        ];
+
+        return jobs.map(job => `
+            <div class="job-card priority-${job.priority} status-${job.status}" data-job-id="${job.id}">
                 <div class="job-header">
-                    <span class="job-type">🚛 Towing</span>
-                    <span class="priority">High Priority</span>
+                    <div class="job-type-info">
+                        <span class="job-type">${job.icon} ${job.type}</span>
+                        <span class="job-id">#${job.id}</span>
+                    </div>
+                    <div class="job-priority-status">
+                        <span class="priority priority-${job.priority}">${job.priority.toUpperCase()} PRIORITY</span>
+                        <span class="job-status status-${job.status}">${this.formatJobStatus(job.status)}</span>
+                    </div>
                 </div>
+                
                 <div class="job-details">
-                    <p><strong>Location:</strong> 1234 Main St</p>
-                    <p><strong>Customer:</strong> John Smith</p>
-                    <p><strong>ETA:</strong> 15 minutes</p>
+                    <div class="job-info-grid">
+                        <div class="info-item">
+                            <strong>Customer:</strong> ${job.customer}
+                        </div>
+                        <div class="info-item">
+                            <strong>Location:</strong> ${job.location}
+                        </div>
+                        <div class="info-item">
+                            <strong>Phone:</strong> ${job.phone}
+                        </div>
+                        <div class="info-item">
+                            <strong>ETA:</strong> ${job.eta}
+                        </div>
+                        <div class="info-item">
+                            <strong>Distance:</strong> ${job.distance}
+                        </div>
+                        <div class="info-item">
+                            <strong>Price:</strong> ${job.price}
+                        </div>
+                    </div>
+                    <div class="job-description">
+                        <strong>Description:</strong> ${job.description}
+                    </div>
                 </div>
+                
                 <div class="job-actions">
-                    <button class="btn btn--primary btn--sm">Navigate</button>
-                    <button class="btn btn--outline btn--sm">Call Customer</button>
+                    ${this.getJobActionButtons(job)}
                 </div>
             </div>
-        `;
+        `).join('');
+    }
+
+    getJobActionButtons(job) {
+        switch (job.status) {
+            case 'assigned':
+                return `
+                    <button onclick="App.acceptJob('${job.id}')" class="btn btn--primary btn--sm">Accept Job</button>
+                    <button onclick="App.navigateToJob('${job.id}')" class="btn btn--outline btn--sm">📍 Navigate</button>
+                    <button onclick="App.callCustomer('${job.phone}', '${job.customer}')" class="btn btn--outline btn--sm">📞 Call</button>
+                    <button onclick="App.declineJob('${job.id}')" class="btn btn--danger btn--sm">Decline</button>
+                `;
+            case 'en_route':
+                return `
+                    <button onclick="App.arriveAtJob('${job.id}')" class="btn btn--primary btn--sm">I've Arrived</button>
+                    <button onclick="App.navigateToJob('${job.id}')" class="btn btn--outline btn--sm">📍 Navigate</button>
+                    <button onclick="App.callCustomer('${job.phone}', '${job.customer}')" class="btn btn--outline btn--sm">📞 Call</button>
+                    <button onclick="App.reportDelay('${job.id}')" class="btn btn--warning btn--sm">Report Delay</button>
+                `;
+            case 'arriving':
+                return `
+                    <button onclick="App.startJob('${job.id}')" class="btn btn--primary btn--sm">Start Service</button>
+                    <button onclick="App.callCustomer('${job.phone}', '${job.customer}')" class="btn btn--outline btn--sm">📞 Call</button>
+                    <button onclick="App.reportIssue('${job.id}')" class="btn btn--warning btn--sm">Report Issue</button>
+                `;
+            default:
+                return `
+                    <button onclick="App.viewJobDetails('${job.id}')" class="btn btn--outline btn--sm">View Details</button>
+                `;
+        }
+    }
+
+    formatJobStatus(status) {
+        const statusMap = {
+            'assigned': 'Assigned',
+            'en_route': 'En Route',
+            'arriving': 'Arriving',
+            'in_progress': 'In Progress',
+            'completed': 'Completed',
+            'cancelled': 'Cancelled'
+        };
+        return statusMap[status] || status;
     }
 
     getCompletedJobsHTML() {
-        return `
+        const completedJobs = [
+            { id: 'TW-098', type: 'Towing', customer: 'Emma Wilson', time: '2 hours ago', rating: 5, earnings: '$150' },
+            { id: 'BJ-097', type: 'Battery Jump', customer: 'David Brown', time: '4 hours ago', rating: 5, earnings: '$75' },
+            { id: 'TC-096', type: 'Tire Change', customer: 'Lisa Garcia', time: '6 hours ago', rating: 4, earnings: '$100' }
+        ];
+
+        return completedJobs.map(job => `
             <div class="completed-job-item">
                 <div class="job-info">
-                    <h4>Battery Jump</h4>
-                    <p>Completed 2 hours ago</p>
-                    <p>Customer: Jane Doe</p>
+                    <span class="job-type">${job.type}</span>
+                    <span class="job-customer">${job.customer}</span>
+                    <span class="job-time">${job.time}</span>
                 </div>
-                <div class="job-rating">⭐ 5.0</div>
+                <div class="job-results">
+                    <span class="job-rating">${'★'.repeat(job.rating)}${'☆'.repeat(5-job.rating)}</span>
+                    <span class="job-earnings">${job.earnings}</span>
+                </div>
             </div>
-        `;
+        `).join('');
+    }
+
+    // Technician Action Methods
+    toggleTechnicianStatus() {
+        this.showToast('Status updated to Off Duty', 'info');
+    }
+
+    viewTechnicianJobs() {
+        this.showToast('Viewing all active jobs', 'info');
+    }
+
+    viewResponseMetrics() {
+        this.showToast('Opening response time analytics', 'info');
+    }
+
+    viewRatings() {
+        this.showToast('Viewing customer ratings and feedback', 'info');
+    }
+
+    viewEarnings() {
+        this.showToast('Opening earnings report', 'info');
+    }
+
+    acceptNextJob() {
+        this.showToast('Looking for next available job...', 'info');
+        setTimeout(() => {
+            this.showToast('New job assigned! Check Active Assignments.', 'success');
+        }, 2000);
+    }
+
+    reportIssue(jobId = null) {
+        const message = jobId ? `Reporting issue for job #${jobId}` : 'Opening issue report form';
+        this.showToast(message, 'warning');
+    }
+
+    requestSupport() {
+        this.showToast('Contacting dispatch for support...', 'info');
+    }
+
+    updateLocation() {
+        this.showToast('Updating GPS location...', 'info');
+        setTimeout(() => {
+            this.showToast('Location updated successfully', 'success');
+        }, 1500);
+    }
+
+    filterJobs(priority) {
+        // Update filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const message = priority === 'all' ? 'Showing all jobs' : `Filtering ${priority} priority jobs`;
+        this.showToast(message, 'info');
+    }
+
+    // Job Action Methods
+    acceptJob(jobId) {
+        this.showToast(`Job #${jobId} accepted! Starting navigation...`, 'success');
+        this.updateJobStatus(jobId, 'en_route');
+    }
+
+    navigateToJob(jobId) {
+        this.showToast(`Opening navigation to job #${jobId}`, 'info');
+    }
+
+    callCustomer(phone, name) {
+        this.showToast(`Calling ${name} at ${phone}`, 'info');
+    }
+
+    declineJob(jobId) {
+        this.showToast(`Job #${jobId} declined. Notifying dispatch...`, 'warning');
+        this.removeJobFromList(jobId);
+    }
+
+    arriveAtJob(jobId) {
+        this.showToast(`Marked as arrived at job #${jobId}`, 'success');
+        this.updateJobStatus(jobId, 'arriving');
+    }
+
+    startJob(jobId) {
+        this.showToast(`Starting service for job #${jobId}`, 'success');
+        this.updateJobStatus(jobId, 'in_progress');
+    }
+
+    reportDelay(jobId) {
+        this.showToast(`Reporting delay for job #${jobId}`, 'warning');
+    }
+
+    updateJobStatus(jobId, newStatus) {
+        const jobCard = document.querySelector(`[data-job-id="${jobId}"]`);
+        if (jobCard) {
+            jobCard.className = jobCard.className.replace(/status-\w+/, `status-${newStatus}`);
+            const statusSpan = jobCard.querySelector('.job-status');
+            if (statusSpan) {
+                statusSpan.textContent = this.formatJobStatus(newStatus);
+            }
+        }
+    }
+
+    removeJobFromList(jobId) {
+        const jobCard = document.querySelector(`[data-job-id="${jobId}"]`);
+        if (jobCard) {
+            jobCard.style.opacity = '0';
+            setTimeout(() => jobCard.remove(), 300);
+        }
     }
 }
 
