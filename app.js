@@ -742,7 +742,8 @@ function generateSystemSettingsInterface() {
                         <div class="pricing-item">
                             <span class="service-name">🚛 Towing</span>
                             <input type="number" value="150" class="price-input">
-                            <button class="btn btn--sm">Update</button>
+                            <button class="btn btn--
+}sm">Update</button>
                         </div>
                         <div class="pricing-item">
                             <span class="service-name">🔋 Battery Jump</span>
