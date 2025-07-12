@@ -1583,6 +1583,262 @@ function saveProfile() {
       relationship: $('#emergency-contact-relationship').value
     },
     preferences: {
+    // Support Center Functions
+    openNewSupportRequest() {
+        const modal = document.getElementById('support-request-modal');
+        modal.classList.add('active');
+        this.clearSupportRequestForm();
+    },
+
+    closeSupportRequestModal() {
+        const modal = document.getElementById('support-request-modal');
+        modal.classList.remove('active');
+    },
+
+    clearSupportRequestForm() {
+        document.getElementById('support-category').value = 'technical';
+        document.getElementById('support-priority').value = 'medium';
+        document.getElementById('support-subject').value = '';
+        document.getElementById('support-description').value = '';
+        document.getElementById('support-attachments').value = '';
+    },
+
+    submitSupportRequest() {
+        const category = document.getElementById('support-category').value;
+        const priority = document.getElementById('support-priority').value;
+        const subject = document.getElementById('support-subject').value;
+        const description = document.getElementById('support-description').value;
+
+        if (!subject.trim() || !description.trim()) {
+            this.showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        const ticket = {
+            id: 'TK' + Date.now(),
+            category,
+            priority,
+            subject,
+            description,
+            status: 'Open',
+            createdAt: new Date().toISOString(),
+            messages: []
+        };
+
+        const tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+        tickets.unshift(ticket);
+        localStorage.setItem('supportTickets', JSON.stringify(tickets));
+
+        this.showToast('Support ticket created successfully', 'success');
+        this.closeSupportRequestModal();
+        this.updateSupportTicketsDisplay();
+    },
+
+    openEmergencyContact() {
+        const modal = document.getElementById('emergency-contact-modal');
+        modal.classList.add('active');
+    },
+
+    closeEmergencyContactModal() {
+        const modal = document.getElementById('emergency-contact-modal');
+        modal.classList.remove('active');
+    },
+
+    callEmergencyNumber(type, number) {
+        this.showToast(`Calling ${type}: ${number}`, 'info');
+        // In a real app, this would initiate a call
+    },
+
+    openFAQ() {
+        const modal = document.getElementById('faq-modal');
+        modal.classList.add('active');
+        this.loadFAQContent();
+    },
+
+    closeFAQModal() {
+        const modal = document.getElementById('faq-modal');
+        modal.classList.remove('active');
+    },
+
+    loadFAQContent() {
+        const faqData = {
+            'Service & Booking': [
+                {
+                    question: 'How do I book a roadside service?',
+                    answer: 'Simply select the service you need from the dashboard, enter your location and problem description, choose your payment method, and confirm your booking. Our system will dispatch the nearest available technician.'
+                },
+                {
+                    question: 'What are your service coverage areas?',
+                    answer: 'We provide 24/7 roadside assistance in all major metropolitan areas and highways. Coverage includes a 50-mile radius from city centers. Check our coverage map for specific areas.'
+                },
+                {
+                    question: 'How long does it take for a technician to arrive?',
+                    answer: 'Average response time is 30-45 minutes depending on your location and service type. Emergency services are prioritized with faster response times.'
+                }
+            ],
+            'Pricing & Payment': [
+                {
+                    question: 'What payment methods do you accept?',
+                    answer: 'We accept all major credit cards, debit cards, cash, and mobile payments including Apple Pay and Google Pay. Payment is processed after service completion.'
+                },
+                {
+                    question: 'Are there any hidden fees?',
+                    answer: 'No hidden fees. All pricing is transparent and shown upfront. Additional charges may apply for parts, extended service time, or specialty equipment usage.'
+                },
+                {
+                    question: 'Do you offer membership or subscription plans?',
+                    answer: 'Yes, we offer RoadSide+ Premium membership with unlimited basic services, priority response, and discounted rates on all services.'
+                }
+            ],
+            'Technical Support': [
+                {
+                    question: 'My app is not working properly, what should I do?',
+                    answer: 'Try restarting the app first. If issues persist, clear the app cache or reinstall. For continued problems, contact our technical support team.'
+                },
+                {
+                    question: 'How do I update my location in the app?',
+                    answer: 'Your location is automatically detected via GPS. You can manually enter a different location in the booking form if needed. Ensure location permissions are enabled.'
+                },
+                {
+                    question: 'Can I track my technician in real-time?',
+                    answer: 'Yes, once a technician is dispatched, you\'ll receive real-time tracking updates including ETA and live location on the map.'
+                }
+            ]
+        };
+
+        const container = document.getElementById('faq-content');
+        container.innerHTML = '';
+
+        Object.keys(faqData).forEach(category => {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'faq-category';
+            categoryDiv.innerHTML = `
+                <h3 class="faq-category-title">${category}</h3>
+                <div class="faq-items">
+                    ${faqData[category].map((item, index) => `
+                        <div class="faq-item">
+                            <div class="faq-question" onclick="App.toggleFAQItem(this)">
+                                <span>${item.question}</span>
+                                <span class="faq-toggle">+</span>
+                            </div>
+                            <div class="faq-answer">
+                                <p>${item.answer}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(categoryDiv);
+        });
+    },
+
+    toggleFAQItem(element) {
+        const faqItem = element.parentElement;
+        const answer = faqItem.querySelector('.faq-answer');
+        const toggle = element.querySelector('.faq-toggle');
+        
+        faqItem.classList.toggle('active');
+        toggle.textContent = faqItem.classList.contains('active') ? '−' : '+';
+    },
+
+    openLiveChat() {
+        const modal = document.getElementById('live-chat-modal');
+        modal.classList.add('active');
+        this.initializeLiveChat();
+    },
+
+    closeLiveChatModal() {
+        const modal = document.getElementById('live-chat-modal');
+        modal.classList.remove('active');
+    },
+
+    initializeLiveChat() {
+        const messagesContainer = document.getElementById('chat-messages');
+        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        // Clear existing messages and add welcome message
+        messagesContainer.innerHTML = `
+            <div class="chat-message support-message">
+                <div class="message-avatar">🎧</div>
+                <div class="message-content">
+                    <div class="message-text">Hello! I'm Sarah from RoadSide+ support. How can I help you today?</div>
+                    <div class="message-time">${currentTime}</div>
+                </div>
+            </div>
+        `;
+
+        // Clear input
+        document.getElementById('chat-input').value = '';
+    },
+
+    sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+
+        const messagesContainer = document.getElementById('chat-messages');
+        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        // Add user message
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chat-message user-message';
+        userMessage.innerHTML = `
+            <div class="message-content">
+                <div class="message-text">${message}</div>
+                <div class="message-time">${currentTime}</div>
+            </div>
+            <div class="message-avatar">👤</div>
+        `;
+        messagesContainer.appendChild(userMessage);
+
+        // Clear input
+        input.value = '';
+
+        // Simulate support response
+        setTimeout(() => {
+            const supportResponse = this.generateSupportResponse(message);
+            const supportMessage = document.createElement('div');
+            supportMessage.className = 'chat-message support-message';
+            const responseTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            supportMessage.innerHTML = `
+                <div class="message-avatar">🎧</div>
+                <div class="message-content">
+                    <div class="message-text">${supportResponse}</div>
+                    <div class="message-time">${responseTime}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(supportMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000 + Math.random() * 2000);
+
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    },
+
+    generateSupportResponse(userMessage) {
+        const responses = {
+            'help': 'I\'d be happy to help! What specific issue are you experiencing?',
+            'problem': 'I understand you\'re having an issue. Can you provide more details about what\'s happening?',
+            'service': 'For service-related questions, I can help you book a service or check on existing requests.',
+            'payment': 'For payment inquiries, I can help explain our pricing or resolve billing issues.',
+            'emergency': 'For immediate emergencies, please call 911. For roadside emergencies, use our SOS feature.',
+            'technician': 'I can help you track your technician or provide their contact information.',
+            'cancel': 'I can help you cancel or modify your service request. Let me check your account.',
+            'location': 'Location services help us dispatch the nearest technician. I can help troubleshoot location issues.',
+            'app': 'I can help with app-related issues. Have you tried restarting the app?',
+            'account': 'I can help with account settings, profile updates, or password resets.',
+            'default': 'Thank you for contacting us. Let me connect you with a specialist who can better assist you with this inquiry.'
+        };
+
+        const message = userMessage.toLowerCase();
+        for (const [key, response] of Object.entries(responses)) {
+            if (message.includes(key)) {
+                return response;
+            }
+        }
+        return responses.default;
+    },
+
       notifications: $('#notifications-enabled').checked,
       location: $('#location-enabled').checked,
       darkMode: $('#dark-mode-enabled').checked
