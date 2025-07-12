@@ -286,6 +286,105 @@
             </div>
         </div>
 
+        <!-- Edit Profile Modal -->
+        <div id="edit-profile-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Profile</h2>
+                    <button class="close-btn" onclick="closeEditProfileModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-profile-form">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="edit-profile-name" class="form-control" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="edit-profile-email" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" id="edit-profile-phone" class="form-control" placeholder="Enter your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <textarea id="edit-profile-address" class="form-control" rows="3" placeholder="Enter your address"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button onclick="saveEditProfile()" class="btn btn--primary">Save Changes</button>
+                            <button onclick="closeEditProfileModal()" class="btn btn--outline">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="close-btn" onclick="closeSettingsModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-content">
+                        <div class="settings-section">
+                            <h3>Notifications</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="setting-push-notifications" checked> Push notifications
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="setting-email-notifications" checked> Email notifications
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="setting-sms-notifications"> SMS notifications
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h3>Privacy</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="setting-location-sharing" checked> Share location for faster service
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="setting-data-analytics"> Allow data analytics
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h3>Appearance</h3>
+                            <div class="form-group">
+                                <label class="form-label">Theme</label>
+                                <select id="setting-theme" class="form-control">
+                                    <option value="dark">Dark Mode</option>
+                                    <option value="light">Light Mode</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h3>Emergency</h3>
+                            <div class="form-group">
+                                <label class="form-label">Emergency Contact</label>
+                                <input type="tel" id="setting-emergency-contact" class="form-control" placeholder="Emergency contact number">
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button onclick="saveSettings()" class="btn btn--primary">Save Settings</button>
+                            <button onclick="closeSettingsModal()" class="btn btn--outline">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Support View -->
         <div id="support-view" class="view">
             <div class="view-header">
