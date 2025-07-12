@@ -1,29 +1,52 @@
-import { SupabaseAdmin } from '../utils/supabaseAdmin.js';
+import { User } from '../models/User.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import logger from '../utils/logger.js';
+import supabase from '../config/database.js';
 
 /**
- * Admin-only controllers with full database access
+ * Admin user management controllers
  */
 
 /**
- * Get all users (admin only)
+ * Get all users with filtering and pagination (admin only)
  */
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await SupabaseAdmin.getAllUsers();
+  const filters = {
+    role: req.query.role,
+    isActive: req.query.isActive !== undefined ? req.query.isActive === 'true' : undefined,
+    search: req.query.search,
+    page: parseInt(req.query.page) || 1,
+    limit: parseInt(req.query.limit) || 10,
+    sortBy: req.query.sortBy || 'created_at',
+    sortOrder: req.query.sortOrder || 'desc'
+  };
+
+  const result = await User.findWithFilters(filters);
+  
+  // Get role definitions for reference
+  const roleDefinitions = User.getUserRoleDefinitions();
   
   return ApiResponse.success(res, 'Users retrieved successfully', {
-    users: users.map(user => ({
-      id: user.id,
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      role: user.role,
-      isActive: user.is_active,
-      createdAt: user.created_at,
-      updatedAt: user.updated_at
-    }))
+    users: result.users.map(user => user.getAdminProfile()),
+    pagination: result.pagination,
+    roleDefinitions
+  });
+});
+
+/**
+ * Get user by ID (admin only)
+ */
+export const getUserById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
+
+  return ApiResponse.success(res, 'User retrieved successfully', {
+    user: user.getAdminProfile()
   });
 });
 
@@ -31,32 +54,38 @@ export const getAllUsers = asyncHandler(async (req, res) => {
  * Create user as admin
  */
 export const createUserAsAdmin = asyncHandler(async (req, res) => {
-  const { email, password, firstName, lastName, role = 'user' } = req.body;
+  const { 
+    email, 
+    password, 
+    firstName, 
+    lastName, 
+    role = 'user',
+    phoneNumber,
+    emergencyContact,
+    preferences = {}
+  } = req.body;
   
-  // Hash password
-  const bcrypt = await import('bcryptjs');
-  const hashedPassword = await bcrypt.hash(password, 12);
+  // Check if user already exists
+  const existingUser = await User.findByEmail(email);
+  if (existingUser) {
+    return ApiResponse.conflict(res, 'User with this email already exists');
+  }
   
-  const user = await SupabaseAdmin.createUser({
+  const user = await User.create({
     email,
-    password_hash: hashedPassword,
-    first_name: firstName,
-    last_name: lastName,
+    password,
+    firstName,
+    lastName,
     role,
-    is_active: true
+    phoneNumber,
+    emergencyContact,
+    preferences
   });
   
   logger.info(`User created by admin: ${email}`);
   
   return ApiResponse.created(res, 'User created successfully', {
-    user: {
-      id: user.id,
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      role: user.role,
-      isActive: user.is_active
-    }
+    user: user.getAdminProfile()
   });
 });
 
@@ -65,29 +94,19 @@ export const createUserAsAdmin = asyncHandler(async (req, res) => {
  */
 export const updateUserAsAdmin = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
   
-  // Convert camelCase to snake_case for database
-  const dbUpdateData = {};
-  if (updateData.firstName) dbUpdateData.first_name = updateData.firstName;
-  if (updateData.lastName) dbUpdateData.last_name = updateData.lastName;
-  if (updateData.role) dbUpdateData.role = updateData.role;
-  if (updateData.isActive !== undefined) dbUpdateData.is_active = updateData.isActive;
-  if (updateData.email) dbUpdateData.email = updateData.email;
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
   
-  const user = await SupabaseAdmin.updateUser(id, dbUpdateData);
+  // Update user with provided data
+  await user.update(req.body);
   
   logger.info(`User updated by admin: ${user.email}`);
   
   return ApiResponse.success(res, 'User updated successfully', {
-    user: {
-      id: user.id,
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      role: user.role,
-      isActive: user.is_active
-    }
+    user: user.getAdminProfile()
   });
 });
 
@@ -97,7 +116,25 @@ export const updateUserAsAdmin = asyncHandler(async (req, res) => {
 export const deleteUserAsAdmin = asyncHandler(async (req, res) => {
   const { id } = req.params;
   
-  await SupabaseAdmin.deleteUser(id);
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
+
+  // Prevent deletion of the last admin user
+  if (user.role === 'admin') {
+    const adminUsers = await User.getUsersByRole('admin');
+    if (adminUsers.length <= 1) {
+      return ApiResponse.badRequest(res, 'Cannot delete the last admin user');
+    }
+  }
+
+  const { error } = await supabase
+    .from('users')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
   
   logger.info(`User deleted by admin: ${id}`);
   
@@ -105,48 +142,102 @@ export const deleteUserAsAdmin = asyncHandler(async (req, res) => {
 });
 
 /**
- * Get all tasks across all users (admin only)
+ * Activate user as admin
  */
-export const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await SupabaseAdmin.getAllTasks();
+export const activateUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   
-  return ApiResponse.success(res, 'All tasks retrieved successfully', {
-    tasks: tasks.map(task => ({
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      dueDate: task.due_date,
-      tags: task.tags,
-      user: task.users ? {
-        id: task.users.id,
-        email: task.users.email,
-        name: `${task.users.first_name} ${task.users.last_name}`
-      } : null,
-      createdAt: task.created_at,
-      updatedAt: task.updated_at
-    }))
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
+
+  await user.activate();
+  
+  logger.info(`User activated by admin: ${user.email}`);
+  
+  return ApiResponse.success(res, 'User activated successfully', {
+    user: user.getAdminProfile()
   });
 });
 
 /**
- * Get system statistics (admin only)
+ * Deactivate user as admin
  */
-export const getSystemStats = asyncHandler(async (req, res) => {
-  const users = await SupabaseAdmin.getAllUsers();
-  const tasks = await SupabaseAdmin.getAllTasks();
+export const deactivateUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   
-  const stats = {
-    totalUsers: users.length,
-    activeUsers: users.filter(u => u.is_active).length,
-    adminUsers: users.filter(u => u.role === 'admin').length,
-    totalTasks: tasks.length,
-    pendingTasks: tasks.filter(t => t.status === 'pending').length,
-    completedTasks: tasks.filter(t => t.status === 'completed').length
-  };
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
+
+  // Prevent deactivation of the last admin user
+  if (user.role === 'admin') {
+    const activeAdminUsers = await User.findWithFilters({ role: 'admin', isActive: true });
+    if (activeAdminUsers.users.length <= 1) {
+      return ApiResponse.badRequest(res, 'Cannot deactivate the last active admin user');
+    }
+  }
+
+  await user.deactivate();
   
-  return ApiResponse.success(res, 'System statistics retrieved successfully', {
-    stats
+  logger.info(`User deactivated by admin: ${user.email}`);
+  
+  return ApiResponse.success(res, 'User deactivated successfully', {
+    user: user.getAdminProfile()
+  });
+});
+
+/**
+ * Change user role as admin
+ */
+export const changeUserRole = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  
+  const user = await User.findById(id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
+
+  // Prevent changing role of the last admin user
+  if (user.role === 'admin' && role !== 'admin') {
+    const adminUsers = await User.getUsersByRole('admin');
+    if (adminUsers.length <= 1) {
+      return ApiResponse.badRequest(res, 'Cannot change role of the last admin user');
+    }
+  }
+
+  await user.changeRole(role);
+  
+  logger.info(`User role changed by admin: ${user.email} -> ${role}`);
+  
+  return ApiResponse.success(res, 'User role changed successfully', {
+    user: user.getAdminProfile()
+  });
+});
+
+/**
+ * Get user statistics (admin only)
+ */
+export const getUserStats = asyncHandler(async (req, res) => {
+  const stats = await User.getUserStats();
+  const roleDefinitions = User.getUserRoleDefinitions();
+  
+  return ApiResponse.success(res, 'User statistics retrieved successfully', {
+    stats,
+    roleDefinitions
+  });
+});
+
+/**
+ * Get user roles and permissions (admin only)
+ */
+export const getRolesAndPermissions = asyncHandler(async (req, res) => {
+  const roleDefinitions = User.getUserRoleDefinitions();
+  
+  return ApiResponse.success(res, 'Roles and permissions retrieved successfully', {
+    roles: roleDefinitions
   });
 });

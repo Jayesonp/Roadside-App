@@ -60,11 +60,17 @@ export const authorize = (...roles) => {
       return ApiResponse.unauthorized(res, 'Authentication required');
     }
 
-    if (!roles.includes(req.user.role)) {
+    // Allow access if user has one of the required roles
+    const hasRequiredRole = roles.includes(req.user.role);
+    
+    // Special handling for admin role - admins can access everything except where explicitly restricted
+    const isAdmin = req.user.role === 'admin';
+    const adminRestricted = roles.includes('!admin'); // Use !admin to restrict admin access
+    
+    if (!hasRequiredRole && !(isAdmin && !adminRestricted)) {
       logger.warn(`Unauthorized access attempt by user ${req.user.id} with role ${req.user.role}`);
       return ApiResponse.forbidden(res, 'Insufficient permissions');
     }
 
     next();
   };
-};
