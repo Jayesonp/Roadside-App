@@ -96,8 +96,8 @@
             <div class="tab" onclick="showDashboard('security')">🛡️ Security</div>
         </div>
 
-        <!-- Customer Dashboard -->
-        <div id="customer-dashboard" class="dashboard active">
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view active">
             <!-- Emergency Banner -->
             <div class="emergency-banner">
                 <div class="emergency-content">
@@ -156,187 +156,157 @@
             <!-- Recent Services -->
             <div class="recent-section">
                 <h2>Recent Services</h2>
-                <div class="service-history">
-                    <div class="history-item">
-                        <div class="history-icon">🔋</div>
-                        <div class="history-details">
-                            <h4>Battery Jump</h4>
-                            <p>Yesterday • Main St & 5th Ave</p>
-                            <div class="rating">⭐⭐⭐⭐⭐</div>
-                        </div>
-                        <div class="history-status">
-                            <span class="status status--success">Completed</span>
-                        </div>
+                <div id="recent-services" class="service-history">
+                    <!-- Recent services will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="stats-section">
+                <h2>Your Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="total-services">0</div>
+                        <div class="stat-label">Total Services</div>
                     </div>
-                    <div class="history-item">
-                        <div class="history-icon">🛞</div>
-                        <div class="history-details">
-                            <h4>Tire Change</h4>
-                            <p>3 days ago • Highway 101</p>
-                            <div class="rating">⭐⭐⭐⭐⭐</div>
-                        </div>
-                        <div class="history-status">
-                            <span class="status status--success">Completed</span>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="total-spent">$0</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value" id="avg-rating">0.0</div>
+                        <div class="stat-label">Avg Rating</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Technician Dashboard -->
-        <div id="technician-dashboard" class="dashboard">
-            <!-- Status Toggle -->
-            <div class="status-toggle-section">
-                <div class="status-toggle">
-                    <span>Status:</span>
-                    <button id="tech-status-btn" class="status-btn online" onclick="toggleTechStatus()">🟢 Online</button>
-                </div>
-                <div class="earnings-summary">
-                    <div class="earnings-item">
-                        <span class="earnings-label">Today</span>
-                        <span class="earnings-value">$245</span>
-                    </div>
-                    <div class="earnings-item">
-                        <span class="earnings-label">Week</span>
-                        <span class="earnings-value">$1,420</span>
-                    </div>
-                </div>
+        <!-- History View -->
+        <div id="history-view" class="view">
+            <div class="view-header">
+                <h2>Service History</h2>
+                <p>Your complete service record</p>
             </div>
+            <div id="service-history-list" class="history-list">
+                <!-- Service history will be populated by JavaScript -->
+            </div>
+        </div>
 
-            <!-- Available Jobs -->
-            <div class="jobs-section">
-                <h2>Available Jobs</h2>
-                <div class="job-queue">
-                    <div class="job-card">
-                        <div class="job-header">
-                            <div class="job-service">🔋 Battery Jump</div>
-                            <div class="job-distance">2.3 miles</div>
-                        </div>
-                        <div class="job-details">
-                            <p><strong>Customer:</strong> Sarah Johnson</p>
-                            <p><strong>Location:</strong> Walmart Parking Lot</p>
-                            <p><strong>Issue:</strong> Car won't start after shopping</p>
-                        </div>
-                        <div class="job-footer">
-                            <div class="job-earnings">$75</div>
-                            <div class="job-actions">
-                                <button class="btn btn--outline btn--sm" onclick="declineJob(1)">Decline</button>
-                                <button class="btn btn--primary btn--sm" onclick="acceptJob(1)">Accept</button>
-                            </div>
-                        </div>
+        <!-- Profile View -->
+        <div id="profile-view" class="view">
+            <div class="view-header">
+                <h2>Profile Settings</h2>
+                <p>Manage your account and preferences</p>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Services</span>
+                        <span class="stat-value" id="profile-total-services">0</span>
                     </div>
-                    <div class="job-card">
-                        <div class="job-header">
-                            <div class="job-service">🛞 Tire Change</div>
-                            <div class="job-distance">4.1 miles</div>
-                        </div>
-                        <div class="job-details">
-                            <p><strong>Customer:</strong> Mike Chen</p>
-                            <p><strong>Location:</strong> Highway 101 Exit 42</p>
-                            <p><strong>Issue:</strong> Flat tire on front right</p>
-                        </div>
-                        <div class="job-footer">
-                            <div class="job-earnings">$100</div>
-                            <div class="job-actions">
-                                <button class="btn btn--outline btn--sm" onclick="declineJob(2)">Decline</button>
-                                <button class="btn btn--primary btn--sm" onclick="acceptJob(2)">Accept</button>
-                            </div>
-                        </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Spent</span>
+                        <span class="stat-value" id="profile-total-spent">$0</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Rating</span>
+                        <span class="stat-value" id="profile-avg-rating">0.0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Member Since</span>
+                        <span class="stat-value" id="profile-member-since">2023</span>
+                    </div>
+                </div>
+                
+                <div class="profile-form">
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="profile-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="profile-email" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" id="profile-phone" class="form-control">
+                    </div>
+                    
+                    <h3>Emergency Contact</h3>
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" id="emergency-contact-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="tel" id="emergency-contact-phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Relationship</label>
+                        <select id="emergency-contact-relationship" class="form-control">
+                            <option value="Spouse">Spouse</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Child">Child</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <h3>Preferences</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notifications-enabled"> Enable push notifications
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="location-enabled"> Share location for faster service
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dark-mode-enabled"> Dark mode
+                        </label>
+                    </div>
+                    
+                    <button onclick="saveProfile()" class="btn btn--primary btn--full-width">Save Changes</button>
                 </div>
             </div>
         </div>
 
-        <!-- Admin Dashboard -->
-        <div id="admin-dashboard" class="dashboard">
-            <!-- Metrics Cards -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-icon">👥</div>
-                    <div class="metric-value">1,247</div>
-                    <div class="metric-label">Active Users</div>
-                </div>
-                <div class="metric-card emergency">
-                    <div class="metric-icon">🚨</div>
-                    <div class="metric-value">23</div>
-                    <div class="metric-label">Emergency Requests</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">⏱️</div>
-                    <div class="metric-value">28 min</div>
-                    <div class="metric-label">Avg Response Time</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">⭐</div>
-                    <div class="metric-value">95%</div>
-                    <div class="metric-label">Satisfaction</div>
-                </div>
+        <!-- Support View -->
+        <div id="support-view" class="view">
+            <div class="view-header">
+                <h2>Support Center</h2>
+                <p>Get help when you need it</p>
+                <button onclick="createSupportTicket()" class="btn btn--primary">New Support Request</button>
             </div>
-
-            <!-- Emergency Operations -->
-            <div class="emergency-operations">
-                <h2>Emergency Operations</h2>
-                <div class="emergency-list">
-                    <div class="emergency-item high-priority">
-                        <div class="emergency-badge">🚨 HIGH</div>
-                        <div class="emergency-info">
-                            <h4>Vehicle Accident - Highway 101</h4>
-                            <p>Multiple vehicles involved • ETA: 15 min</p>
-                        </div>
-                        <button class="btn btn--primary btn--sm">Manage</button>
+            
+            <div class="support-content">
+                <div class="support-quick-actions">
+                    <div class="quick-action" onclick="alert('Emergency: Call 911\nRoadSide+: 1-800-ROADSIDE')">
+                        <div class="action-icon">📞</div>
+                        <h4>Emergency Contact</h4>
+                        <p>Get immediate assistance</p>
                     </div>
-                    <div class="emergency-item medium-priority">
-                        <div class="emergency-badge">⚠️ MED</div>
-                        <div class="emergency-info">
-                            <h4>Stranded Vehicle - Desert Road</h4>
-                            <p>Family with children • ETA: 25 min</p>
-                        </div>
-                        <button class="btn btn--primary btn--sm">Manage</button>
+                    <div class="quick-action" onclick="alert('FAQ topics:\n• Service pricing\n• Coverage areas\n• How to book\n• Cancellation policy')">
+                        <div class="action-icon">❓</div>
+                        <h4>FAQ</h4>
+                        <p>Common questions</p>
+                    </div>
+                    <div class="quick-action" onclick="alert('Live chat available 24/7\nAverage response: 2 minutes')">
+                        <div class="action-icon">💬</div>
+                        <h4>Live Chat</h4>
+                        <p>Chat with support</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Partner Dashboard -->
-        <div id="partner-dashboard" class="dashboard">
-            <div class="partner-content">
-                <h2>Partner Network</h2>
-                <div class="partner-metrics">
-                    <div class="metric-card">
-                        <div class="metric-value">156</div>
-                        <div class="metric-label">Active Partners</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">98.5%</div>
-                        <div class="metric-label">Service Level</div>
-                    </div>
-                </div>
-                <div class="partner-list">
-                    <div class="partner-item">
-                        <div class="partner-info">
-                            <h4>Metro Towing Services</h4>
-                            <p>Downtown Coverage • 24/7 Available</p>
-                        </div>
-                        <div class="partner-status">
-                            <span class="status status--success">Active</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Security Dashboard -->
-        <div id="security-dashboard" class="dashboard">
-            <div class="security-content">
-                <h2>Security Operations</h2>
-                <div class="security-alerts">
-                    <div class="alert-item">
-                        <div class="alert-icon">🛡️</div>
-                        <div class="alert-info">
-                            <h4>System Security Check</h4>
-                            <p>All systems operational • Last scan: 2 min ago</p>
-                        </div>
-                        <span class="status status--success">Secure</span>
+                
+                <div class="support-tickets-section">
+                    <h3>Your Support Tickets</h3>
+                    <div id="support-tickets">
+                        <!-- Support tickets will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -372,11 +342,15 @@
                     <div id="booking-step-2" class="booking-step">
                         <div class="form-group">
                             <label class="form-label">Location</label>
-                            <input type="text" class="form-control" placeholder="Enter your location" value="1234 Main St, City, State">
+                            <input type="text" id="location-input" class="form-control" placeholder="Enter your location" value="1234 Main St, City, State">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Describe the problem</label>
-                            <textarea class="form-control" rows="3" placeholder="Tell us what happened..."></textarea>
+                            <textarea id="problem-description" class="form-control" rows="3" placeholder="Tell us what happened..."></textarea>
+                        </div>
+                        <div class="service-info">
+                            <p><strong>Service:</strong> <span id="service-description">Professional roadside assistance</span></p>
+                            <p><strong>Estimated Time:</strong> <span id="estimated-time">30 min</span></p>
                         </div>
                         <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
                     </div>
@@ -434,7 +408,7 @@
                     <div class="tracking-status">
                         <div class="status-icon">🚗</div>
                         <h3>Technician En Route</h3>
-                        <p>ETA: 15 minutes</p>
+                        <p>ETA: <span id="eta-time">15 minutes</span></p>
                     </div>
                     <div class="tracking-map">
                         <div class="map-placeholder">
@@ -456,22 +430,22 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item" onclick="showDashboard('customer')">
+            <div class="nav-item active" data-view="dashboard">
                 <div class="nav-icon">👤</div>
                 <span>Dashboard</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="history">
                 <div class="nav-icon">📋</div>
                 <span>History</span>
             </div>
             <div class="emergency-sos" onclick="emergencyCall()">
                 <div class="sos-button">SOS</div>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="support">
                 <div class="nav-icon">💬</div>
                 <span>Support</span>
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-view="profile">
                 <div class="nav-icon">👤</div>
                 <span>Profile</span>
             </div>
