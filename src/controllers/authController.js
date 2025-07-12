@@ -1,7 +1,19 @@
+import jwt from 'jsonwebtoken';
+import { User } from '../models/User.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { config } from '../config/index.js';
 import logger from '../utils/logger.js';
-import { SupabaseAuth } from '../utils/supabaseAuth.js';
+import supabase from '../config/database.js';
+
+/**
+ * Generate JWT token
+ */
+const generateToken = (userId) => {
+  return jwt.sign({ userId }, config.jwt.secret, {
+    expiresIn: config.jwt.expiresIn
+  });
+};
 
 /**
  * Register new user
@@ -9,31 +21,29 @@ import { SupabaseAuth } from '../utils/supabaseAuth.js';
 export const register = asyncHandler(async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
 
-  try {
-    // Register user with Supabase Auth
-    const { user, session } = await SupabaseAuth.signUp(email, password, {
-      firstName,
-      lastName
-    });
+  // Check if user already exists
+  const existingUser = await User.findByEmail(email);
+  if (existingUser) {
+    return ApiResponse.conflict(res, 'User with this email already exists');
   }
 
-    logger.info(`New user registered: ${email}`);
+  // Create new user
+  const user = await User.create({
+    email,
+    password,
+    firstName,
+    lastName
+  });
 
-    return ApiResponse.created(res, 'User registered successfully', {
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.user_metadata?.first_name,
-        lastName: user.user_metadata?.last_name
-      },
-      session
-    });
-  } catch (error) {
-    if (error.message.includes('User already registered')) {
-      return ApiResponse.conflict(res, 'User with this email already exists');
-    }
-    throw error;
-  }
+  // Generate token
+  const token = generateToken(user.id);
+
+  logger.info(`New user registered: ${email}`);
+
+  return ApiResponse.created(res, 'User registered successfully', {
+    user: user.getProfile(),
+    token
+  });
 });
 
 /**
@@ -42,47 +52,51 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    // Sign in with Supabase Auth
-    const { user, session } = await SupabaseAuth.signIn(email, password);
+  // Find user by email
+  const { data: userData, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .single();
 
-    logger.info(`User logged in: ${email}`);
-
-    return ApiResponse.success(res, 'Login successful', {
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.user_metadata?.first_name,
-        lastName: user.user_metadata?.last_name
-      },
-      session
-    });
-  } catch (error) {
-    if (error.message.includes('Invalid login credentials')) {
-      return ApiResponse.unauthorized(res, 'Invalid email or password');
-    }
-    throw error;
+  if (error || !userData) {
+    return ApiResponse.unauthorized(res, 'Invalid email or password');
   }
+
+  // Verify password
+  const isValidPassword = await User.verifyPassword(password, userData.password_hash);
+  if (!isValidPassword) {
+    return ApiResponse.unauthorized(res, 'Invalid email or password');
+  }
+
+  // Check if user is active
+  if (!userData.is_active) {
+    return ApiResponse.forbidden(res, 'Account is deactivated');
+  }
+
+  const user = new User(userData);
+  const token = generateToken(user.id);
+
+  logger.info(`User logged in: ${email}`);
+
+  return ApiResponse.success(res, 'Login successful', {
+    user: user.getProfile(),
+    token
+  });
 });
 
 /**
  * Get current user profile
  */
 export const getProfile = asyncHandler(async (req, res) => {
-  const user = await SupabaseAuth.getCurrentUser();
-
+  const user = await User.findById(req.user.id);
+  
   if (!user) {
     return ApiResponse.notFound(res, 'User not found');
   }
 
   return ApiResponse.success(res, 'Profile retrieved successfully', {
-    user: {
-      id: user.id,
-      email: user.email,
-      firstName: user.user_metadata?.first_name,
-      lastName: user.user_metadata?.last_name,
-      createdAt: user.created_at
-    }
+    user: user.getProfile()
   });
 });
 
@@ -91,29 +105,32 @@ export const getProfile = asyncHandler(async (req, res) => {
  */
 export const updateProfile = asyncHandler(async (req, res) => {
   const { firstName, lastName } = req.body;
+  
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return ApiResponse.notFound(res, 'User not found');
+  }
 
-  const { user } = await SupabaseAuth.updateProfile({
+  await user.update({
     first_name: firstName,
-    last_name: lastName
+    last_name: lastName,
+    updated_at: new Date().toISOString()
   });
 
   logger.info(`User profile updated: ${user.email}`);
 
   return ApiResponse.success(res, 'Profile updated successfully', {
-    user: {
-      id: user.id,
-      email: user.email,
-      firstName: user.user_metadata?.first_name,
-      lastName: user.user_metadata?.last_name
-    }
+    user: user.getProfile()
   });
 });
 
 /**
- * Logout user
+ * Logout user (client-side token removal)
  */
 export const logout = asyncHandler(async (req, res) => {
-  await SupabaseAuth.signOut();
-  logger.info('User logged out');
+  // In a stateless JWT system, logout is handled client-side
+  // Here we just log the action and return success
+  logger.info(`User logged out: ${req.user.email}`);
+  
   return ApiResponse.success(res, 'Logout successful');
 });

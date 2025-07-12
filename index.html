@@ -281,110 +281,7 @@
                         </label>
                     </div>
                     
-                    <div class="profile-actions">
-                        <button onclick="openEditProfileModal()" class="btn btn--primary">Edit Profile</button>
-                        <button onclick="openSettingsModal()" class="btn btn--outline">Settings</button>
-                        <button onclick="handleLogout()" class="btn btn--outline">Logout</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Profile Modal -->
-        <div id="edit-profile-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Edit Profile</h2>
-                    <button class="close-btn" onclick="closeEditProfileModal()">×</button>
-                </div>
-                <div class="modal-body">
-                    <div class="edit-profile-form">
-                        <div class="form-group">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" id="edit-profile-name" class="form-control" placeholder="Enter your full name">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="edit-profile-email" class="form-control" placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone</label>
-                            <input type="tel" id="edit-profile-phone" class="form-control" placeholder="Enter your phone number">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Address</label>
-                            <textarea id="edit-profile-address" class="form-control" rows="3" placeholder="Enter your address"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button onclick="saveEditProfile()" class="btn btn--primary">Save Changes</button>
-                            <button onclick="closeEditProfileModal()" class="btn btn--outline">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Modal -->
-        <div id="settings-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Settings</h2>
-                    <button class="close-btn" onclick="closeSettingsModal()">×</button>
-                </div>
-                <div class="modal-body">
-                    <div class="settings-content">
-                        <div class="settings-section">
-                            <h3>Notifications</h3>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="setting-push-notifications" checked> Push notifications
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="setting-email-notifications" checked> Email notifications
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="setting-sms-notifications"> SMS notifications
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="settings-section">
-                            <h3>Privacy</h3>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="setting-location-sharing" checked> Share location for faster service
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="setting-data-analytics"> Allow data analytics
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="settings-section">
-                            <h3>Appearance</h3>
-                            <div class="form-group">
-                                <label class="form-label">Theme</label>
-                                <select id="setting-theme" class="form-control">
-                                    <option value="dark">Dark Mode</option>
-                                    <option value="light">Light Mode</option>
-                                    <option value="auto">Auto</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="settings-section">
-                            <h3>Emergency</h3>
-                            <div class="form-group">
-                                <label class="form-label">Emergency Contact</label>
-                                <input type="tel" id="setting-emergency-contact" class="form-control" placeholder="Emergency contact number">
-                            </div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button onclick="saveSettings()" class="btn btn--primary">Save Settings</button>
-                            <button onclick="closeSettingsModal()" class="btn btn--outline">Cancel</button>
-                        </div>
-                    </div>
+                    <button onclick="saveProfile()" class="btn btn--primary btn--full-width">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -734,76 +631,13 @@
     </div>
 
     <script>
-        // Initialize app immediately when script loads
+        // Ensure DOM is loaded before initializing app
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing app...');
-            try {
+            // Small delay to ensure styles are loaded
+            setTimeout(() => {
                 window.App = new RoadSideApp();
-                window.App.init();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                // Force show main app if error
-                setTimeout(() => {
-                    const loadingScreen = document.getElementById('loading-screen');
-                    const mainApp = document.getElementById('main-app');
-                    if (loadingScreen) loadingScreen.style.display = 'none';
-                    if (mainApp) {
-                        mainApp.style.display = 'block';
-                        mainApp.style.opacity = '1';
-                        mainApp.style.visibility = 'visible';
-                    }
-                }, 1000);
-            }
+            }, 100);
         });
-        
-        // Fallback initialization
-        window.addEventListener('load', function() {
-            if (!window.App) {
-                console.log('Fallback app initialization...');
-                try {
-                    window.App = new RoadSideApp();
-                    window.App.init();
-                } catch (error) {
-                    console.error('Fallback initialization failed:', error);
-                    // Emergency fallback
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loading-screen');
-                        const mainApp = document.getElementById('main-app');
-                        if (loadingScreen) loadingScreen.style.display = 'none';
-                        if (mainApp) {
-                            mainApp.style.display = 'block';
-                            mainApp.style.opacity = '1';
-                            mainApp.style.visibility = 'visible';
-                        }
-                    }, 500);
-                }
-            }
-        });
-        
-        // Ultimate fallback - show app after 2 seconds no matter what
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('loading-screen');
-            const mainApp = document.getElementById('main-app');
-            
-            if (loadingScreen && loadingScreen.style.display !== 'none') {
-                console.log('Ultimate fallback - forcing app display');
-                loadingScreen.style.display = 'none';
-            }
-            
-            if (mainApp && mainApp.style.opacity !== '1') {
-                mainApp.style.display = 'block';
-                mainApp.style.opacity = '1';
-                mainApp.style.visibility = 'visible';
-                
-                // Initialize basic functionality if app didn't load
-                if (!window.App) {
-                    window.App = new RoadSideApp();
-                    window.App.setupEventListeners();
-                    window.App.loadInitialData();
-                    window.App.showDashboard('customer');
-                }
-            }
-        }, 2000);
     </script>
     <script src="app.js"></script>
 </body>
