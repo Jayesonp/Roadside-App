@@ -1,3062 +1,3040 @@
-// RoadSide+ Emergency Assistance App - Frontend JavaScript
+// RoadSide+ Fully Functional App
 
-// Global App object for managing application state and functionality
-const App = {
-    currentUser: null,
-    currentView: 'dashboard',
-    currentDashboard: 'customer',
-    isNavDrawerOpen: false,
-    lastFocusedElement: null,
-    services: [
-        { id: 1, name: 'Towing', price: 150, icon: '🚛', time: '45 min', response: '30 min response' },
-        { id: 2, name: 'Battery Jump', price: 75, icon: '🔋', time: '20 min', response: '30 min response' },
-        { id: 3, name: 'Tire Change', price: 100, icon: '🛞', time: '30 min', response: '30 min response' },
-        { id: 4, name: 'Lockout', price: 85, icon: '🔓', time: '20 min', response: '30 min response' },
-        { id: 5, name: 'Fuel Delivery', price: 60, icon: '⛽', time: '15 min', response: '30 min response' },
-        { id: 6, name: 'Winch Recovery', price: 200, icon: '🪝', time: '60 min', response: '45 min response' }
-    ],
+// App State Management
+class AppState {
+  constructor() {
+    this.currentUser = this.loadFromStorage('currentUser') || {
+      id: 'user-123',
+      name: 'John Doe',
+      email: 'john.doe@email.com',
+      phone: '+1 (555) 123-4567',
+      memberSince: '2023-01-15',
+      emergencyContact: {
+        name: 'Jane Doe',
+        phone: '+1 (555) 987-6543',
+        relationship: 'Spouse'
+      },
+      preferences: {
+        notifications: true,
+        location: true,
+        darkMode: true
+      },
+      stats: {
+        totalServices: 12,
+        totalSpent: 850,
+        avgRating: 4.8
+      }
+    };
     
-    // Initialize the application
-    init() {
-        console.log('RoadSide+ App initializing...');
-        this.setupEventListeners();
-        this.loadUserData();
-        this.showLoadingScreen();
-        this.initializeNavigation();
-    },
-
-    // Show loading screen and transition to main app
-    showLoadingScreen() {
-        setTimeout(() => {
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            this.updateUI();
-        }, 1500);
-    },
-
-    // Load demo user data
-    loadUserData() {
-        this.currentUser = {
-            id: 'user-123',
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '(555) 123-4567',
-            totalServices: 12,
-            totalSpent: 875,
-            avgRating: 4.8,
-            memberSince: 2023
-        };
-    },
-
-    // Setup event listeners
-    setupEventListeners() {
-        // Bottom navigation
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const view = item.dataset.view;
-                if (view) {
-                    this.showView(view);
-                }
-            });
-        });
-
-        // Dashboard tabs
-        document.querySelectorAll('.dashboard-tabs .tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                const dashboard = tab.textContent.toLowerCase().includes('customer') ? 'customer' :
-                                tab.textContent.toLowerCase().includes('technician') ? 'technician' :
-                                tab.textContent.toLowerCase().includes('admin') ? 'admin' :
-                                tab.textContent.toLowerCase().includes('partner') ? 'partner' : 'security';
-                this.showDashboard(dashboard);
-            });
-        });
-    },
-
-    // Update UI with current data
-    updateUI() {
-        if (this.currentUser) {
-            // Update user stats
-            document.getElementById('total-services').textContent = this.currentUser.totalServices;
-            document.getElementById('total-spent').textContent = `$${this.currentUser.totalSpent}`;
-            document.getElementById('avg-rating').textContent = this.currentUser.avgRating;
-            
-            // Update profile
-            document.getElementById('profile-total-services').textContent = this.currentUser.totalServices;
-            document.getElementById('profile-total-spent').textContent = `$${this.currentUser.totalSpent}`;
-            document.getElementById('profile-avg-rating').textContent = this.currentUser.avgRating;
-            document.getElementById('profile-member-since').textContent = this.currentUser.memberSince;
-        }
-        
-        this.loadRecentServices();
-        this.loadServiceHistory();
-    },
-
-    // Load recent services
-    loadRecentServices() {
-        const recentContainer = document.getElementById('recent-services');
-        if (!recentContainer) return;
-
-        const recentServices = [
-            { id: 'RS001', service: 'Battery Jump', date: '2024-01-15', status: 'Completed', price: 75, technician: 'Mike Rodriguez', rating: 5 },
-            { id: 'RS002', service: 'Tire Change', date: '2024-01-10', status: 'Completed', price: 100, technician: 'Sarah Wilson', rating: 4 },
-            { id: 'RS003', service: 'Fuel Delivery', date: '2024-01-05', status: 'Completed', price: 60, technician: 'Alex Thompson', rating: 5 }
-        ];
-
-        recentContainer.innerHTML = recentServices.map(service => `
-            <div class="service-record">
-                <div class="service-info">
-                    <h4>${service.service}</h4>
-                    <p>ID: ${service.id} • ${service.date}</p>
-                    <p>Technician: ${service.technician}</p>
-                </div>
-                <div class="service-status">
-                    <span class="status ${service.status.toLowerCase()}">${service.status}</span>
-                    <div class="service-price">$${service.price}</div>
-                    <div class="rating">${'⭐'.repeat(service.rating)}</div>
-                </div>
-            </div>
-        `).join('');
-    },
-
-    // Load service history
-    loadServiceHistory() {
-        const historyContainer = document.getElementById('service-history-list');
-        if (!historyContainer) return;
-
-        const history = [
-            { id: 'SH001', service: 'Towing', date: '2024-01-20', location: '123 Main St', status: 'Completed', price: 150, technician: 'John Smith' },
-            { id: 'SH002', service: 'Battery Jump', date: '2024-01-15', location: '456 Oak Ave', status: 'Completed', price: 75, technician: 'Mike Rodriguez' },
-            { id: 'SH003', service: 'Tire Change', date: '2024-01-10', location: '789 Pine Rd', status: 'Completed', price: 100, technician: 'Sarah Wilson' },
-            { id: 'SH004', service: 'Lockout', date: '2024-01-05', location: '321 Elm St', status: 'Completed', price: 85, technician: 'David Lee' },
-            { id: 'SH005', service: 'Fuel Delivery', date: '2024-01-01', location: '654 Maple Dr', status: 'Completed', price: 60, technician: 'Alex Thompson' }
-        ];
-
-        historyContainer.innerHTML = history.map(item => `
-            <div class="history-item">
-                <div class="history-header">
-                    <h4>${item.service}</h4>
-                    <span class="history-price">$${item.price}</span>
-                </div>
-                <div class="history-details">
-                    <p><strong>ID:</strong> ${item.id}</p>
-                    <p><strong>Date:</strong> ${item.date}</p>
-                    <p><strong>Location:</strong> ${item.location}</p>
-                    <p><strong>Technician:</strong> ${item.technician}</p>
-                    <p><strong>Status:</strong> <span class="status ${item.status.toLowerCase()}">${item.status}</span></p>
-                </div>
-            </div>
-        `).join('');
-    },
-
-    // Show specific view
-    showView(viewName) {
-        // Hide all views
-        document.querySelectorAll('.view').forEach(view => {
-            view.classList.remove('active');
-        });
-        
-        // Show selected view
-        const targetView = document.getElementById(`${viewName}-view`);
-        if (targetView) {
-            targetView.classList.add('active');
-        }
-        
-        // Update navigation
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.view === viewName) {
-                item.classList.add('active');
-            }
-        });
-        
-        this.currentView = viewName;
-    },
-
-    // Show specific dashboard
-    showDashboard(dashboardType) {
-        this.currentDashboard = dashboardType;
-        
-        // Update tab states
-        document.querySelectorAll('.dashboard-tabs .tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Set active tab based on dashboard type
-        const activeTabIndex = {
-            'customer': 0,
-            'technician': 1,
-            'admin': 2,
-            'partner': 3,
-            'security': 4
-        }[dashboardType] || 0;
-        
-        const tabs = document.querySelectorAll('.dashboard-tabs .tab');
-        if (tabs[activeTabIndex]) {
-            tabs[activeTabIndex].classList.add('active');
-        }
-        
-        // Load dashboard content
-        this.loadDashboardContent(dashboardType);
-        
-        // Close nav drawer when selecting an item (mobile)
-        if (this.isNavDrawerOpen) {
-            this.closeNavDrawer();
-        }
-        
-        // Show success message
-        this.showToast(`Switched to ${dashboardType.charAt(0).toUpperCase() + dashboardType.slice(1)} Dashboard`);
-    },
-
-    // Load dashboard content based on type
-    loadDashboardContent(type) {
-        const dashboardView = document.getElementById('dashboard-view');
-        if (!dashboardView) return;
-
-        // Dashboard content templates
-        const dashboardTemplates = {
-            customer: this.getCustomerDashboard(),
-            technician: this.getTechnicianDashboard(),
-            admin: this.getAdminDashboard(),
-            partner: this.getPartnerDashboard(),
-            security: this.getSecurityDashboard()
-        };
-
-        dashboardView.innerHTML = dashboardTemplates[type] || dashboardTemplates.customer;
-    },
-
-    // Get customer dashboard content
-    getCustomerDashboard() {
-        return `
-            <!-- Emergency Banner -->
-            <div class="emergency-banner">
-                <div class="emergency-content">
-                    <span class="emergency-icon">🚨</span>
-                    <div class="emergency-text">
-                        <h3>Emergency Assistance</h3>
-                        <p>24/7 immediate response</p>
-                    </div>
-                    <button class="emergency-btn" onclick="emergencyCall()">SOS</button>
-                </div>
-            </div>
-
-            <!-- Services Grid -->
-            <div class="services-section">
-                <h2>Select Service</h2>
-                <div class="services-grid">
-                    ${this.services.map(service => `
-                        <div class="service-card" onclick="selectService(${service.id}, '${service.name}', ${service.price})">
-                            <div class="service-icon">${service.icon}</div>
-                            <h3>${service.name}</h3>
-                            <p class="service-price">$${service.price}</p>
-                            <p class="service-time">${service.time} • ${service.response}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-
-            <!-- Recent Services -->
-            <div class="recent-section">
-                <h2>Recent Services</h2>
-                <div id="recent-services" class="service-history"></div>
-            </div>
-
-            <!-- Dashboard Stats -->
-            <div class="stats-section">
-                <h2>Your Stats</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-value" id="total-services">0</div>
-                        <div class="stat-label">Total Services</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-value" id="total-spent">$0</div>
-                        <div class="stat-label">Total Spent</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-value" id="avg-rating">0.0</div>
-                        <div class="stat-label">Avg Rating</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Get technician dashboard content
-    getTechnicianDashboard() {
-        return `
-            <div class="technician-dashboard">
-                <div class="dashboard-header">
-                    <h2>🔧 Technician Dashboard</h2>
-                    <p>Manage your assignments and track performance</p>
-                </div>
-                
-                <div class="quick-stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📋</div>
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Active Jobs</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-value">4.9</div>
-                        <div class="stat-label">Rating</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <div class="stat-value">12min</div>
-                        <div class="stat-label">Avg Response</div>
-                    </div>
-                </div>
-
-                <div class="assignments-section">
-                    <h3>Current Assignments</h3>
-                    <div class="assignment-list">
-                        <div class="assignment-card priority-high">
-                            <div class="assignment-header">
-                                <h4>Battery Jump - ID: #TJ001</h4>
-                                <span class="priority-badge high">High Priority</span>
-                            </div>
-                            <p><strong>Customer:</strong> Sarah Johnson</p>
-                            <p><strong>Location:</strong> 123 Main St, Downtown</p>
-                            <p><strong>ETA:</strong> 8 minutes</p>
-                            <div class="assignment-actions">
-                                <button class="btn btn--primary btn--sm">Navigate</button>
-                                <button class="btn btn--outline btn--sm">Contact</button>
-                            </div>
-                        </div>
-                        <div class="assignment-card priority-medium">
-                            <div class="assignment-header">
-                                <h4>Tire Change - ID: #TJ002</h4>
-                                <span class="priority-badge medium">Medium Priority</span>
-                            </div>
-                            <p><strong>Customer:</strong> Mike Davis</p>
-                            <p><strong>Location:</strong> 456 Oak Ave, Midtown</p>
-                            <p><strong>Scheduled:</strong> 2:30 PM</p>
-                            <div class="assignment-actions">
-                                <button class="btn btn--primary btn--sm">View Details</button>
-                                <button class="btn btn--outline btn--sm">Call</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Get admin dashboard content
-    getAdminDashboard() {
-        return `
-            <div class="admin-dashboard">
-                <div class="dashboard-header">
-                    <h2>⚙️ Admin Dashboard</h2>
-                    <p>System management and analytics</p>
-                </div>
-                
-                <div class="admin-stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-value">1,247</div>
-                        <div class="stat-label">Active Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🔧</div>
-                        <div class="stat-value">89</div>
-                        <div class="stat-label">Technicians</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-value">$24.8k</div>
-                        <div class="stat-label">Daily Revenue</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <div class="stat-value">98.2%</div>
-                        <div class="stat-label">Uptime</div>
-                    </div>
-                </div>
-
-                <div class="system-controls-section">
-                    <h3>System Controls</h3>
-                    <div class="controls-grid">
-                        <div class="control-card" onclick="App.openSystemControl('user-management')">
-                            <div class="control-icon">👤</div>
-                            <h4>User Management</h4>
-                            <p>Manage customer accounts and permissions</p>
-                        </div>
-                        <div class="control-card" onclick="App.openSystemControl('technician-management')">
-                            <div class="control-icon">🔧</div>
-                            <h4>Technician Management</h4>
-                            <p>Monitor and assign technician resources</p>
-                        </div>
-                        <div class="control-card" onclick="App.openSystemControl('analytics')">
-                            <div class="control-icon">📈</div>
-                            <h4>Analytics</h4>
-                            <p>View detailed system performance metrics</p>
-                        </div>
-                        <div class="control-card" onclick="App.openSystemControl('system-settings')">
-                            <div class="control-icon">⚙️</div>
-                            <h4>System Settings</h4>
-                            <p>Configure system parameters and features</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="recent-activity-section">
-                    <h3>Recent Activity</h3>
-                    <div class="activity-feed">
-                        <div class="activity-item">
-                            <div class="activity-icon">👤</div>
-                            <div class="activity-content">
-                                <p><strong>New user registered:</strong> jane.doe@example.com</p>
-                                <span class="activity-time">5 minutes ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">🔧</div>
-                            <div class="activity-content">
-                                <p><strong>Technician completed service:</strong> Battery Jump #BJ001</p>
-                                <span class="activity-time">12 minutes ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">💰</div>
-                            <div class="activity-content">
-                                <p><strong>Payment processed:</strong> $150.00 for Towing Service</p>
-                                <span class="activity-time">18 minutes ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Get partner dashboard content
-    getPartnerDashboard() {
-        return `
-            <div class="partner-dashboard">
-                <div class="dashboard-header">
-                    <h2>🤝 Partner Dashboard</h2>
-                    <p>Manage partnerships and track performance</p>
-                </div>
-                
-                <div class="partner-stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">🤝</div>
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Active Partners</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📈</div>
-                        <div class="stat-value">$12.4k</div>
-                        <div class="stat-label">Monthly Commission</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🎯</div>
-                        <div class="stat-value">187</div>
-                        <div class="stat-label">Referrals</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-value">4.7</div>
-                        <div class="stat-label">Partner Rating</div>
-                    </div>
-                </div>
-
-                <div class="partner-network-section">
-                    <h3>Partner Network</h3>
-                    <div class="partner-list">
-                        <div class="partner-card">
-                            <div class="partner-info">
-                                <h4>AutoCare Plus</h4>
-                                <p>Automotive Services • Downtown</p>
-                                <div class="partner-stats">
-                                    <span>42 referrals</span>
-                                    <span>⭐ 4.8</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn btn--outline btn--sm">Contact</button>
-                                <button class="btn btn--primary btn--sm">View Details</button>
-                            </div>
-                        </div>
-                        <div class="partner-card">
-                            <div class="partner-info">
-                                <h4>QuickTow Services</h4>
-                                <p>Towing & Recovery • Citywide</p>
-                                <div class="partner-stats">
-                                    <span>38 referrals</span>
-                                    <span>⭐ 4.6</span>
-                                </div>
-                            </div>
-                            <div class="partner-actions">
-                                <button class="btn btn--outline btn--sm">Contact</button>
-                                <button class="btn btn--primary btn--sm">View Details</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Get security dashboard content
-    getSecurityDashboard() {
-        return `
-            <div class="security-dashboard">
-                <div class="dashboard-header">
-                    <h2>🛡️ Security Dashboard</h2>
-                    <p>Monitor system security and threats</p>
-                </div>
-                
-                <div class="security-stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">🛡️</div>
-                        <div class="stat-value">99.9%</div>
-                        <div class="stat-label">Security Score</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🚨</div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-label">Active Threats</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🔐</div>
-                        <div class="stat-value">1,247</div>
-                        <div class="stat-label">Secure Logins</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-value">24/7</div>
-                        <div class="stat-label">Monitoring</div>
-                    </div>
-                </div>
-
-                <div class="security-alerts-section">
-                    <h3>Security Alerts</h3>
-                    <div class="alerts-container">
-                        <div class="alert-item alert-success">
-                            <div class="alert-icon">✅</div>
-                            <div class="alert-content">
-                                <h4>System Security Check Passed</h4>
-                                <p>All security protocols functioning normally</p>
-                                <span class="alert-time">2 minutes ago</span>
-                            </div>
-                        </div>
-                        <div class="alert-item alert-info">
-                            <div class="alert-icon">ℹ️</div>
-                            <div class="alert-content">
-                                <h4>Security Update Available</h4>
-                                <p>New security patch ready for deployment</p>
-                                <span class="alert-time">1 hour ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="security-log-section">
-                    <h3>Security Log</h3>
-                    <div class="log-container">
-                        <div class="log-entry">
-                            <span class="log-time">14:25:30</span>
-                            <span class="log-level info">INFO</span>
-                            <span class="log-message">User authentication successful - user@example.com</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">14:23:15</span>
-                            <span class="log-level success">SUCCESS</span>
-                            <span class="log-message">Security scan completed - No threats detected</span>
-                        </div>
-                        <div class="log-entry">
-                            <span class="log-time">14:20:45</span>
-                            <span class="log-level info">INFO</span>
-                            <span class="log-message">SSL certificate verification successful</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Navigation functions
-    toggleNavDrawer() {
-        const navDrawer = document.getElementById('nav-drawer');
-        const hamburgerBtn = document.getElementById('hamburger-toggle');
-        
-        if (this.isNavDrawerOpen) {
-            this.closeNavDrawer();
-        } else {
-            this.openNavDrawer();
-        }
-    },
-
-    openNavDrawer() {
-        const navDrawer = document.getElementById('nav-drawer');
-        const hamburgerBtn = document.getElementById('hamburger-toggle');
-        const body = document.body;
-        
-        // Store the currently focused element
-        this.lastFocusedElement = document.activeElement;
-        
-        // Open the drawer
-        navDrawer.classList.add('open');
-        hamburgerBtn.classList.add('active');
-        hamburgerBtn.setAttribute('aria-expanded', 'true');
-        body.style.overflow = 'hidden'; // Prevent background scrolling
-        
-        this.isNavDrawerOpen = true;
-        
-        // Focus on the first nav item for keyboard users
-        setTimeout(() => {
-            const firstNavItem = navDrawer.querySelector('.nav-item');
-            if (firstNavItem) {
-                firstNavItem.focus();
-            }
-        }, 100);
-        
-        // Add event listeners for closing
-        document.addEventListener('keydown', this.handleNavDrawerKeydown.bind(this));
-        const overlay = navDrawer.querySelector('.nav-drawer-overlay');
-        if (overlay) {
-            overlay.addEventListener('click', this.closeNavDrawer.bind(this));
-        }
-    },
-
-    closeNavDrawer() {
-        const navDrawer = document.getElementById('nav-drawer');
-        const hamburgerBtn = document.getElementById('hamburger-toggle');
-        const body = document.body;
-        
-        if (!this.isNavDrawerOpen) return;
-        
-        // Close the drawer
-        navDrawer.classList.remove('open');
-        hamburgerBtn.classList.remove('active');
-        hamburgerBtn.setAttribute('aria-expanded', 'false');
-        body.style.overflow = ''; // Restore scrolling
-        
-        this.isNavDrawerOpen = false;
-        
-        // Return focus to the hamburger button
-        if (this.lastFocusedElement) {
-            this.lastFocusedElement.focus();
-            this.lastFocusedElement = null;
-        } else {
-            hamburgerBtn.focus();
-        }
-        
-        // Remove event listeners
-        document.removeEventListener('keydown', this.handleNavDrawerKeydown.bind(this));
-        const overlay = navDrawer.querySelector('.nav-drawer-overlay');
-        if (overlay) {
-            overlay.removeEventListener('click', this.closeNavDrawer.bind(this));
-        }
-    },
-
-    handleNavDrawerKeydown(event) {
-        if (!this.isNavDrawerOpen) return;
-        
-        // Close on Escape key
-        if (event.key === 'Escape') {
-            this.closeNavDrawer();
-            return;
-        }
-        
-        // Handle focus trapping
-        if (event.key === 'Tab') {
-            this.trapFocus(event);
-        }
-    },
-
-    trapFocus(event) {
-        const navDrawer = document.getElementById('nav-drawer');
-        const focusableElements = navDrawer.querySelectorAll(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        if (event.shiftKey) {
-            // Shift + Tab
-            if (document.activeElement === firstElement) {
-                lastElement.focus();
-                event.preventDefault();
-            }
-        } else {
-            // Tab
-            if (document.activeElement === lastElement) {
-                firstElement.focus();
-                event.preventDefault();
-            }
-        }
-    },
-
-    // Handle clicks outside the navigation drawer
-    handleOutsideClick(event) {
-        const navDrawer = document.getElementById('nav-drawer');
-        const hamburgerBtn = document.getElementById('hamburger-toggle');
-        
-        if (!this.isNavDrawerOpen) return;
-        
-        // Check if click is outside the drawer content
-        const drawerContent = navDrawer.querySelector('div:not(.nav-drawer-overlay)');
-        if (!drawerContent.contains(event.target) && !hamburgerBtn.contains(event.target)) {
-            this.closeNavDrawer();
-        }
-    },
-
-    // Initialize navigation event listeners
-    initializeNavigation() {
-        // Mobile hamburger menu
-        const hamburgerBtn = document.getElementById('hamburger-toggle');
-        if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', this.toggleNavDrawer.bind(this));
-            
-            // Handle touch events for better mobile experience
-            hamburgerBtn.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.95)';
-            });
-            
-            hamburgerBtn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                hamburgerBtn.style.transform = '';
-                this.toggleNavDrawer();
-            });
-        }
-        
-        // Close button in nav drawer
-        const closeBtn = document.getElementById('nav-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', this.closeNavDrawer.bind(this));
-        }
-        
-        // Handle keyboard navigation for nav items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.click();
-                }
-            });
-        });
-        
-        // Close drawer when clicking outside (mobile)
-        document.addEventListener('click', this.handleOutsideClick.bind(this));
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768 && this.isNavDrawerOpen) {
-                this.closeNavDrawer();
-            }
-        });
-    },
-
-    // System control functions
-    openSystemControl(controlType) {
-        const modal = document.getElementById('system-control-modal');
-        const title = document.getElementById('system-control-title');
-        const content = document.getElementById('system-control-content');
-        
-        if (!modal || !title || !content) return;
-
-        const controlTemplates = {
-            'user-management': this.getUserManagementControl(),
-            'technician-management': this.getTechnicianManagementControl(),
-            'analytics': this.getAnalyticsControl(),
-            'system-settings': this.getSystemSettingsControl()
-        };
-
-        const controlTitles = {
-            'user-management': '👤 User Management',
-            'technician-management': '🔧 Technician Management',
-            'analytics': '📈 Analytics Dashboard',
-            'system-settings': '⚙️ System Settings'
-        };
-
-        title.textContent = controlTitles[controlType] || 'System Control';
-        content.innerHTML = controlTemplates[controlType] || '<p>Control panel not available.</p>';
-        
-        modal.classList.add('active');
-    },
-
-    closeSystemControlModal() {
-        const modal = document.getElementById('system-control-modal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    },
-
-    // Support Center functions
-    openNewSupportRequest() {
-        const modal = document.getElementById('support-request-modal');
-        if (modal) {
-            modal.classList.add('active');
-        }
-    },
-
-    closeSupportRequestModal() {
-        const modal = document.getElementById('support-request-modal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    },
-
-    submitSupportRequest() {
-        const category = document.getElementById('support-category').value;
-        const priority = document.getElementById('support-priority').value;
-        const subject = document.getElementById('support-subject').value;
-        const description = document.getElementById('support-description').value;
-
-        if (!subject || !description) {
-            this.showToast('Please fill in all required fields', 'error');
-            return;
-        }
-
-        // Create new ticket
-        const ticketId = 'TK' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        
-        // Store in localStorage for demo
-        const tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
-        tickets.push({
-            id: ticketId,
-            category,
-            priority,
-            subject,
-            description,
-            status: 'Open',
-            created: new Date().toISOString()
-        });
-        localStorage.setItem('supportTickets', JSON.stringify(tickets));
-
-        this.showToast(`Support ticket ${ticketId} created successfully!`);
-        this.closeSupportRequestModal();
-        
-        // Clear form
-        document.getElementById('support-subject').value = '';
-        document.getElementById('support-description').value = '';
-    },
-
-    openEmergencyContact() {
-        const modal = document.getElementById('emergency-contact-modal');
-        if (modal) {
-            modal.classList.add('active');
-        }
-    },
-
-    closeEmergencyContactModal() {
-        const modal = document.getElementById('emergency-contact-modal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    },
-
-    callEmergencyNumber(type, number) {
-        this.showToast(`Calling ${type}: ${number}`);
-        // In a real app, this would initiate the call
-        console.log(`Calling ${type}: ${number}`);
-    },
-
-    openFAQ() {
-        const modal = document.getElementById('faq-modal');
-        const content = document.getElementById('faq-content');
-        
-        if (!modal || !content) return;
-
-        content.innerHTML = this.getFAQContent();
-        modal.classList.add('active');
-    },
-
-    closeFAQModal() {
-        const modal = document.getElementById('faq-modal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    },
-
-    openLiveChat() {
-        const modal = document.getElementById('live-chat-modal');
-        const messagesContainer = document.getElementById('chat-messages');
-        
-        if (!modal || !messagesContainer) return;
-
-        // Initialize chat with welcome message
-        messagesContainer.innerHTML = `
-            <div class="chat-message agent">
-                <div class="message-avatar">👩‍💼</div>
-                <div class="message-content">
-                    <div class="message-text">Hello! I'm Sarah from RoadSide+ support. How can I help you today?</div>
-                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                </div>
-            </div>
-        `;
-        
-        modal.classList.add('active');
-    },
-
-    closeLiveChatModal() {
-        const modal = document.getElementById('live-chat-modal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    },
-
-    sendChatMessage() {
-        const input = document.getElementById('chat-input');
-        const messagesContainer = document.getElementById('chat-messages');
-        
-        if (!input || !messagesContainer || !input.value.trim()) return;
-
-        const message = input.value.trim();
-        const time = new Date().toLocaleTimeString();
-
-        // Add user message
-        messagesContainer.innerHTML += `
-            <div class="chat-message user">
-                <div class="message-content">
-                    <div class="message-text">${message}</div>
-                    <div class="message-time">${time}</div>
-                </div>
-                <div class="message-avatar">👤</div>
-            </div>
-        `;
-
-        // Auto-response
-        setTimeout(() => {
-            const responses = [
-                "Thank you for contacting us! Let me help you with that.",
-                "I understand your concern. Let me check our system for you.",
-                "That's a great question! Here's what I can tell you...",
-                "I'll be happy to assist you with this issue.",
-                "Let me connect you with the right department for this request."
-            ];
-            
-            const response = responses[Math.floor(Math.random() * responses.length)];
-            
-            messagesContainer.innerHTML += `
-                <div class="chat-message agent">
-                    <div class="message-avatar">👩‍💼</div>
-                    <div class="message-content">
-                        <div class="message-text">${response}</div>
-                        <div class="message-time">${new Date().toLocaleTimeString()}</div>
-                    </div>
-                </div>
-            `;
-            
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 1000);
-
-        input.value = '';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    },
-
-    // Utility functions
-    showToast(message, type = 'success') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `toast toast--${type}`;
-        toast.textContent = message;
-        
-        // Add to body
-        document.body.appendChild(toast);
-        
-        // Show toast
-        setTimeout(() => toast.classList.add('show'), 100);
-        
-        // Remove toast
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => document.body.removeChild(toast), 300);
-        }, 3000);
-    },
-
-    // Enhanced User Management Control with full functionality
-    getUserManagementControl() {
-        return `
-            <div class="admin-control-interface">
-                <div class="control-header">
-                    <h3>👤 User Management System</h3>
-                    <div class="control-actions">
-                        <button class="btn btn--primary" onclick="App.showUserForm('add')">
-                            <span>➕</span> Add New User
-                        </button>
-                        <button class="btn btn--outline" onclick="App.exportUserData()">
-                            <span>📊</span> Export Data
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="admin-tabs">
-                    <div class="tab-nav">
-                        <button class="tab-btn active" onclick="App.switchAdminTab(this, 'users-overview')">
-                            📊 Overview
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'users-list')">
-                            👥 User Accounts
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'users-analytics')">
-                            📈 Analytics
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'users-permissions')">
-                            🔐 Permissions
-                        </button>
-                    </div>
-                    
-                    <div class="tab-content-container">
-                        <div id="users-overview" class="admin-tab-content active">
-                            <div class="overview-stats-grid">
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Total Users</h4>
-                                        <span class="stat-trend positive">+12%</span>
-                                    </div>
-                                    <div class="stat-number">1,247</div>
-                                    <div class="stat-detail">238 new this month</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Active Today</h4>
-                                        <span class="stat-trend positive">+8%</span>
-                                    </div>
-                                    <div class="stat-number">342</div>
-                                    <div class="stat-detail">Peak: 2:30 PM</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Premium Users</h4>
-                                        <span class="stat-trend positive">+15%</span>
-                                    </div>
-                                    <div class="stat-number">156</div>
-                                    <div class="stat-detail">12.5% conversion</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Support Tickets</h4>
-                                        <span class="stat-trend negative">-5%</span>
-                                    </div>
-                                    <div class="stat-number">23</div>
-                                    <div class="stat-detail">Avg resolution: 2.4h</div>
-                                </div>
-                            </div>
-                            
-                            <div class="recent-activity-section">
-                                <h4>Recent User Activity</h4>
-                                <div class="activity-feed">
-                                    <div class="activity-item">
-                                        <div class="activity-icon">👤</div>
-                                        <div class="activity-content">
-                                            <div class="activity-text">
-                                                <strong>Sarah Johnson</strong> upgraded to Premium
-                                            </div>
-                                            <div class="activity-time">2 minutes ago</div>
-                                        </div>
-                                        <div class="activity-value">+$29.99</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon">🆕</div>
-                                        <div class="activity-content">
-                                            <div class="activity-text">
-                                                <strong>Mike Davis</strong> created new account
-                                            </div>
-                                            <div class="activity-time">5 minutes ago</div>
-                                        </div>
-                                        <div class="activity-badge">New</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon">🔧</div>
-                                        <div class="activity-content">
-                                            <div class="activity-text">
-                                                <strong>Lisa Chen</strong> completed service booking
-                                            </div>
-                                            <div class="activity-time">8 minutes ago</div>
-                                        </div>
-                                        <div class="activity-value">$150</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="users-list" class="admin-tab-content">
-                            <div class="users-controls">
-                                <div class="search-filter-bar">
-                                    <input type="search" placeholder="Search users by name, email..." class="search-input" id="user-search">
-                                    <select class="filter-select" id="user-status-filter">
-                                        <option value="">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="premium">Premium</option>
-                                    </select>
-                                    <select class="filter-select" id="user-role-filter">
-                                        <option value="">All Roles</option>
-                                        <option value="customer">Customer</option>
-                                        <option value="technician">Technician</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="users-table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>User</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>Joined</th>
-                                            <th>Last Active</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="users-table-body">
-                                        <tr>
-                                            <td>
-                                                <div class="user-info">
-                                                    <div class="user-avatar">JD</div>
-                                                    <div class="user-details">
-                                                        <div class="user-name">John Doe</div>
-                                                        <div class="user-id">#USR001</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>john.doe@example.com</td>
-                                            <td><span class="role-badge customer">Customer</span></td>
-                                            <td><span class="status-badge active">Active</span></td>
-                                            <td>Jan 15, 2024</td>
-                                            <td>2 hours ago</td>
-                                            <td>
-                                                <div class="action-buttons">
-                                                    <button class="btn-icon" onclick="App.showUserForm('edit', 'USR001')" title="Edit User">
-                                                        ✏️
-                                                    </button>
-                                                    <button class="btn-icon" onclick="App.viewUserDetails('USR001')" title="View Details">
-                                                        👁️
-                                                    </button>
-                                                    <button class="btn-icon danger" onclick="App.confirmDeleteUser('USR001')" title="Delete User">
-                                                        🗑️
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="user-info">
-                                                    <div class="user-avatar">SJ</div>
-                                                    <div class="user-details">
-                                                        <div class="user-name">Sarah Johnson</div>
-                                                        <div class="user-id">#USR002</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>sarah.j@example.com</td>
-                                            <td><span class="role-badge premium">Premium</span></td>
-                                            <td><span class="status-badge active">Active</span></td>
-                                            <td>Dec 20, 2023</td>
-                                            <td>Online now</td>
-                                            <td>
-                                                <div class="action-buttons">
-                                                    <button class="btn-icon" onclick="App.showUserForm('edit', 'USR002')" title="Edit User">
-                                                        ✏️
-                                                    </button>
-                                                    <button class="btn-icon" onclick="App.viewUserDetails('USR002')" title="View Details">
-                                                        👁️
-                                                    </button>
-                                                    <button class="btn-icon danger" onclick="App.confirmDeleteUser('USR002')" title="Delete User">
-                                                        🗑️
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="pagination-controls">
-                                <div class="pagination-info">Showing 1-2 of 1,247 users</div>
-                                <div class="pagination-buttons">
-                                    <button class="btn btn--outline btn--sm" disabled>Previous</button>
-                                    <button class="btn btn--primary btn--sm">1</button>
-                                    <button class="btn btn--outline btn--sm">2</button>
-                                    <button class="btn btn--outline btn--sm">3</button>
-                                    <button class="btn btn--outline btn--sm">Next</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="users-analytics" class="admin-tab-content">
-                            <div class="analytics-dashboard">
-                                <h4>User Growth Analytics</h4>
-                                <div class="chart-container">
-                                    <div class="chart-placeholder">
-                                        <div class="chart-bars">
-                                            <div class="chart-bar" style="height: 60%"></div>
-                                            <div class="chart-bar" style="height: 80%"></div>
-                                            <div class="chart-bar" style="height: 45%"></div>
-                                            <div class="chart-bar" style="height: 90%"></div>
-                                            <div class="chart-bar" style="height: 75%"></div>
-                                            <div class="chart-bar" style="height: 100%"></div>
-                                        </div>
-                                        <div class="chart-labels">
-                                            <span>Jan</span>
-                                            <span>Feb</span>
-                                            <span>Mar</span>
-                                            <span>Apr</span>
-                                            <span>May</span>
-                                            <span>Jun</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="analytics-metrics">
-                                    <div class="metric-card">
-                                        <h5>Registration Rate</h5>
-                                        <div class="metric-value">8.2 users/day</div>
-                                        <div class="metric-change positive">+15% from last month</div>
-                                    </div>
-                                    <div class="metric-card">
-                                        <h5>Retention Rate</h5>
-                                        <div class="metric-value">78.5%</div>
-                                        <div class="metric-change positive">+3% from last month</div>
-                                    </div>
-                                    <div class="metric-card">
-                                        <h5>Churn Rate</h5>
-                                        <div class="metric-value">2.1%</div>
-                                        <div class="metric-change negative">+0.5% from last month</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="users-permissions" class="admin-tab-content">
-                            <div class="permissions-management">
-                                <h4>User Permissions & Roles</h4>
-                                <div class="permission-matrix">
-                                    <div class="permission-role">
-                                        <h5>Customer Permissions</h5>
-                                        <div class="permission-items">
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked disabled>
-                                                <span>Book Services</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked>
-                                                <span>View Service History</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked>
-                                                <span>Contact Support</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox">
-                                                <span>Leave Reviews</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="permission-role">
-                                        <h5>Technician Permissions</h5>
-                                        <div class="permission-items">
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked>
-                                                <span>Accept Jobs</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked>
-                                                <span>Update Job Status</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked>
-                                                <span>Access Customer Info</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox">
-                                                <span>Set Custom Pricing</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="permission-role">
-                                        <h5>Admin Permissions</h5>
-                                        <div class="permission-items">
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked disabled>
-                                                <span>Full System Access</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked disabled>
-                                                <span>User Management</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked disabled>
-                                                <span>System Configuration</span>
-                                            </label>
-                                            <label class="permission-item">
-                                                <input type="checkbox" checked disabled>
-                                                <span>Analytics Access</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="permissions-actions">
-                                    <button class="btn btn--primary" onclick="App.savePermissions()">
-                                        Save Permission Changes
-                                    </button>
-                                    <button class="btn btn--outline" onclick="App.resetPermissions()">
-                                        Reset to Default
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    switchControlTab(tabBtn, contentId) {
-        // Remove active class from all tabs and content
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked tab and corresponding content
-        tabBtn.classList.add('active');
-        document.getElementById(contentId).classList.add('active');
-    },
-
-    // Enhanced admin tab switching
-    switchAdminTab(tabBtn, contentId) {
-        // Remove active class from all admin tabs and content
-        document.querySelectorAll('.admin-control-interface .tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked tab and corresponding content
-        tabBtn.classList.add('active');
-        const targetContent = document.getElementById(contentId);
-        if (targetContent) {
-            targetContent.classList.add('active');
-        }
-    },
-
-    // User management functions
-    showUserForm(action, userId = null) {
-        const modalHtml = `
-            <div class="admin-modal active" id="user-form-modal">
-                <div class="admin-modal-content">
-                    <div class="modal-header">
-                        <h3>${action === 'add' ? '➕ Add New User' : '✏️ Edit User'}</h3>
-                        <button class="close-btn" onclick="App.closeUserForm()">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <form class="admin-form" id="user-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="user-first-name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="user-last-name" required>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="user-email" required>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" id="user-phone" required>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Role</label>
-                                    <select class="form-control" id="user-role" required>
-                                        <option value="">Select Role</option>
-                                        <option value="customer">Customer</option>
-                                        <option value="technician">Technician</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Status</label>
-                                    <select class="form-control" id="user-status">
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Account Type</label>
-                                    <select class="form-control" id="user-account-type">
-                                        <option value="basic">Basic</option>
-                                        <option value="premium">Premium</option>
-                                        <option value="enterprise">Enterprise</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            ${action === 'add' ? `
-                            <div class="form-group">
-                                <label class="form-label">Initial Password</label>
-                                <input type="password" class="form-control" id="user-password" required>
-                            </div>
-                            ` : ''}
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn--outline" onclick="App.closeUserForm()">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="btn btn--primary">
-                                    ${action === 'add' ? 'Create User' : 'Update User'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Remove existing modal if present
-        const existingModal = document.getElementById('user-form-modal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        // Add modal to body
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        
-        // Setup form submission
-        document.getElementById('user-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.submitUserForm(action, userId);
-        });
-        
-        // If editing, populate form with existing data
-        if (action === 'edit' && userId) {
-            this.populateUserForm(userId);
-        }
-    },
-
-    populateUserForm(userId) {
-        // Demo data - in real app, this would fetch from API
-        const userData = {
-            'USR001': {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                phone: '(555) 123-4567',
-                role: 'customer',
-                status: 'active',
-                accountType: 'basic'
-            },
-            'USR002': {
-                firstName: 'Sarah',
-                lastName: 'Johnson',
-                email: 'sarah.j@example.com',
-                phone: '(555) 987-6543',
-                role: 'customer',
-                status: 'active',
-                accountType: 'premium'
-            }
-        };
-        
-        const data = userData[userId];
-        if (data) {
-            document.getElementById('user-first-name').value = data.firstName;
-            document.getElementById('user-last-name').value = data.lastName;
-            document.getElementById('user-email').value = data.email;
-            document.getElementById('user-phone').value = data.phone;
-            document.getElementById('user-role').value = data.role;
-            document.getElementById('user-status').value = data.status;
-            document.getElementById('user-account-type').value = data.accountType;
-        }
-    },
-
-    submitUserForm(action, userId) {
-        // Get form data
-        const formData = {
-            firstName: document.getElementById('user-first-name').value,
-            lastName: document.getElementById('user-last-name').value,
-            email: document.getElementById('user-email').value,
-            phone: document.getElementById('user-phone').value,
-            role: document.getElementById('user-role').value,
-            status: document.getElementById('user-status').value,
-            accountType: document.getElementById('user-account-type').value
-        };
-        
-        if (action === 'add') {
-            formData.password = document.getElementById('user-password').value;
-        }
-        
-        // Validate form
-        if (!this.validateUserForm(formData, action)) {
-            return;
-        }
-        
-        // Simulate API call
-        this.showToast(`User ${action === 'add' ? 'created' : 'updated'} successfully!`);
-        this.closeUserForm();
-        
-        // In real app, this would refresh the user list
-        console.log('User form submitted:', { action, userId, formData });
-    },
-
-    validateUserForm(data, action) {
-        const errors = [];
-        
-        if (!data.firstName.trim()) errors.push('First name is required');
-        if (!data.lastName.trim()) errors.push('Last name is required');
-        if (!data.email.trim()) errors.push('Email is required');
-        if (!data.phone.trim()) errors.push('Phone is required');
-        if (!data.role) errors.push('Role is required');
-        
-        if (action === 'add' && !data.password) {
-            errors.push('Password is required');
-        }
-        
-        if (errors.length > 0) {
-            this.showToast(errors.join('\n'), 'error');
-            return false;
-        }
-        
-        return true;
-    },
-
-    closeUserForm() {
-        const modal = document.getElementById('user-form-modal');
-        if (modal) {
-            modal.remove();
-        }
-    },
-
-    viewUserDetails(userId) {
-        this.showToast(`Viewing details for user ${userId}`);
-        // In real app, this would open a detailed view modal
-    },
-
-    confirmDeleteUser(userId) {
-        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-            this.deleteUser(userId);
-        }
-    },
-
-    deleteUser(userId) {
-        // Simulate API call
-        this.showToast(`User ${userId} deleted successfully`);
-        // In real app, this would remove the user from the list
-    },
-
-    exportUserData() {
-        this.showToast('Exporting user data...');
-        // Simulate export
-        setTimeout(() => {
-            this.showToast('User data exported successfully!');
-        }, 1500);
-    },
-
-    savePermissions() {
-        this.showToast('Permissions updated successfully!');
-        // In real app, this would save permission changes
-    },
-
-    resetPermissions() {
-        if (confirm('Reset all permissions to default settings?')) {
-            this.showToast('Permissions reset to default');
-            // In real app, this would reset permissions
-        }
-    },
-
-    getTechnicianManagementControl() {
-        return `
-            <div class="admin-control-interface">
-                <div class="control-header">
-                    <h3>🔧 Technician Management System</h3>
-                    <div class="control-actions">
-                        <button class="btn btn--primary" onclick="App.showTechnicianForm('add')">
-                            <span>➕</span> Add Technician
-                        </button>
-                        <button class="btn btn--outline" onclick="App.assignJobs()">
-                            <span>📋</span> Assign Jobs
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="admin-tabs">
-                    <div class="tab-nav">
-                        <button class="tab-btn active" onclick="App.switchAdminTab(this, 'techs-overview')">
-                            📊 Overview
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'techs-active')">
-                            👷 Active Technicians
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'techs-assignments')">
-                            📋 Job Assignments
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'techs-performance')">
-                            📈 Performance
-                        </button>
-                    </div>
-                    
-                    <div class="tab-content-container">
-                        <div id="techs-overview" class="admin-tab-content active">
-                            <div class="overview-stats-grid">
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Active Technicians</h4>
-                                        <span class="stat-trend positive">+3</span>
-                                    </div>
-                                    <div class="stat-number">89</div>
-                                    <div class="stat-detail">67 currently available</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Jobs in Progress</h4>
-                                        <span class="stat-trend neutral">22</span>
-                                    </div>
-                                    <div class="stat-number">22</div>
-                                    <div class="stat-detail">8 high priority</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Avg Response Time</h4>
-                                        <span class="stat-trend positive">-2min</span>
-                                    </div>
-                                    <div class="stat-number">12min</div>
-                                    <div class="stat-detail">Target: 15min</div>
-                                </div>
-                                <div class="overview-stat">
-                                    <div class="stat-header">
-                                        <h4>Customer Rating</h4>
-                                        <span class="stat-trend positive">+0.2</span>
-                                    </div>
-                                    <div class="stat-number">4.8★</div>
-                                    <div class="stat-detail">98% satisfaction</div>
-                                </div>
-                            </div>
-                            
-                            <div class="technician-map-section">
-                                <h4>Live Technician Locations</h4>
-                                <div class="map-container">
-                                    <div class="map-placeholder">
-                                        <div class="map-markers">
-                                            <div class="map-marker active" style="top: 20%; left: 30%">🚗</div>
-                                            <div class="map-marker busy" style="top: 60%; left: 70%">🔧</div>
-                                            <div class="map-marker available" style="top: 40%; left: 50%">📍</div>
-                                            <div class="map-marker busy" style="top: 80%; left: 20%">🚛</div>
-                                        </div>
-                                        <div class="map-legend">
-                                            <div class="legend-item">🚗 En Route</div>
-                                            <div class="legend-item">🔧 Working</div>
-                                            <div class="legend-item">📍 Available</div>
-                                            <div class="legend-item">🚛 Returning</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="techs-active" class="admin-tab-content">
-                            <div class="technicians-grid">
-                                <div class="technician-card">
-                                    <div class="tech-header">
-                                        <div class="tech-avatar">MR</div>
-                                        <div class="tech-info">
-                                            <h5>Mike Rodriguez</h5>
-                                            <div class="tech-id">#TECH001</div>
-                                            <div class="tech-status available">Available</div>
-                                        </div>
-                                        <div class="tech-rating">⭐ 4.9</div>
-                                    </div>
-                                    <div class="tech-details">
-                                        <div class="detail-row">
-                                            <span>Specialization:</span>
-                                            <span>Towing, Battery</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span>Current Location:</span>
-                                            <span>Downtown Area</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span>Jobs Today:</span>
-                                            <span>8 completed</span>
-                                        </div>
-                                    </div>
-                                    <div class="tech-actions">
-                                        <button class="btn btn--sm btn--primary" onclick="App.assignJobToTechnician('TECH001')">
-                                            Assign Job
-                                        </button>
-                                        <button class="btn btn--sm btn--outline" onclick="App.contactTechnician('TECH001')">
-                                            Contact
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="technician-card">
-                                    <div class="tech-header">
-                                        <div class="tech-avatar">SW</div>
-                                        <div class="tech-info">
-                                            <h5>Sarah Wilson</h5>
-                                            <div class="tech-id">#TECH002</div>
-                                            <div class="tech-status busy">On Job</div>
-                                        </div>
-                                        <div class="tech-rating">⭐ 4.7</div>
-                                    </div>
-                                    <div class="tech-details">
-                                        <div class="detail-row">
-                                            <span>Specialization:</span>
-                                            <span>Tire Change, Lockout</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span>Current Job:</span>
-                                            <span>Tire Change #TC104</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span>ETA:</span>
-                                            <span>15 minutes</span>
-                                        </div>
-                                    </div>
-                                    <div class="tech-actions">
-                                        <button class="btn btn--sm btn--outline" disabled>
-                                            Currently Busy
-                                        </button>
-                                        <button class="btn btn--sm btn--outline" onclick="App.contactTechnician('TECH002')">
-                                            Contact
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="techs-assignments" class="admin-tab-content">
-                            <div class="assignments-container">
-                                <div class="assignment-filters">
-                                    <select class="filter-select">
-                                        <option value="">All Priorities</option>
-                                        <option value="high">High Priority</option>
-                                        <option value="medium">Medium Priority</option>
-                                        <option value="low">Low Priority</option>
-                                    </select>
-                                    <select class="filter-select">
-                                        <option value="">All Services</option>
-                                        <option value="towing">Towing</option>
-                                        <option value="battery">Battery Jump</option>
-                                        <option value="tire">Tire Change</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="assignments-list">
-                                    <div class="assignment-item priority-high">
-                                        <div class="assignment-header">
-                                            <div class="assignment-info">
-                                                <h5>Battery Jump - #BJ105</h5>
-                                                <div class="assignment-customer">Customer: Lisa Chen</div>
-                                            </div>
-                                            <div class="assignment-priority">
-                                                <span class="priority-badge high">High Priority</span>
-                                            </div>
-                                        </div>
-                                        <div class="assignment-details">
-                                            <div class="detail-item">
-                                                <span>📍 Location:</span>
-                                                <span>123 Oak Street, Downtown</span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <span>⏰ Requested:</span>
-                                                <span>5 minutes ago</span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <span>👤 Assigned to:</span>
-                                                <span>Mike Rodriguez</span>
-                                            </div>
-                                        </div>
-                                        <div class="assignment-actions">
-                                            <button class="btn btn--sm btn--outline" onclick="App.viewAssignmentDetails('BJ105')">
-                                                View Details
-                                            </button>
-                                            <button class="btn btn--sm btn--primary" onclick="App.reassignJob('BJ105')">
-                                                Reassign
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="assignment-item priority-medium">
-                                        <div class="assignment-header">
-                                            <div class="assignment-info">
-                                                <h5>Tire Change - #TC106</h5>
-                                                <div class="assignment-customer">Customer: David Kim</div>
-                                            </div>
-                                            <div class="assignment-priority">
-                                                <span class="priority-badge medium">Medium Priority</span>
-                                            </div>
-                                        </div>
-                                        <div class="assignment-details">
-                                            <div class="detail-item">
-                                                <span>📍 Location:</span>
-                                                <span>456 Pine Avenue, Midtown</span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <span>⏰ Scheduled:</span>
-                                                <span>2:30 PM</span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <span>👤 Status:</span>
-                                                <span>Unassigned</span>
-                                            </div>
-                                        </div>
-                                        <div class="assignment-actions">
-                                            <button class="btn btn--sm btn--outline" onclick="App.viewAssignmentDetails('TC106')">
-                                                View Details
-                                            </button>
-                                            <button class="btn btn--sm btn--primary" onclick="App.assignJobFromPool('TC106')">
-                                                Assign
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="techs-performance" class="admin-tab-content">
-                            <div class="performance-dashboard">
-                                <div class="performance-metrics">
-                                    <div class="metric-card">
-                                        <h5>Average Response Time</h5>
-                                        <div class="metric-value">12.5 min</div>
-                                        <div class="metric-change positive">-2.1 min from last week</div>
-                                        <div class="metric-chart">
-                                            <div class="mini-chart">
-                                                <div class="chart-bar" style="height: 60%"></div>
-                                                <div class="chart-bar" style="height: 80%"></div>
-                                                <div class="chart-bar" style="height: 45%"></div>
-                                                <div class="chart-bar" style="height: 70%"></div>
-                                                <div class="chart-bar" style="height: 90%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="metric-card">
-                                        <h5>Job Completion Rate</h5>
-                                        <div class="metric-value">96.8%</div>
-                                        <div class="metric-change positive">+1.2% from last week</div>
-                                        <div class="metric-chart">
-                                            <div class="mini-chart">
-                                                <div class="chart-bar" style="height: 90%"></div>
-                                                <div class="chart-bar" style="height: 85%"></div>
-                                                <div class="chart-bar" style="height: 95%"></div>
-                                                <div class="chart-bar" style="height: 92%"></div>
-                                                <div class="chart-bar" style="height: 97%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="metric-card">
-                                        <h5>Customer Satisfaction</h5>
-                                        <div class="metric-value">4.8★</div>
-                                        <div class="metric-change positive">+0.1★ from last week</div>
-                                        <div class="metric-chart">
-                                            <div class="mini-chart">
-                                                <div class="chart-bar" style="height: 85%"></div>
-                                                <div class="chart-bar" style="height: 90%"></div>
-                                                <div class="chart-bar" style="height: 88%"></div>
-                                                <div class="chart-bar" style="height: 93%"></div>
-                                                <div class="chart-bar" style="height: 96%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="top-performers">
-                                    <h4>Top Performing Technicians</h4>
-                                    <div class="performers-list">
-                                        <div class="performer-item">
-                                            <div class="performer-rank">1</div>
-                                            <div class="performer-info">
-                                                <div class="performer-name">Mike Rodriguez</div>
-                                                <div class="performer-stats">8 jobs • 4.9★ • 10min avg</div>
-                                            </div>
-                                            <div class="performer-score">98%</div>
-                                        </div>
-                                        <div class="performer-item">
-                                            <div class="performer-rank">2</div>
-                                            <div class="performer-info">
-                                                <div class="performer-name">Sarah Wilson</div>
-                                                <div class="performer-stats">7 jobs • 4.7★ • 12min avg</div>
-                                            </div>
-                                            <div class="performer-score">95%</div>
-                                        </div>
-                                        <div class="performer-item">
-                                            <div class="performer-rank">3</div>
-                                            <div class="performer-info">
-                                                <div class="performer-name">Alex Thompson</div>
-                                                <div class="performer-stats">6 jobs • 4.6★ • 14min avg</div>
-                                            </div>
-                                            <div class="performer-score">92%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Technician management functions
-    showTechnicianForm(action, techId = null) {
-        this.showToast(`${action === 'add' ? 'Adding new' : 'Editing'} technician form`);
-        // Implementation similar to user form
-    },
-
-    assignJobs() {
-        this.showToast('Opening job assignment interface');
-    },
-
-    assignJobToTechnician(techId) {
-        this.showToast(`Assigning job to technician ${techId}`);
-    },
-
-    contactTechnician(techId) {
-        this.showToast(`Contacting technician ${techId}`);
-    },
-
-    viewAssignmentDetails(jobId) {
-        this.showToast(`Viewing details for job ${jobId}`);
-    },
-
-    reassignJob(jobId) {
-        this.showToast(`Reassigning job ${jobId}`);
-    },
-
-    assignJobFromPool(jobId) {
-        this.showToast(`Assigning job ${jobId} from pool`);
-    },
-
-    getAnalyticsControl() {
-        return `
-            <div class="admin-control-interface">
-                <div class="control-header">
-                    <h3>📈 Analytics Dashboard</h3>
-                    <div class="control-actions">
-                        <button class="btn btn--primary" onclick="App.exportAnalytics()">
-                            <span>📊</span> Export Report
-                        </button>
-                        <button class="btn btn--outline" onclick="App.refreshAnalytics()">
-                            <span>🔄</span> Refresh Data
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="admin-tabs">
-                    <div class="tab-nav">
-                        <button class="tab-btn active" onclick="App.switchAdminTab(this, 'analytics-overview')">
-                            📊 Overview
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'analytics-revenue')">
-                            💰 Revenue
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'analytics-services')">
-                            🔧 Services
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'analytics-geographic')">
-                            🗺️ Geographic
-                        </button>
-                    </div>
-                    
-                    <div class="tab-content-container">
-                        <div id="analytics-overview" class="admin-tab-content active">
-                            <div class="kpi-dashboard">
-                                <div class="kpi-grid">
-                                    <div class="kpi-card">
-                                        <div class="kpi-header">
-                                            <div class="kpi-title">Total Revenue</div>
-                                            <div class="kpi-period">This Month</div>
-                                        </div>
-                                        <div class="kpi-value">$247,892</div>
-                                        <div class="kpi-change positive">
-                                            <span class="change-icon">↗</span>
-                                            <span>+18.5% from last month</span>
-                                        </div>
-                                        <div class="kpi-chart">
-                                            <div class="trend-line">
-                                                <div class="trend-point" style="height: 40%"></div>
-                                                <div class="trend-point" style="height: 60%"></div>
-                                                <div class="trend-point" style="height: 45%"></div>
-                                                <div class="trend-point" style="height: 80%"></div>
-                                                <div class="trend-point" style="height: 75%"></div>
-                                                <div class="trend-point" style="height: 95%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="kpi-card">
-                                        <div class="kpi-header">
-                                            <div class="kpi-title">Services Completed</div>
-                                            <div class="kpi-period">Today</div>
-                                        </div>
-                                        <div class="kpi-value">1,847</div>
-                                        <div class="kpi-change positive">
-                                            <span class="change-icon">↗</span>
-                                            <span>+12% from yesterday</span>
-                                        </div>
-                                        <div class="kpi-chart">
-                                            <div class="trend-line">
-                                                <div class="trend-point" style="height: 70%"></div>
-                                                <div class="trend-point" style="height: 85%"></div>
-                                                <div class="trend-point" style="height: 65%"></div>
-                                                <div class="trend-point" style="height: 90%"></div>
-                                                <div class="trend-point" style="height: 80%"></div>
-                                                <div class="trend-point" style="height: 100%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="kpi-card">
-                                        <div class="kpi-header">
-                                            <div class="kpi-title">Customer Satisfaction</div>
-                                            <div class="kpi-period">Overall</div>
-                                        </div>
-                                        <div class="kpi-value">4.8★</div>
-                                        <div class="kpi-change positive">
-                                            <span class="change-icon">↗</span>
-                                            <span>+0.2 from last month</span>
-                                        </div>
-                                        <div class="satisfaction-breakdown">
-                                            <div class="rating-bar">
-                                                <span>5★</span>
-                                                <div class="bar"><div style="width: 85%"></div></div>
-                                                <span>85%</span>
-                                            </div>
-                                            <div class="rating-bar">
-                                                <span>4★</span>
-                                                <div class="bar"><div style="width: 12%"></div></div>
-                                                <span>12%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="kpi-card">
-                                        <div class="kpi-header">
-                                            <div class="kpi-title">Response Time</div>
-                                            <div class="kpi-period">Average</div>
-                                        </div>
-                                        <div class="kpi-value">12.5min</div>
-                                        <div class="kpi-change positive">
-                                            <span class="change-icon">↘</span>
-                                            <span>-2.1min improvement</span>
-                                        </div>
-                                        <div class="response-breakdown">
-                                            <div class="response-item">
-                                                <span>Emergency:</span>
-                                                <span>8.2min</span>
-                                            </div>
-                                            <div class="response-item">
-                                                <span>Standard:</span>
-                                                <span>14.7min</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="analytics-summary">
-                                <div class="summary-section">
-                                    <h4>Performance Summary</h4>
-                                    <div class="summary-grid">
-                                        <div class="summary-item">
-                                            <div class="summary-label">Peak Hour</div>
-                                            <div class="summary-value">2:00 PM - 3:00 PM</div>
-                                        </div>
-                                        <div class="summary-item">
-                                            <div class="summary-label">Most Requested Service</div>
-                                            <div class="summary-value">Battery Jump (38%)</div>
-                                        </div>
-                                        <div class="summary-item">
-                                            <div class="summary-label">Busiest Day</div>
-                                            <div class="summary-value">Friday</div>
-                                        </div>
-                                        <div class="summary-item">
-                                            <div class="summary-label">Revenue Growth</div>
-                                            <div class="summary-value">+18.5% MoM</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="analytics-revenue" class="admin-tab-content">
-                            <div class="revenue-analytics">
-                                <div class="revenue-chart-container">
-                                    <h4>Revenue Trend Analysis</h4>
-                                    <div class="chart-controls">
-                                        <select class="chart-filter">
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly" selected>Monthly</option>
-                                        </select>
-                                    </div>
-                                    <div class="revenue-chart">
-                                        <div class="chart-bars">
-                                            <div class="chart-bar" style="height: 45%" data-value="$18.2k">
-                                                <div class="bar-value">$18.2k</div>
-                                            </div>
-                                            <div class="chart-bar" style="height: 60%" data-value="$24.1k">
-                                                <div class="bar-value">$24.1k</div>
-                                            </div>
-                                            <div class="chart-bar" style="height: 55%" data-value="$22.3k">
-                                                <div class="bar-value">$22.3k</div>
-                                            </div>
-                                            <div class="chart-bar" style="height: 80%" data-value="$32.1k">
-                                                <div class="bar-value">$32.1k</div>
-                                            </div>
-                                            <div class="chart-bar" style="height: 90%" data-value="$36.2k">
-                                                <div class="bar-value">$36.2k</div>
-                                            </div>
-                                            <div class="chart-bar" style="height: 100%" data-value="$40.1k">
-                                                <div class="bar-value">$40.1k</div>
-                                            </div>
-                                        </div>
-                                        <div class="chart-labels">
-                                            <span>Jan</span>
-                                            <span>Feb</span>
-                                            <span>Mar</span>
-                                            <span>Apr</span>
-                                            <span>May</span>
-                                            <span>Jun</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="revenue-breakdown">
-                                    <h4>Revenue by Service Type</h4>
-                                    <div class="service-revenue-list">
-                                        <div class="service-revenue-item">
-                                            <div class="service-info">
-                                                <div class="service-icon">🚛</div>
-                                                <div class="service-details">
-                                                    <div class="service-name">Towing</div>
-                                                    <div class="service-count">847 services</div>
-                                                </div>
-                                            </div>
-                                            <div class="service-revenue">
-                                                <div class="revenue-amount">$127,050</div>
-                                                <div class="revenue-percentage">38.2%</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="service-revenue-item">
-                                            <div class="service-info">
-                                                <div class="service-icon">🔋</div>
-                                                <div class="service-details">
-                                                    <div class="service-name">Battery Jump</div>
-                                                    <div class="service-count">1,247 services</div>
-                                                </div>
-                                            </div>
-                                            <div class="service-revenue">
-                                                <div class="revenue-amount">$93,525</div>
-                                                <div class="revenue-percentage">28.1%</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="service-revenue-item">
-                                            <div class="service-info">
-                                                <div class="service-icon">🛞</div>
-                                                <div class="service-details">
-                                                    <div class="service-name">Tire Change</div>
-                                                    <div class="service-count">623 services</div>
-                                                </div>
-                                            </div>
-                                            <div class="service-revenue">
-                                                <div class="revenue-amount">$62,300</div>
-                                                <div class="revenue-percentage">18.7%</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="analytics-services" class="admin-tab-content">
-                            <div class="services-analytics">
-                                <div class="service-performance-grid">
-                                    <div class="service-performance-card">
-                                        <div class="service-header">
-                                            <div class="service-icon">🚛</div>
-                                            <div class="service-title">
-                                                <h5>Towing Services</h5>
-                                                <div class="service-subtitle">Heavy duty operations</div>
-                                            </div>
-                                        </div>
-                                        <div class="service-metrics">
-                                            <div class="metric-item">
-                                                <span class="metric-label">Total Requests</span>
-                                                <span class="metric-value">847</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Avg Response Time</span>
-                                                <span class="metric-value">22min</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Success Rate</span>
-                                                <span class="metric-value">94.2%</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Avg Rating</span>
-                                                <span class="metric-value">4.6★</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="service-performance-card">
-                                        <div class="service-header">
-                                            <div class="service-icon">🔋</div>
-                                            <div class="service-title">
-                                                <h5>Battery Jump</h5>
-                                                <div class="service-subtitle">Quick electrical service</div>
-                                            </div>
-                                        </div>
-                                        <div class="service-metrics">
-                                            <div class="metric-item">
-                                                <span class="metric-label">Total Requests</span>
-                                                <span class="metric-value">1,247</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Avg Response Time</span>
-                                                <span class="metric-value">8min</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Success Rate</span>
-                                                <span class="metric-value">98.7%</span>
-                                            </div>
-                                            <div class="metric-item">
-                                                <span class="metric-label">Avg Rating</span>
-                                                <span class="metric-value">4.9★</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="demand-analysis">
-                                    <h4>Service Demand Patterns</h4>
-                                    <div class="demand-chart">
-                                        <div class="hourly-demand">
-                                            <div class="hour-bar" style="height: 20%" data-hour="6"></div>
-                                            <div class="hour-bar" style="height: 30%" data-hour="7"></div>
-                                            <div class="hour-bar" style="height: 45%" data-hour="8"></div>
-                                            <div class="hour-bar" style="height: 60%" data-hour="9"></div>
-                                            <div class="hour-bar" style="height: 75%" data-hour="10"></div>
-                                            <div class="hour-bar" style="height: 90%" data-hour="11"></div>
-                                            <div class="hour-bar" style="height: 85%" data-hour="12"></div>
-                                            <div class="hour-bar" style="height: 95%" data-hour="13"></div>
-                                            <div class="hour-bar" style="height: 100%" data-hour="14"></div>
-                                            <div class="hour-bar" style="height: 88%" data-hour="15"></div>
-                                            <div class="hour-bar" style="height: 70%" data-hour="16"></div>
-                                            <div class="hour-bar" style="height: 55%" data-hour="17"></div>
-                                        </div>
-                                        <div class="hour-labels">
-                                            <span>6AM</span>
-                                            <span>8AM</span>
-                                            <span>10AM</span>
-                                            <span>12PM</span>
-                                            <span>2PM</span>
-                                            <span>4PM</span>
-                                            <span>6PM</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="analytics-geographic" class="admin-tab-content">
-                            <div class="geographic-analytics">
-                                <div class="coverage-map">
-                                    <h4>Service Coverage & Performance by Region</h4>
-                                    <div class="map-container">
-                                        <div class="coverage-map-placeholder">
-                                            <div class="region-overlay high-demand" style="top: 20%; left: 30%; width: 25%; height: 20%">
-                                                <div class="region-label">Downtown</div>
-                                                <div class="region-stats">847 services</div>
-                                            </div>
-                                            <div class="region-overlay medium-demand" style="top: 50%; left: 60%; width: 30%; height: 25%">
-                                                <div class="region-label">Suburbs</div>
-                                                <div class="region-stats">623 services</div>
-                                            </div>
-                                            <div class="region-overlay low-demand" style="top: 70%; left: 10%; width: 20%; height: 15%">
-                                                <div class="region-label">Industrial</div>
-                                                <div class="region-stats">234 services</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="map-legend">
-                                        <div class="legend-item">
-                                            <div class="legend-color high-demand"></div>
-                                            <span>High Demand (800+ services)</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color medium-demand"></div>
-                                            <span>Medium Demand (400-800 services)</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <div class="legend-color low-demand"></div>
-                                            <span>Low Demand (<400 services)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="regional-breakdown">
-                                    <h4>Regional Performance Breakdown</h4>
-                                    <div class="region-stats-list">
-                                        <div class="region-stat-item">
-                                            <div class="region-info">
-                                                <h5>Downtown District</h5>
-                                                <div class="region-details">High-density urban area</div>
-                                            </div>
-                                            <div class="region-metrics">
-                                                <div class="region-metric">
-                                                    <span>Services:</span>
-                                                    <span>847</span>
-                                                </div>
-                                                <div class="region-metric">
-                                                    <span>Avg Response:</span>
-                                                    <span>8.5min</span>
-                                                </div>
-                                                <div class="region-metric">
-                                                    <span>Rating:</span>
-                                                    <span>4.8★</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="region-stat-item">
-                                            <div class="region-info">
-                                                <h5>Suburban Areas</h5>
-                                                <div class="region-details">Residential neighborhoods</div>
-                                            </div>
-                                            <div class="region-metrics">
-                                                <div class="region-metric">
-                                                    <span>Services:</span>
-                                                    <span>623</span>
-                                                </div>
-                                                <div class="region-metric">
-                                                    <span>Avg Response:</span>
-                                                    <span>15.2min</span>
-                                                </div>
-                                                <div class="region-metric">
-                                                    <span>Rating:</span>
-                                                    <span>4.7★</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // Analytics functions
-    exportAnalytics() {
-        this.showToast('Exporting analytics report...');
-        setTimeout(() => {
-            this.showToast('Analytics report exported successfully!');
-        }, 1500);
-    },
-
-    refreshAnalytics() {
-        this.showToast('Refreshing analytics data...');
-        setTimeout(() => {
-            this.showToast('Analytics data updated!');
-        }, 1000);
-    },
-
-    getSystemSettingsControl() {
-        return `
-            <div class="admin-control-interface">
-                <div class="control-header">
-                    <h3>⚙️ System Settings</h3>
-                    <div class="control-actions">
-                        <button class="btn btn--primary" onclick="App.saveAllSettings()">
-                            <span>💾</span> Save All Changes
-                        </button>
-                        <button class="btn btn--outline" onclick="App.resetToDefaults()">
-                            <span>🔄</span> Reset to Defaults
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="admin-tabs">
-                    <div class="tab-nav">
-                        <button class="tab-btn active" onclick="App.switchAdminTab(this, 'settings-general')">
-                            ⚙️ General
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'settings-services')">
-                            🔧 Services
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'settings-notifications')">
-                            🔔 Notifications
-                        </button>
-                        <button class="tab-btn" onclick="App.switchAdminTab(this, 'settings-security')">
-                            🛡️ Security
-                        </button>
-                    </div>
-                    
-                    <div class="tab-content-container">
-                        <div id="settings-general" class="admin-tab-content active">
-                            <div class="settings-section">
-                                <h4>System Configuration</h4>
-                                <div class="settings-form">
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">System Name</label>
-                                            <div class="setting-description">Display name for the application</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <input type="text" class="form-control" value="RoadSide+ Emergency" id="system-name">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Maintenance Mode</label>
-                                            <div class="setting-description">Temporarily disable user access</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle-switch">
-                                                <input type="checkbox" id="maintenance-mode">
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Operating Hours</label>
-                                            <div class="setting-description">Service availability window</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <div class="time-range">
-                                                <input type="time" class="form-control" value="06:00" id="start-time">
-                                                <span>to</span>
-                                                <input type="time" class="form-control" value="22:00" id="end-time">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Maximum Response Time</label>
-                                            <div class="setting-description">Target response time for all services</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <div class="input-with-unit">
-                                                <input type="number" class="form-control" value="15" id="max-response-time">
-                                                <span class="input-unit">minutes</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Auto-Assignment</label>
-                                            <div class="setting-description">Automatically assign jobs to available technicians</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle-switch">
-                                                <input type="checkbox" checked id="auto-assignment">
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Service Area Radius</label>
-                                            <div class="setting-description">Maximum distance for service coverage</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <div class="input-with-unit">
-                                                <input type="number" class="form-control" value="50" id="service-radius">
-                                                <span class="input-unit">miles</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="settings-section">
-                                <h4>Data & Backup</h4>
-                                <div class="backup-controls">
-                                    <div class="backup-item">
-                                        <div class="backup-info">
-                                            <h5>Automatic Backup</h5>
-                                            <p>Last backup: Today at 3:00 AM</p>
-                                        </div>
-                                        <button class="btn btn--outline" onclick="App.runBackup()">
-                                            Run Backup Now
-                                        </button>
-                                    </div>
-                                    <div class="backup-item">
-                                        <div class="backup-info">
-                                            <h5>Data Retention</h5>
-                                            <p>Keep records for 2 years</p>
-                                        </div>
-                                        <button class="btn btn--outline" onclick="App.configureRetention()">
-                                            Configure
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="settings-services" class="admin-tab-content">
-                            <div class="services-settings">
-                                <h4>Service Configuration & Pricing</h4>
-                                <div class="service-pricing-list">
-                                    <div class="service-pricing-item">
-                                        <div class="service-info">
-                                            <div class="service-icon">🚛</div>
-                                            <div class="service-details">
-                                                <h5>Towing Service</h5>
-                                                <div class="service-description">Vehicle towing and recovery</div>
-                                            </div>
-                                        </div>
-                                        <div class="service-controls">
-                                            <div class="price-control">
-                                                <label>Base Price:</label>
-                                                <div class="input-with-unit">
-                                                    <span class="input-unit">$</span>
-                                                    <input type="number" class="form-control" value="150" id="towing-price">
-                                                </div>
-                                            </div>
-                                            <div class="service-toggle">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked>
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="service-pricing-item">
-                                        <div class="service-info">
-                                            <div class="service-icon">🔋</div>
-                                            <div class="service-details">
-                                                <h5>Battery Jump</h5>
-                                                <div class="service-description">Emergency battery assistance</div>
-                                            </div>
-                                        </div>
-                                        <div class="service-controls">
-                                            <div class="price-control">
-                                                <label>Base Price:</label>
-                                                <div class="input-with-unit">
-                                                    <span class="input-unit">$</span>
-                                                    <input type="number" class="form-control" value="75" id="battery-price">
-                                                </div>
-                                            </div>
-                                            <div class="service-toggle">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked>
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="service-pricing-item">
-                                        <div class="service-info">
-                                            <div class="service-icon">🛞</div>
-                                            <div class="service-details">
-                                                <h5>Tire Change</h5>
-                                                <div class="service-description">Flat tire replacement service</div>
-                                            </div>
-                                        </div>
-                                        <div class="service-controls">
-                                            <div class="price-control">
-                                                <label>Base Price:</label>
-                                                <div class="input-with-unit">
-                                                    <span class="input-unit">$</span>
-                                                    <input type="number" class="form-control" value="100" id="tire-price">
-                                                </div>
-                                            </div>
-                                            <div class="service-toggle">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked>
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="pricing-settings">
-                                    <h5>Pricing Rules</h5>
-                                    <div class="pricing-rule-item">
-                                        <div class="rule-info">
-                                            <label class="setting-label">Emergency Surcharge</label>
-                                            <div class="setting-description">Additional fee for emergency services</div>
-                                        </div>
-                                        <div class="rule-control">
-                                            <div class="input-with-unit">
-                                                <input type="number" class="form-control" value="25" id="emergency-surcharge">
-                                                <span class="input-unit">%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="pricing-rule-item">
-                                        <div class="rule-info">
-                                            <label class="setting-label">Distance Multiplier</label>
-                                            <div class="setting-description">Additional cost per mile beyond base radius</div>
-                                        </div>
-                                        <div class="rule-control">
-                                            <div class="input-with-unit">
-                                                <span class="input-unit">$</span>
-                                                <input type="number" class="form-control" value="2.50" step="0.25" id="distance-multiplier">
-                                                <span class="input-unit">/mile</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="settings-notifications" class="admin-tab-content">
-                            <div class="notification-settings">
-                                <div class="notification-section">
-                                    <h4>Email Notifications</h4>
-                                    <div class="notification-list">
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">New User Registration</label>
-                                                <div class="notification-description">Send email when new users register</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="email-new-user">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Service Completion</label>
-                                                <div class="notification-description">Email confirmation after service completion</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="email-service-complete">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Daily Reports</label>
-                                                <div class="notification-description">Daily analytics and performance reports</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" id="email-daily-reports">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="notification-section">
-                                    <h4>SMS Notifications</h4>
-                                    <div class="notification-list">
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Technician Arrival</label>
-                                                <div class="notification-description">SMS when technician is 5 minutes away</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="sms-arrival">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Emergency Alerts</label>
-                                                <div class="notification-description">Critical system alerts via SMS</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="sms-emergency">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="notification-section">
-                                    <h4>Push Notifications</h4>
-                                    <div class="notification-list">
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Job Assignments</label>
-                                                <div class="notification-description">Notify technicians of new job assignments</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="push-assignments">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="notification-item">
-                                            <div class="notification-info">
-                                                <label class="notification-label">Status Updates</label>
-                                                <div class="notification-description">Real-time service status updates</div>
-                                            </div>
-                                            <div class="notification-control">
-                                                <label class="toggle-switch">
-                                                    <input type="checkbox" checked id="push-status">
-                                                    <span class="toggle-slider"></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="settings-security" class="admin-tab-content">
-                            <div class="security-settings">
-                                <div class="security-section">
-                                    <h4>Authentication & Access Control</h4>
-                                    <div class="security-setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Two-Factor Authentication</label>
-                                            <div class="setting-description">Require 2FA for all admin accounts</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle-switch">
-                                                <input type="checkbox" checked id="require-2fa">
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="security-setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Session Timeout</label>
-                                            <div class="setting-description">Automatic logout after inactivity</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <select class="form-control" id="session-timeout">
-                                                <option value="15">15 minutes</option>
-                                                <option value="30" selected>30 minutes</option>
-                                                <option value="60">1 hour</option>
-                                                <option value="120">2 hours</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="security-setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Password Requirements</label>
-                                            <div class="setting-description">Minimum security requirements for passwords</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <div class="password-requirements">
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" checked> Minimum 8 characters
-                                                </label>
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" checked> Require uppercase letter
-                                                </label>
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" checked> Require number
-                                                </label>
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox"> Require special character
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="security-section">
-                                    <h4>Data Protection</h4>
-                                    <div class="security-setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Data Encryption</label>
-                                            <div class="setting-description">Encrypt sensitive customer data</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle-switch">
-                                                <input type="checkbox" checked disabled>
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="security-setting-item">
-                                        <div class="setting-info">
-                                            <label class="setting-label">Access Logging</label>
-                                            <div class="setting-description">Log all admin system access</div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle-switch">
-                                                <input type="checkbox" checked id="access-logging">
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="security-section">
-                                    <h4>Recent Security Events</h4>
-                                    <div class="security-log">
-                                        <div class="log-entry">
-                                            <div class="log-time">2024-01-15 14:23:15</div>
-                                            <div class="log-event">Admin login: john.admin@roadside.com</div>
-                                            <div class="log-status success">✓ Success</div>
-                                        </div>
-                                        <div class="log-entry">
-                                            <div class="log-time">2024-01-15 14:20:45</div>
-                                            <div class="log-event">Password change: sarah.admin@roadside.com</div>
-                                            <div class="log-status success">✓ Success</div>
-                                        </div>
-                                        <div class="log-entry">
-                                            <div class="log-time">2024-01-15 14:18:30</div>
-                                            <div class="log-event">Failed login attempt: unknown@hacker.com</div>
-                                            <div class="log-status error">✗ Blocked</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    // System settings functions
-    saveAllSettings() {
-        this.showToast('Saving all system settings...');
-        setTimeout(() => {
-            this.showToast('All settings saved successfully!');
-        }, 1500);
-    },
-
-    resetToDefaults() {
-        if (confirm('Reset all settings to default values? This action cannot be undone.')) {
-            this.showToast('Settings reset to defaults');
-        }
-    },
-
-    runBackup() {
-        this.showToast('Starting system backup...');
-        setTimeout(() => {
-            this.showToast('Backup completed successfully!');
-        }, 2000);
-    },
-
-    configureRetention() {
-        this.showToast('Opening data retention configuration');
-    },
-
-    getFAQContent() {
-        return `
-            <div class="faq-categories">
-                <div class="faq-category">
-                    <h3>🛠️ Service & Booking</h3>
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="App.toggleFAQ(this)">
-                            How do I book a service?
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            To book a service, select the service you need from the dashboard, enter your location and problem description, choose your payment method, and confirm your booking.
-                        </div>
-                    </div>
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="App.toggleFAQ(this)">
-                            How long does it take for a technician to arrive?
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            Average response time is 30 minutes for most services. Emergency services have priority and typically arrive within 15 minutes.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="faq-category">
-                    <h3>💰 Pricing & Payment</h3>
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="App.toggleFAQ(this)">
-                            What payment methods do you accept?
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            We accept all major credit cards, cash payments, and digital payment methods like Apple Pay and Google Pay.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="faq-category">
-                    <h3>🔧 Technical Support</h3>
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="App.toggleFAQ(this)">
-                            How do I track my technician?
-                            <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer">
-                            Once a technician is assigned, you'll receive real-time GPS tracking and can see their estimated arrival time in the app.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    },
-
-    toggleFAQ(element) {
-        const answer = element.nextElementSibling;
-        const toggle = element.querySelector('.faq-toggle');
-        
-        if (answer.style.display === 'block') {
-            answer.style.display = 'none';
-            toggle.textContent = '+';
-        } else {
-            answer.style.display = 'block';
-            toggle.textContent = '-';
-        }
+    this.serviceHistory = this.loadFromStorage('serviceHistory') || [
+      {
+        id: 'service-001',
+        type: 'Battery Jump',
+        date: '2024-07-10T14:30:00Z',
+        location: 'Main St & 5th Ave',
+        status: 'completed',
+        technician: 'Mike Rodriguez',
+        cost: 75,
+        rating: 5,
+        duration: '20 min',
+        description: 'Car battery was completely drained after leaving lights on overnight.'
+      },
+      {
+        id: 'service-002',
+        type: 'Tire Change',
+        date: '2024-07-08T09:15:00Z',
+        location: 'Highway 101, Mile 42',
+        status: 'completed',
+        technician: 'Sarah Johnson',
+        cost: 100,
+        rating: 5,
+        duration: '35 min',
+        description: 'Front right tire had a nail puncture. Replaced with spare tire.'
+      },
+      {
+        id: 'service-003',
+        type: 'Towing',
+        date: '2024-06-25T16:45:00Z',
+        location: 'Downtown Plaza',
+        status: 'completed',
+        technician: 'Carlos Martinez',
+        cost: 150,
+        rating: 4,
+        duration: '45 min',
+        description: 'Engine overheating issue. Towed to nearby mechanic shop.'
+      }
+    ];
+
+    this.supportTickets = this.loadFromStorage('supportTickets') || [
+      {
+        id: 'ticket-001',
+        subject: 'Billing Question',
+        status: 'resolved',
+        date: '2024-07-09T10:30:00Z',
+        messages: [
+          { sender: 'user', message: 'I have a question about my last service charge.', timestamp: '2024-07-09T10:30:00Z' },
+          { sender: 'support', message: 'Hi John! I\'d be happy to help with your billing question. Can you provide more details?', timestamp: '2024-07-09T10:35:00Z' },
+          { sender: 'user', message: 'The tire change service was charged $100, but I thought the quote was $85.', timestamp: '2024-07-09T10:37:00Z' },
+          { sender: 'support', message: 'I see the issue. The base price was $85, but there was a $15 fee for highway service. This was mentioned during booking. I\'ve added a note to your account for future reference.', timestamp: '2024-07-09T10:40:00Z' }
+        ]
+      }
+    ];
+
+    this.currentBooking = null;
+    this.currentView = 'dashboard';
+    this.sosActive = false;
+  }
+
+  saveToStorage(key, data) {
+    try {
+      localStorage.setItem(`roadside_${key}`, JSON.stringify(data));
+    } catch (e) {
+      console.warn('Could not save to localStorage:', e);
     }
+  }
+
+  loadFromStorage(key) {
+    try {
+      const data = localStorage.getItem(`roadside_${key}`);
+      return data ? JSON.parse(data) : null;
+    } catch (e) {
+      console.warn('Could not load from localStorage:', e);
+      return null;
+    }
+  }
+
+  addServiceToHistory(service) {
+    this.serviceHistory.unshift(service);
+    this.saveToStorage('serviceHistory', this.serviceHistory);
+    this.updateUserStats();
+  }
+
+  updateUserStats() {
+    const completed = this.serviceHistory.filter(s => s.status === 'completed');
+    this.currentUser.stats.totalServices = completed.length;
+    this.currentUser.stats.totalSpent = completed.reduce((sum, s) => sum + s.cost, 0);
+    this.currentUser.stats.avgRating = completed.length > 0 
+      ? completed.reduce((sum, s) => sum + s.rating, 0) / completed.length 
+      : 0;
+    this.saveToStorage('currentUser', this.currentUser);
+  }
+
+  updateProfile(updates) {
+    Object.assign(this.currentUser, updates);
+    this.saveToStorage('currentUser', this.currentUser);
+  }
+
+  addSupportTicket(ticket) {
+    this.supportTickets.unshift(ticket);
+    this.saveToStorage('supportTickets', this.supportTickets);
+  }
+
+  updateSupportTicket(ticketId, updates) {
+    const ticket = this.supportTickets.find(t => t.id === ticketId);
+    if (ticket) {
+      Object.assign(ticket, updates);
+      this.saveToStorage('supportTickets', this.supportTickets);
+    }
+  }
+
+  // Enhanced System Controls with comprehensive interfaces
+  openSystemControl: function(controlType) {
+    const modal = document.getElementById('system-control-modal');
+    const title = document.getElementById('system-control-title');
+    const content = document.getElementById('system-control-content');
+    
+    title.textContent = this.getControlTitle(controlType);
+    content.innerHTML = this.getControlContent(controlType);
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Initialize control-specific functionality
+    this.initializeControlFunctions(controlType);
+  },
+
+  getControlTitle: function(controlType) {
+    const titles = {
+      'user-management': '👤 User Management System',
+      'technician-management': '🔧 Technician Management System', 
+      'analytics': '📈 System Analytics Dashboard',
+      'system-settings': '⚙️ System Settings & Configuration'
+    };
+    return titles[controlType] || 'System Control';
+  },
+
+  getControlContent: function(controlType) {
+    switch(controlType) {
+      case 'user-management':
+        return this.getUserManagementContent();
+      case 'technician-management':
+        return this.getTechnicianManagementContent();
+      case 'analytics':
+        return this.getAnalyticsContent();
+      case 'system-settings':
+        return this.getSystemSettingsContent();
+      default:
+        return '<p>Control panel content loading...</p>';
+    }
+  },
+
+  getUserManagementContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('users-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('users-accounts')">User Accounts</div>
+          <div class="control-tab" onclick="showControlTab('users-permissions')">Permissions</div>
+          <div class="control-tab" onclick="showControlTab('users-analytics')">Analytics</div>
+        </div>
+        
+        <div id="users-overview" class="control-content active">
+          <div class="overview-stats">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-details">
+                <h3>Total Users</h3>
+                <div class="stat-value">2,847</div>
+                <div class="stat-change positive">+12.5% this month</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-details">
+                <h3>Active Users</h3>
+                <div class="stat-value">2,156</div>
+                <div class="stat-change positive">+8.3% this week</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🆕</div>
+              <div class="stat-details">
+                <h3>New Registrations</h3>
+                <div class="stat-value">89</div>
+                <div class="stat-change">Last 7 days</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="recent-activities">
+            <h3>Recent User Activities</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">👤</div>
+                <div class="activity-details">
+                  <p><strong>Sarah Johnson</strong> updated profile</p>
+                  <small>2 minutes ago</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🆕</div>
+                <div class="activity-details">
+                  <p><strong>Mike Chen</strong> registered new account</p>
+                  <small>15 minutes ago</small>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🚗</div>
+                <div class="activity-details">
+                  <p><strong>Emma Davis</strong> requested towing service</p>
+                  <small>23 minutes ago</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="users-accounts" class="control-content">
+          <div class="search-section">
+            <input type="text" placeholder="Search users..." class="search-input">
+            <button class="btn btn--primary">🔍 Search</button>
+            <button class="btn btn--outline">+ Add User</button>
+          </div>
+          
+          <div class="users-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">SJ</div>
+                      <span>Sarah Johnson</span>
+                    </div>
+                  </td>
+                  <td>sarah@email.com</td>
+                  <td><span class="role-badge customer">Customer</span></td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                    <button class="btn-icon" title="View">👁️</button>
+                    <button class="btn-icon" title="Delete">🗑️</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">MC</div>
+                      <span>Mike Chen</span>
+                    </div>
+                  </td>
+                  <td>mike@email.com</td>
+                  <td><span class="role-badge technician">Technician</span></td>
+                  <td><span class="status-badge active">Active</span></td>
+                  <td>
+                    <button class="btn-icon" title="Edit">✏️</button>
+                    <button class="btn-icon" title="View">👁️</button>
+                    <button class="btn-icon" title="Delete">🗑️</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="users-permissions" class="control-content">
+          <div class="permissions-grid">
+            <div class="permission-group">
+              <h3>Customer Permissions</h3>
+              <div class="permission-list">
+                <label class="permission-item">
+                  <input type="checkbox" checked> Book Services
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> View History
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Emergency SOS
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox"> Cancel Services
+                </label>
+              </div>
+            </div>
+            
+            <div class="permission-group">
+              <h3>Technician Permissions</h3>
+              <div class="permission-list">
+                <label class="permission-item">
+                  <input type="checkbox" checked> View Assignments
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Update Status
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox" checked> Contact Customers
+                </label>
+                <label class="permission-item">
+                  <input type="checkbox"> Override Pricing
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="users-analytics" class="control-content">
+          <div class="analytics-charts">
+            <div class="chart-container">
+              <h3>User Growth Trend</h3>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 60%"></div>
+                <div class="chart-bar" style="height: 75%"></div>
+                <div class="chart-bar" style="height: 85%"></div>
+                <div class="chart-bar" style="height: 90%"></div>
+                <div class="chart-bar" style="height: 100%"></div>
+              </div>
+            </div>
+            
+            <div class="chart-container">
+              <h3>User Activity Distribution</h3>
+              <div class="pie-chart-placeholder">
+                <div class="pie-segment" style="--percentage: 60%; --color: #4CAF50;">Active (60%)</div>
+                <div class="pie-segment" style="--percentage: 25%; --color: #FF9800;">Inactive (25%)</div>
+                <div class="pie-segment" style="--percentage: 15%; --color: #f44336;">Suspended (15%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getTechnicianManagementContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('tech-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('tech-active')">Active Technicians</div>
+          <div class="control-tab" onclick="showControlTab('tech-assignments')">Assignments</div>
+          <div class="control-tab" onclick="showControlTab('tech-performance')">Performance</div>
+        </div>
+        
+        <div id="tech-overview" class="control-content active">
+          <div class="overview-stats">
+            <div class="stat-card">
+              <div class="stat-icon">🔧</div>
+              <div class="stat-details">
+                <h3>Total Technicians</h3>
+                <div class="stat-value">47</div>
+                <div class="stat-change positive">+3 this month</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🟢</div>
+              <div class="stat-details">
+                <h3>Online Now</h3>
+                <div class="stat-value">32</div>
+                <div class="stat-change">Available for service</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⚡</div>
+              <div class="stat-details">
+                <h3>Active Jobs</h3>
+                <div class="stat-value">18</div>
+                <div class="stat-change">In progress</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tech-status-map">
+            <h3>Technician Locations</h3>
+            <div class="map-placeholder">
+              <div class="map-marker online" style="top: 20%; left: 30%;">🔧</div>
+              <div class="map-marker online" style="top: 40%; left: 60%;">🔧</div>
+              <div class="map-marker busy" style="top: 60%; left: 45%;">🔧</div>
+              <div class="map-marker online" style="top: 35%; left: 75%;">🔧</div>
+              <p>Real-time technician GPS tracking</p>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-active" class="control-content">
+          <div class="search-section">
+            <input type="text" placeholder="Search technicians..." class="search-input">
+            <select class="filter-select">
+              <option>All Status</option>
+              <option>Online</option>
+              <option>Busy</option>
+              <option>Offline</option>
+            </select>
+            <button class="btn btn--primary">Filter</button>
+          </div>
+          
+          <div class="technicians-grid">
+            <div class="tech-card">
+              <div class="tech-header">
+                <div class="tech-avatar">MR</div>
+                <div class="tech-info">
+                  <h4>Mike Rodriguez</h4>
+                  <p>Senior Technician</p>
+                </div>
+                <div class="tech-status online">Online</div>
+              </div>
+              <div class="tech-stats">
+                <div class="stat">
+                  <span class="label">Rating:</span>
+                  <span class="value">4.9 ⭐</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Jobs Today:</span>
+                  <span class="value">8</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Response Time:</span>
+                  <span class="value">12 min</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm">Assign Job</button>
+                <button class="btn btn--outline btn--sm">Contact</button>
+              </div>
+            </div>
+            
+            <div class="tech-card">
+              <div class="tech-header">
+                <div class="tech-avatar">JS</div>
+                <div class="tech-info">
+                  <h4>Jennifer Smith</h4>
+                  <p>Towing Specialist</p>
+                </div>
+                <div class="tech-status busy">Busy</div>
+              </div>
+              <div class="tech-stats">
+                <div class="stat">
+                  <span class="label">Rating:</span>
+                  <span class="value">4.8 ⭐</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Jobs Today:</span>
+                  <span class="value">6</span>
+                </div>
+                <div class="stat">
+                  <span class="label">Response Time:</span>
+                  <span class="value">15 min</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm" disabled>Busy</button>
+                <button class="btn btn--outline btn--sm">Contact</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-assignments" class="control-content">
+          <div class="assignments-header">
+            <h3>Current Assignments</h3>
+            <button class="btn btn--primary">+ New Assignment</button>
+          </div>
+          
+          <div class="assignments-list">
+            <div class="assignment-card priority-high">
+              <div class="assignment-header">
+                <span class="priority-badge high">High Priority</span>
+                <span class="assignment-id">#A-2024-001</span>
+              </div>
+              <div class="assignment-details">
+                <h4>Emergency Towing Service</h4>
+                <p>Customer: Sarah Johnson • Location: Downtown Plaza</p>
+                <p>Assigned to: Mike Rodriguez • Status: En Route</p>
+              </div>
+              <div class="assignment-actions">
+                <button class="btn btn--sm">Track</button>
+                <button class="btn btn--outline btn--sm">Reassign</button>
+              </div>
+            </div>
+            
+            <div class="assignment-card priority-medium">
+              <div class="assignment-header">
+                <span class="priority-badge medium">Medium Priority</span>
+                <span class="assignment-id">#A-2024-002</span>
+              </div>
+              <div class="assignment-details">
+                <h4>Battery Jump Service</h4>
+                <p>Customer: David Wilson • Location: Shopping Center</p>
+                <p>Assigned to: Jennifer Smith • Status: In Progress</p>
+              </div>
+              <div class="assignment-actions">
+                <button class="btn btn--sm">Track</button>
+                <button class="btn btn--outline btn--sm">Reassign</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-performance" class="control-content">
+          <div class="performance-metrics">
+            <div class="metric-card">
+              <h3>Average Response Time</h3>
+              <div class="metric-value">14.2 min</div>
+              <div class="metric-trend positive">-2.1 min from last month</div>
+            </div>
+            
+            <div class="metric-card">
+              <h3>Customer Satisfaction</h3>
+              <div class="metric-value">4.7 ⭐</div>
+              <div class="metric-trend positive">+0.2 from last month</div>
+            </div>
+            
+            <div class="metric-card">
+              <h3>Job Completion Rate</h3>
+              <div class="metric-value">97.3%</div>
+              <div class="metric-trend positive">+1.2% from last month</div>
+            </div>
+          </div>
+          
+          <div class="performance-chart">
+            <h3>Monthly Performance Trends</h3>
+            <div class="chart-placeholder">
+              <div class="chart-line">
+                <div class="line-point" style="left: 10%; bottom: 60%"></div>
+                <div class="line-point" style="left: 30%; bottom: 70%"></div>
+                <div class="line-point" style="left: 50%; bottom: 75%"></div>
+                <div class="line-point" style="left: 70%; bottom: 85%"></div>
+                <div class="line-point" style="left: 90%; bottom: 90%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getAnalyticsContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('analytics-overview')">Overview</div>
+          <div class="control-tab" onclick="showControlTab('analytics-revenue')">Revenue</div>
+          <div class="control-tab" onclick="showControlTab('analytics-services')">Services</div>
+          <div class="control-tab" onclick="showControlTab('analytics-geographic')">Geographic</div>
+        </div>
+        
+        <div id="analytics-overview" class="control-content active">
+          <div class="kpi-dashboard">
+            <div class="kpi-card">
+              <div class="kpi-icon">💰</div>
+              <div class="kpi-details">
+                <h3>Total Revenue</h3>
+                <div class="kpi-value">$234,567</div>
+                <div class="kpi-change positive">+15.2% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">🚗</div>
+              <div class="kpi-details">
+                <h3>Services Completed</h3>
+                <div class="kpi-value">1,847</div>
+                <div class="kpi-change positive">+8.7% vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">⭐</div>
+              <div class="kpi-details">
+                <h3>Customer Satisfaction</h3>
+                <div class="kpi-value">4.8/5.0</div>
+                <div class="kpi-change positive">+0.1 vs last month</div>
+              </div>
+            </div>
+            
+            <div class="kpi-card">
+              <div class="kpi-icon">⚡</div>
+              <div class="kpi-details">
+                <h3>Avg Response Time</h3>
+                <div class="kpi-value">14.2 min</div>
+                <div class="kpi-change positive">-2.1 min vs last month</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="analytics-charts-grid">
+            <div class="chart-container">
+              <h3>Revenue Trend (Last 6 Months)</h3>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height: 70%"><span>Jan</span></div>
+                <div class="chart-bar" style="height: 75%"><span>Feb</span></div>
+                <div class="chart-bar" style="height: 65%"><span>Mar</span></div>
+                <div class="chart-bar" style="height: 85%"><span>Apr</span></div>
+                <div class="chart-bar" style="height: 90%"><span>May</span></div>
+                <div class="chart-bar" style="height: 100%"><span>Jun</span></div>
+              </div>
+            </div>
+            
+            <div class="chart-container">
+              <h3>Service Distribution</h3>
+              <div class="service-pie-chart">
+                <div class="pie-slice" style="--percentage: 35%; --color: #FF6B6B;">
+                  <span>Towing (35%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 25%; --color: #4ECDC4;">
+                  <span>Battery Jump (25%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 20%; --color: #45B7D1;">
+                  <span>Tire Change (20%)</span>
+                </div>
+                <div class="pie-slice" style="--percentage: 20%; --color: #FFA07A;">
+                  <span>Other (20%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-revenue" class="control-content">
+          <div class="revenue-summary">
+            <div class="revenue-period">
+              <h3>Today</h3>
+              <div class="revenue-amount">$8,247</div>
+              <div class="revenue-services">67 services</div>
+            </div>
+            
+            <div class="revenue-period">
+              <h3>This Week</h3>
+              <div class="revenue-amount">$47,892</div>
+              <div class="revenue-services">398 services</div>
+            </div>
+            
+            <div class="revenue-period">
+              <h3>This Month</h3>
+              <div class="revenue-amount">$234,567</div>
+              <div class="revenue-services">1,847 services</div>
+            </div>
+          </div>
+          
+          <div class="revenue-breakdown">
+            <h3>Revenue by Service Type</h3>
+            <div class="breakdown-list">
+              <div class="breakdown-item">
+                <span class="service-name">🚛 Towing</span>
+                <span class="service-revenue">$82,098</span>
+                <span class="service-percentage">35%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🔋 Battery Jump</span>
+                <span class="service-revenue">$58,642</span>
+                <span class="service-percentage">25%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🛞 Tire Change</span>
+                <span class="service-revenue">$46,913</span>
+                <span class="service-percentage">20%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">🔓 Lockout</span>
+                <span class="service-revenue">$28,148</span>
+                <span class="service-percentage">12%</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="service-name">⛽ Fuel Delivery</span>
+                <span class="service-revenue">$18,766</span>
+                <span class="service-percentage">8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-services" class="control-content">
+          <div class="services-analytics">
+            <div class="service-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Most Requested Service</span>
+                <span class="metric-value">🚛 Towing (647 requests)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Fastest Service</span>
+                <span class="metric-value">⛽ Fuel Delivery (8.5 min avg)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Highest Rated Service</span>
+                <span class="metric-value">🔋 Battery Jump (4.9⭐)</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Peak Hours</span>
+                <span class="metric-value">8:00 AM - 10:00 AM, 5:00 PM - 7:00 PM</span>
+              </div>
+            </div>
+            
+            <div class="hourly-demand-chart">
+              <h3>Hourly Service Demand</h3>
+              <div class="demand-bars">
+                <div class="demand-bar" style="height: 20%"><span>12AM</span></div>
+                <div class="demand-bar" style="height: 15%"><span>3AM</span></div>
+                <div class="demand-bar" style="height: 25%"><span>6AM</span></div>
+                <div class="demand-bar" style="height: 85%"><span>9AM</span></div>
+                <div class="demand-bar" style="height: 60%"><span>12PM</span></div>
+                <div class="demand-bar" style="height: 70%"><span>3PM</span></div>
+                <div class="demand-bar" style="height: 95%"><span>6PM</span></div>
+                <div class="demand-bar" style="height: 40%"><span>9PM</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="analytics-geographic" class="control-content">
+          <div class="geographic-analytics">
+            <div class="region-stats">
+              <h3>Service Coverage by Region</h3>
+              <div class="region-list">
+                <div class="region-item">
+                  <span class="region-name">Downtown</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 85%"></div>
+                  </div>
+                  <span class="region-percentage">85%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Suburbs</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 70%"></div>
+                  </div>
+                  <span class="region-percentage">70%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Industrial</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 55%"></div>
+                  </div>
+                  <span class="region-percentage">55%</span>
+                </div>
+                <div class="region-item">
+                  <span class="region-name">Rural</span>
+                  <div class="region-bar">
+                    <div class="region-fill" style="width: 30%"></div>
+                  </div>
+                  <span class="region-percentage">30%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="heat-map">
+              <h3>Service Request Heat Map</h3>
+              <div class="map-container">
+                <div class="heat-zone high" style="top: 20%; left: 25%; width: 30%; height: 20%">
+                  <span>High Activity</span>
+                </div>
+                <div class="heat-zone medium" style="top: 50%; left: 60%; width: 25%; height: 15%">
+                  <span>Medium Activity</span>
+                </div>
+                <div class="heat-zone low" style="top: 70%; left: 20%; width: 40%; height: 25%">
+                  <span>Low Activity</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  getSystemSettingsContent: function() {
+    return `
+      <div class="control-panel">
+        <div class="control-tabs">
+          <div class="control-tab active" onclick="showControlTab('settings-general')">General</div>
+          <div class="control-tab" onclick="showControlTab('settings-services')">Services</div>
+          <div class="control-tab" onclick="showControlTab('settings-notifications')">Notifications</div>
+          <div class="control-tab" onclick="showControlTab('settings-security')">Security</div>
+        </div>
+        
+        <div id="settings-general" class="control-content active">
+          <div class="settings-section">
+            <h3>General System Settings</h3>
+            
+            <div class="setting-group">
+              <label class="setting-label">System Name</label>
+              <input type="text" class="form-control" value="RoadSide+ Emergency System">
+            </div>
+            
+            <div class="setting-group">
+              <label class="setting-label">Default Response Time (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            
+            <div class="setting-group">
+              <label class="setting-label">Maximum Service Radius (miles)</label>
+              <input type="number" class="form-control" value="50">
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                Enable 24/7 Operations
+              </label>
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                Automatic Technician Assignment
+              </label>
+            </div>
+            
+            <div class="setting-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+                GPS Tracking for All Services
+              </label>
+            </div>
+          </div>
+          
+          <div class="settings-section">
+            <h3>Maintenance Mode</h3>
+            <div class="maintenance-controls">
+              <p>Schedule system maintenance or enable emergency maintenance mode</p>
+              <button class="btn btn--outline">Schedule Maintenance</button>
+              <button class="btn btn--warning">Enable Maintenance Mode</button>
+            </div>
+          </div>
+        </div>
+        
+        <div id="settings-services" class="control-content">
+          <div class="services-pricing">
+            <h3>Service Pricing Configuration</h3>
+            
+            <div class="pricing-grid">
+              <div class="pricing-item">
+                <div class="service-icon">🚛</div>
+                <div class="service-details">
+                  <h4>Towing Service</h4>
+                  <div class="pricing-controls">
+                    <label>Base Price: $<input type="number" value="150" class="price-input"></label>
+                    <label>Per Mile: $<input type="number" value="3.50" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🔋</div>
+                <div class="service-details">
+                  <h4>Battery Jump</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="75" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🛞</div>
+                <div class="service-details">
+                  <h4>Tire Change</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="100" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+              
+              <div class="pricing-item">
+                <div class="service-icon">🔓</div>
+                <div class="service-details">
+                  <h4>Lockout Service</h4>
+                  <div class="pricing-controls">
+                    <label>Flat Rate: $<input type="number" value="85" class="price-input"></label>
+                  </div>
+                </div>
+                <div class="service-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Active
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="service-areas">
+            <h3>Service Areas</h3>
+            <div class="area-list">
+              <div class="area-item">
+                <span class="area-name">Downtown Metro</span>
+                <span class="area-status active">Active</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+              <div class="area-item">
+                <span class="area-name">Suburban District</span>
+                <span class="area-status active">Active</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+              <div class="area-item">
+                <span class="area-name">Industrial Zone</span>
+                <span class="area-status limited">Limited</span>
+                <button class="btn btn--sm">Edit</button>
+              </div>
+            </div>
+            <button class="btn btn--primary">+ Add Service Area</button>
+          </div>
+        </div>
+        
+        <div id="settings-notifications" class="control-content">
+          <div class="notification-settings">
+            <h3>Notification Configuration</h3>
+            
+            <div class="notification-section">
+              <h4>Email Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Service Request Notifications
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Emergency Alert Notifications
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                  Daily Summary Reports
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  System Status Updates
+                </label>
+              </div>
+            </div>
+            
+            <div class="notification-section">
+              <h4>SMS Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Emergency Alerts Only
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                  Service Confirmations
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Critical System Alerts
+                </label>
+              </div>
+            </div>
+            
+            <div class="notification-section">
+              <h4>Push Notifications</h4>
+              <div class="notification-toggles">
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Real-time Service Updates
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Technician Assignments
+                </label>
+                <label class="toggle-label">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                  Customer Communications
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="settings-security" class="control-content">
+          <div class="security-settings">
+            <h3>Security Configuration</h3>
+            
+            <div class="security-section">
+              <h4>Authentication Settings</h4>
+              <div class="security-controls">
+                <div class="setting-group">
+                  <label class="setting-label">Password Minimum Length</label>
+                  <input type="number" class="form-control" value="8">
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Require Two-Factor Authentication
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Auto-logout After Inactivity
+                  </label>
+                </div>
+                
+                <div class="setting-group">
+                  <label class="setting-label">Session Timeout (minutes)</label>
+                  <input type="number" class="form-control" value="30">
+                </div>
+              </div>
+            </div>
+            
+            <div class="security-section">
+              <h4>Data Protection</h4>
+              <div class="security-controls">
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Encrypt All Data Transmissions
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                    Log All Access Attempts
+                  </label>
+                </div>
+                
+                <div class="setting-toggle">
+                  <label class="toggle-label">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                    Enable Data Backup Encryption
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="security-section">
+              <h4>Access Control</h4>
+              <div class="access-logs">
+                <h5>Recent Security Events</h5>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 14:23:45</span>
+                  <span class="log-event">Admin login from 192.168.1.100</span>
+                  <span class="log-status success">✓ Allowed</span>
+                </div>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 13:45:12</span>
+                  <span class="log-event">Failed login attempt from 203.45.67.89</span>
+                  <span class="log-status warning">⚠ Blocked</span>
+                </div>
+                <div class="log-entry">
+                  <span class="log-time">2024-01-15 12:30:56</span>
+                  <span class="log-event">Password reset request</span>
+                  <span class="log-status success">✓ Completed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  initializeControlFunctions: function(controlType) {
+    // Add event listeners for interactive elements
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!this.disabled) {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 100);
+        }
+      });
+    });
+    
+    // Initialize toggle switches
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const label = this.closest('.toggle-label') || this.closest('.permission-item');
+        if (label) {
+          label.style.opacity = this.checked ? '1' : '0.7';
+        }
+      });
+    });
+  },
+
+  closeSystemControlModal: function() {
+    const modal = document.getElementById('system-control-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+}
+
+// Initialize app state
+const appState = new AppState();
+
+// Services Data
+const services = {
+  1: { id: 1, name: 'Towing', price: 150, icon: '🚛', estimatedTime: 45, description: 'Vehicle towing to your preferred location' },
+  2: { id: 2, name: 'Battery Jump', price: 75, icon: '🔋', estimatedTime: 20, description: 'Jump start for dead battery' },
+  3: { id: 3, name: 'Tire Change', price: 100, icon: '🛞', estimatedTime: 30, description: 'Flat tire replacement with spare' },
+  4: { id: 4, name: 'Lockout', price: 85, icon: '🔓', estimatedTime: 20, description: 'Professional lockout assistance' },
+  5: { id: 5, name: 'Fuel Delivery', price: 60, icon: '⛽', estimatedTime: 25, description: 'Emergency fuel delivery service' },
+  6: { id: 6, name: 'Winch Recovery', price: 200, icon: '🪝', estimatedTime: 60, description: 'Vehicle recovery from ditches or obstacles' }
 };
 
-// Global functions for HTML onclick handlers
+// Utility Functions
+function $(selector) {
+  return document.querySelector(selector);
+}
+
+function $all(selector) {
+  return document.querySelectorAll(selector);
+}
+
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function generateId(prefix = 'id') {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Loading Screen
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    $('#loading-screen').style.display = 'none';
+    $('#login-screen').classList.remove('hidden');
+  }, 1000);
+});
+
+// Authentication
 function login() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-    App.updateUI();
+  $('#login-screen').classList.add('hidden');
+  $('#main-app').classList.remove('hidden');
+  updateUserInfo();
+  showView('dashboard');
 }
 
-function showRegister() {
-    App.showToast('Register functionality not implemented in demo');
+function logout() {
+  $('#main-app').classList.add('hidden');
+  $('#login-screen').classList.remove('hidden');
 }
 
+function updateUserInfo() {
+  const user = appState.currentUser;
+  $('.user-name').textContent = user.name;
+  $('.user-avatar').textContent = user.name.split(' ').map(n => n[0]).join('');
+}
+
+// Navigation
 function toggleNavDrawer() {
-    App.toggleNavDrawer();
+  $('#nav-drawer').classList.toggle('open');
 }
 
 function closeNavDrawer() {
-    App.closeNavDrawer();
+  $('#nav-drawer').classList.remove('open');
 }
 
-function emergencyCall() {
-    App.showToast('🚨 Emergency SOS activated! Help is on the way!', 'success');
-    // In a real app, this would contact emergency services
+function showView(viewName) {
+  // Hide all views
+  $all('.view').forEach(view => view.classList.remove('active'));
+  $all('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+  
+  // Show selected view
+  $(`#${viewName}-view`).classList.add('active');
+  
+  // Update bottom nav
+  const navItem = $(`.bottom-nav .nav-item[data-view="${viewName}"]`);
+  if (navItem) navItem.classList.add('active');
+  
+  appState.currentView = viewName;
+  
+  // Update view content
+  switch(viewName) {
+    case 'dashboard':
+      updateDashboard();
+      break;
+    case 'history':
+      updateHistoryView();
+      break;
+    case 'profile':
+      updateProfileView();
+      break;
+    case 'support':
+      updateSupportView();
+      break;
+  }
+  
+  closeNavDrawer();
 }
 
-function selectService(id, name, price) {
-    const service = App.services.find(s => s.id === id);
-    if (!service) return;
+// Dashboard Functions
+function updateDashboard() {
+  // Update recent services
+  const recentContainer = $('#recent-services');
+  const recentServices = appState.serviceHistory.slice(0, 3);
+  
+  recentContainer.innerHTML = recentServices.map(service => `
+    <div class="service-item">
+      <div class="service-icon">${services[Object.keys(services).find(k => services[k].name === service.type)]?.icon || '🔧'}</div>
+      <div class="service-details">
+        <h4>${service.type}</h4>
+        <p>${formatDate(service.date)}</p>
+        <p class="location">${service.location}</p>
+      </div>
+      <div class="service-status">
+        <span class="status status--success">Completed</span>
+        <div class="rating">${'⭐'.repeat(service.rating)}</div>
+      </div>
+    </div>
+  `).join('');
 
-    // Update booking modal with selected service
-    document.getElementById('selected-service-icon').textContent = service.icon;
-    document.getElementById('selected-service-name').textContent = name;
-    document.getElementById('selected-service-price').textContent = `$${price}`;
-    document.getElementById('summary-service').textContent = name;
-    document.getElementById('summary-total').textContent = `$${price}`;
-
-    // Show booking modal
-    document.getElementById('booking-modal').classList.add('active');
+  // Update stats
+  const stats = appState.currentUser.stats;
+  $('#total-services').textContent = stats.totalServices;
+  $('#total-spent').textContent = `$${stats.totalSpent}`;
+  $('#avg-rating').textContent = stats.avgRating.toFixed(1);
 }
 
-function closeBookingModal() {
-    document.getElementById('booking-modal').classList.remove('active');
+// Service Booking
+function selectService(serviceId) {
+  const service = services[serviceId];
+  appState.currentBooking = {
+    service: service,
+    step: 1,
+    details: {},
+    estimatedCost: service.price
+  };
+  
+  updateBookingModal();
+  openBookingModal();
+}
+
+function updateBookingModal() {
+  const booking = appState.currentBooking;
+  if (!booking) return;
+
+  // Update service display
+  $('#selected-service-icon').textContent = booking.service.icon;
+  $('#selected-service-name').textContent = booking.service.name;
+  $('#selected-service-price').textContent = `$${booking.service.price}`;
+  $('#service-description').textContent = booking.service.description;
+  $('#estimated-time').textContent = `${booking.service.estimatedTime} min`;
+
+  // Update steps
+  $all('.booking-step').forEach(step => step.classList.remove('active'));
+  $(`#booking-step-${booking.step}`).classList.add('active');
+  
+  $all('.booking-steps .step').forEach((step, index) => {
+    step.classList.toggle('active', index + 1 === booking.step);
+    step.classList.toggle('completed', index + 1 < booking.step);
+  });
 }
 
 function nextBookingStep() {
-    const steps = document.querySelectorAll('.booking-step');
-    const stepIndicators = document.querySelectorAll('.step');
-    let currentStep = 1;
+  const booking = appState.currentBooking;
+  if (!booking) return;
 
-    // Find current active step
-    steps.forEach((step, index) => {
-        if (step.classList.contains('active')) {
-            currentStep = index + 1;
-        }
-    });
-
-    if (currentStep < 4) {
-        // Hide current step
-        document.getElementById(`booking-step-${currentStep}`).classList.remove('active');
-        stepIndicators[currentStep - 1].classList.remove('active');
-
-        // Show next step
-        currentStep++;
-        document.getElementById(`booking-step-${currentStep}`).classList.add('active');
-        stepIndicators[currentStep - 1].classList.add('active');
+  // Validate current step
+  if (booking.step === 2) {
+    const location = $('#location-input').value;
+    const description = $('#problem-description').value;
+    
+    if (!location.trim()) {
+      alert('Please enter your location');
+      return;
     }
+    
+    booking.details.location = location;
+    booking.details.description = description;
+  }
+
+  if (booking.step < 4) {
+    booking.step++;
+    updateBookingModal();
+    
+    if (booking.step === 4) {
+      updateBookingSummary();
+    }
+  }
+}
+
+function updateBookingSummary() {
+  const booking = appState.currentBooking;
+  $('#summary-service').textContent = booking.service.name;
+  $('#summary-location').textContent = booking.details.location || 'Current Location';
+  $('#summary-payment').textContent = 'Credit Card ••••4242';
+  $('#summary-total').textContent = `$${booking.estimatedCost}`;
 }
 
 function selectPaymentMethod(element) {
-    document.querySelectorAll('.payment-method').forEach(method => {
-        method.classList.remove('active');
-    });
-    element.classList.add('active');
+  $all('.payment-method').forEach(method => method.classList.remove('active'));
+  element.classList.add('active');
 }
 
 function confirmBooking() {
-    closeBookingModal();
-    App.showToast('🎉 Booking confirmed! Technician assigned and en route.');
-    
-    // Show tracking modal after a short delay
-    setTimeout(() => {
-        document.getElementById('tracking-modal').classList.add('active');
-    }, 1000);
+  const booking = appState.currentBooking;
+  if (!booking) return;
+
+  // Create service record
+  const serviceRecord = {
+    id: generateId('service'),
+    type: booking.service.name,
+    date: new Date().toISOString(),
+    location: booking.details.location || 'Current Location',
+    status: 'in_progress',
+    technician: 'Mike Rodriguez',
+    cost: booking.estimatedCost,
+    rating: 0,
+    duration: `${booking.service.estimatedTime} min`,
+    description: booking.details.description || ''
+  };
+
+  appState.addServiceToHistory(serviceRecord);
+  closeBookingModal();
+  
+  // Start tracking
+  setTimeout(() => {
+    openTrackingModal(serviceRecord);
+  }, 500);
+}
+
+function openBookingModal() {
+  $('#booking-modal').classList.add('active');
+}
+
+function closeBookingModal() {
+  $('#booking-modal').classList.remove('active');
+  appState.currentBooking = null;
+}
+
+// Service Tracking
+function openTrackingModal(service) {
+  $('#tracking-modal').classList.add('active');
+  startServiceTracking(service);
 }
 
 function closeTrackingModal() {
-    document.getElementById('tracking-modal').classList.remove('active');
+  $('#tracking-modal').classList.remove('active');
+}
+
+function startServiceTracking(service) {
+  let timeRemaining = service ? parseInt(service.duration) : 15;
+  $('#eta-time').textContent = `${timeRemaining} minutes`;
+  
+  const interval = setInterval(() => {
+    timeRemaining--;
+    $('#eta-time').textContent = `${timeRemaining} minutes`;
+    
+    if (timeRemaining <= 0) {
+      clearInterval(interval);
+      $('#tracking-status').innerHTML = `
+        <div class="status-icon">✅</div>
+        <h3>Service Completed</h3>
+        <p>Your technician has finished the service</p>
+      `;
+      
+      // Update service status
+      const serviceIndex = appState.serviceHistory.findIndex(s => s.id === service.id);
+      if (serviceIndex !== -1) {
+        appState.serviceHistory[serviceIndex].status = 'completed';
+        appState.serviceHistory[serviceIndex].rating = 5;
+        appState.saveToStorage('serviceHistory', appState.serviceHistory);
+        appState.updateUserStats();
+      }
+      
+      setTimeout(() => {
+        closeTrackingModal();
+        showView('dashboard');
+      }, 3000);
+    }
+  }, 2000); // Faster for demo
 }
 
 function callTechnician() {
-    App.showToast('📞 Calling technician Mike Rodriguez...');
+  alert('Calling technician: +1 (555) 123-4567');
+}
+
+// History Functions
+function updateHistoryView() {
+  const historyContainer = $('#service-history-list');
+  
+  if (appState.serviceHistory.length === 0) {
+    historyContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No Service History</h3>
+        <p>Your service history will appear here</p>
+      </div>
+    `;
+    return;
+  }
+
+  historyContainer.innerHTML = appState.serviceHistory.map(service => `
+    <div class="history-card" onclick="viewServiceDetails('${service.id}')">
+      <div class="history-header">
+        <div class="service-type">
+          <span class="service-icon">${services[Object.keys(services).find(k => services[k].name === service.type)]?.icon || '🔧'}</span>
+          <span>${service.type}</span>
+        </div>
+        <span class="status status--${service.status === 'completed' ? 'success' : 'info'}">${service.status}</span>
+      </div>
+      <div class="history-details">
+        <p><strong>Date:</strong> ${formatDate(service.date)}</p>
+        <p><strong>Location:</strong> ${service.location}</p>
+        <p><strong>Technician:</strong> ${service.technician}</p>
+        <p><strong>Cost:</strong> $${service.cost}</p>
+        ${service.rating > 0 ? `<div class="rating">${'⭐'.repeat(service.rating)} (${service.rating}/5)</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function viewServiceDetails(serviceId) {
+  const service = appState.serviceHistory.find(s => s.id === serviceId);
+  if (!service) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Service Details</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="service-detail-card">
+          <div class="service-header">
+            <span class="service-icon">${services[Object.keys(services).find(k => services[k].name === service.type)]?.icon || '🔧'}</span>
+            <h3>${service.type}</h3>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Date & Time</label>
+              <span>${formatDate(service.date)}</span>
+            </div>
+            <div class="detail-item">
+              <label>Location</label>
+              <span>${service.location}</span>
+            </div>
+            <div class="detail-item">
+              <label>Technician</label>
+              <span>${service.technician}</span>
+            </div>
+            <div class="detail-item">
+              <label>Duration</label>
+              <span>${service.duration}</span>
+            </div>
+            <div class="detail-item">
+              <label>Cost</label>
+              <span>$${service.cost}</span>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status status--${service.status === 'completed' ? 'success' : 'info'}">${service.status}</span>
+            </div>
+            ${service.rating > 0 ? `
+              <div class="detail-item">
+                <label>Rating</label>
+                <span>${'⭐'.repeat(service.rating)} (${service.rating}/5)</span>
+              </div>
+            ` : ''}
+            ${service.description ? `
+              <div class="detail-item full-width">
+                <label>Description</label>
+                <span>${service.description}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+// Profile Functions
+function updateProfileView() {
+  const user = appState.currentUser;
+  
+  // Update profile form
+  $('#profile-name').value = user.name;
+  $('#profile-email').value = user.email;
+  $('#profile-phone').value = user.phone;
+  $('#emergency-contact-name').value = user.emergencyContact.name;
+  $('#emergency-contact-phone').value = user.emergencyContact.phone;
+  $('#emergency-contact-relationship').value = user.emergencyContact.relationship;
+  
+  // Update preferences
+  $('#notifications-enabled').checked = user.preferences.notifications;
+  $('#location-enabled').checked = user.preferences.location;
+  $('#dark-mode-enabled').checked = user.preferences.darkMode;
+  
+  // Update stats display
+  $('#profile-total-services').textContent = user.stats.totalServices;
+  $('#profile-total-spent').textContent = `$${user.stats.totalSpent}`;
+  $('#profile-avg-rating').textContent = user.stats.avgRating.toFixed(1);
+  $('#profile-member-since').textContent = new Date(user.memberSince).toLocaleDateString();
 }
 
 function saveProfile() {
-    App.showToast('✅ Profile saved successfully!');
+  const updates = {
+    name: $('#profile-name').value,
+    email: $('#profile-email').value,
+    phone: $('#profile-phone').value,
+    emergencyContact: {
+      name: $('#emergency-contact-name').value,
+      phone: $('#emergency-contact-phone').value,
+      relationship: $('#emergency-contact-relationship').value
+    },
+    preferences: {
+      notifications: $('#notifications-enabled').checked,
+      location: $('#location-enabled').checked,
+      darkMode: $('#dark-mode-enabled').checked
+    }
+  };
+  
+  appState.updateProfile(updates);
+  updateUserInfo();
+  
+  // Show success message
+  showToast('Profile updated successfully', 'success');
 }
 
-function showDashboard(type) {
-    App.showDashboard(type);
+// Support Functions
+function updateSupportView() {
+  const ticketsContainer = $('#support-tickets');
+  
+  if (appState.supportTickets.length === 0) {
+    ticketsContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">💬</div>
+        <h3>No Support Tickets</h3>
+        <p>Your support conversations will appear here</p>
+      </div>
+    `;
+  } else {
+    ticketsContainer.innerHTML = appState.supportTickets.map(ticket => `
+      <div class="support-ticket" onclick="openSupportChat('${ticket.id}')">
+        <div class="ticket-header">
+          <h4>${ticket.subject}</h4>
+          <span class="status status--${ticket.status === 'resolved' ? 'success' : 'info'}">${ticket.status}</span>
+        </div>
+        <div class="ticket-preview">
+          <p>${ticket.messages[ticket.messages.length - 1].message}</p>
+          <span class="ticket-date">${formatDate(ticket.date)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
 }
 
-function openSystemControl(controlType) {
-    App.openSystemControl(controlType);
+function createSupportTicket() {
+  const subject = prompt('What can we help you with?');
+  if (!subject) return;
+  
+  const message = prompt('Please describe your issue:');
+  if (!message) return;
+  
+  const ticket = {
+    id: generateId('ticket'),
+    subject: subject,
+    status: 'open',
+    date: new Date().toISOString(),
+    messages: [
+      {
+        sender: 'user',
+        message: message,
+        timestamp: new Date().toISOString()
+      },
+      {
+        sender: 'support',
+        message: 'Thank you for contacting RoadSide+ support. We\'ve received your message and will respond shortly.',
+        timestamp: new Date(Date.now() + 30000).toISOString()
+      }
+    ]
+  };
+  
+  appState.addSupportTicket(ticket);
+  updateSupportView();
+  showToast('Support ticket created successfully', 'success');
 }
 
-// Initialize app when DOM is ready
+function openSupportChat(ticketId) {
+  const ticket = appState.supportTickets.find(t => t.id === ticketId);
+  if (!ticket) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content support-chat">
+      <div class="modal-header">
+        <h2>${ticket.subject}</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="chat-messages" id="chat-messages-${ticketId}">
+          ${ticket.messages.map(msg => `
+            <div class="message ${msg.sender === 'user' ? 'user-message' : 'support-message'}">
+              <div class="message-content">${msg.message}</div>
+              <div class="message-time">${formatDate(msg.timestamp)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="chat-input-container">
+          <input type="text" id="chat-input-${ticketId}" placeholder="Type your message..." class="form-control">
+          <button onclick="sendSupportMessage('${ticketId}')" class="btn btn--primary">Send</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+}
+
+function sendSupportMessage(ticketId) {
+  const input = $(`#chat-input-${ticketId}`);
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  const ticket = appState.supportTickets.find(t => t.id === ticketId);
+  if (!ticket) return;
+  
+  // Add user message
+  ticket.messages.push({
+    sender: 'user',
+    message: message,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Simulate support response
+  setTimeout(() => {
+    ticket.messages.push({
+      sender: 'support',
+      message: 'Thank you for your message. Our team is reviewing your request and will provide an update soon.',
+      timestamp: new Date().toISOString()
+    });
+    
+    appState.updateSupportTicket(ticketId, ticket);
+    
+    // Update chat display
+    const chatContainer = $(`#chat-messages-${ticketId}`);
+    if (chatContainer) {
+      chatContainer.innerHTML = ticket.messages.map(msg => `
+        <div class="message ${msg.sender === 'user' ? 'user-message' : 'support-message'}">
+          <div class="message-content">${msg.message}</div>
+          <div class="message-time">${formatDate(msg.timestamp)}</div>
+        </div>
+      `).join('');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, 1000);
+  
+  input.value = '';
+  appState.updateSupportTicket(ticketId, ticket);
+  
+  // Update chat display immediately for user message
+  const chatContainer = $(`#chat-messages-${ticketId}`);
+  if (chatContainer) {
+    chatContainer.innerHTML = ticket.messages.map(msg => `
+      <div class="message ${msg.sender === 'user' ? 'user-message' : 'support-message'}">
+        <div class="message-content">${msg.message}</div>
+        <div class="message-time">${formatDate(msg.timestamp)}</div>
+      </div>
+    `).join('');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+}
+
+// Emergency SOS
+function emergencyCall() {
+  if (appState.sosActive) {
+    cancelSOS();
+    return;
+  }
+  
+  appState.sosActive = true;
+  
+  // Create SOS modal
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.id = 'sos-modal';
+  modal.innerHTML = `
+    <div class="modal-content sos-modal">
+      <div class="sos-header">
+        <div class="sos-icon">🚨</div>
+        <h2>EMERGENCY SOS ACTIVATED</h2>
+        <p>Emergency services have been notified</p>
+      </div>
+      <div class="sos-body">
+        <div class="sos-countdown" id="sos-countdown">
+          <div class="countdown-circle">
+            <span id="countdown-number">30</span>
+          </div>
+          <p>Emergency dispatch in <span id="countdown-text">30</span> seconds</p>
+        </div>
+        <div class="sos-info">
+          <p><strong>Location:</strong> Current GPS location shared</p>
+          <p><strong>Emergency Contact:</strong> ${appState.currentUser.emergencyContact.name} will be notified</p>
+          <p><strong>Services:</strong> Police, Fire, Medical on standby</p>
+        </div>
+        <div class="sos-actions">
+          <button onclick="cancelSOS()" class="btn btn--outline btn--full-width">Cancel Emergency</button>
+          <button onclick="immediateDispatch()" class="btn btn--primary btn--full-width">Dispatch Now</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  startSOSCountdown();
+}
+
+function startSOSCountdown() {
+  let countdown = 30;
+  const countdownNumber = $('#countdown-number');
+  const countdownText = $('#countdown-text');
+  
+  const interval = setInterval(() => {
+    countdown--;
+    if (countdownNumber) countdownNumber.textContent = countdown;
+    if (countdownText) countdownText.textContent = countdown;
+    
+    if (countdown <= 0) {
+      clearInterval(interval);
+      dispatchEmergency();
+    }
+  }, 1000);
+  
+  // Store interval for cancellation
+  window.sosInterval = interval;
+}
+
+function cancelSOS() {
+  appState.sosActive = false;
+  
+  if (window.sosInterval) {
+    clearInterval(window.sosInterval);
+  }
+  
+  const modal = $('#sos-modal');
+  if (modal) {
+    modal.remove();
+  }
+  
+  showToast('Emergency SOS cancelled', 'info');
+}
+
+function immediateDispatch() {
+  if (window.sosInterval) {
+    clearInterval(window.sosInterval);
+  }
+  dispatchEmergency();
+}
+
+function dispatchEmergency() {
+  const modal = $('#sos-modal');
+  if (modal) {
+    modal.innerHTML = `
+      <div class="modal-content sos-modal">
+        <div class="sos-header success">
+          <div class="sos-icon">✅</div>
+          <h2>EMERGENCY DISPATCHED</h2>
+          <p>Help is on the way</p>
+        </div>
+        <div class="sos-body">
+          <div class="dispatch-info">
+            <h3>Emergency Services Notified</h3>
+            <ul>
+              <li>🚓 Police ETA: 8 minutes</li>
+              <li>🚑 Medical ETA: 12 minutes</li>
+              <li>🚒 Fire Department on standby</li>
+            </ul>
+            <p><strong>Incident ID:</strong> EMG-${Date.now()}</p>
+            <p><strong>Your Location:</strong> GPS coordinates shared</p>
+          </div>
+          <div class="emergency-contacts">
+            <h4>Emergency Contacts Notified</h4>
+            <p>${appState.currentUser.emergencyContact.name} - ${appState.currentUser.emergencyContact.phone}</p>
+          </div>
+          <button onclick="closeEmergencyModal()" class="btn btn--primary btn--full-width">Close</button>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Add to service history
+  const emergencyService = {
+    id: generateId('emergency'),
+    type: 'Emergency SOS',
+    date: new Date().toISOString(),
+    location: 'Current GPS Location',
+    status: 'in_progress',
+    technician: 'Emergency Services',
+    cost: 0,
+    rating: 0,
+    duration: 'Active',
+    description: 'Emergency SOS activated - Emergency services dispatched'
+  };
+  
+  appState.addServiceToHistory(emergencyService);
+}
+
+function closeEmergencyModal() {
+  appState.sosActive = false;
+  const modal = $('#sos-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Utility Functions
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast--${type}`;
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    App.init();
+  // Bottom navigation
+  $all('.bottom-nav .nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const view = item.dataset.view;
+      if (view) {
+        showView(view);
+      }
+    });
+  });
+
+  // Modal close on outside click
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+      e.target.remove();
+    }
+  });
+
+  // ESC key handling
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modals = $all('.modal');
+      modals.forEach(modal => modal.remove());
+      closeNavDrawer();
+    }
+  });
 });
 
-// Export App object for global access
-window.App = App;
+// Initialize the app
+window.addEventListener('load', () => {
+  updateUserInfo();
+  showDashboard('customer'); // Initialize with customer dashboard
+});
+
+// Dashboard Management Functions
+function showDashboard(dashboardType) {
+  // Update active tab
+  $all('.dashboard-tabs .tab').forEach(tab => tab.classList.remove('active'));
+  
+  // Find and activate the correct tab based on the dashboard type
+  $all('.dashboard-tabs .tab').forEach(tab => {
+    const onclick = tab.getAttribute('onclick');
+    if (onclick && onclick.includes(`'${dashboardType}'`)) {
+      tab.classList.add('active');
+    }
+  });
+  
+  // Update nav drawer active item
+  $all('.nav-drawer .nav-item').forEach(item => item.classList.remove('active'));
+  
+  // Find and activate the correct nav item
+  $all('.nav-drawer .nav-item').forEach(item => {
+    const onclick = item.getAttribute('onclick');
+    if (onclick && onclick.includes(`'${dashboardType}'`)) {
+      item.classList.add('active');
+    }
+  });
+  
+  // Update dashboard content
+  updateDashboardContent(dashboardType);
+  
+  // Store current dashboard type
+  appState.currentDashboard = dashboardType;
+  
+  // Close navigation drawer after selection
+  closeNavDrawer();
+  
+  // Show visual feedback
+  showToast(`Switched to ${dashboardType.charAt(0).toUpperCase() + dashboardType.slice(1)} Dashboard`, 'success');
+}
+
+function updateDashboardContent(dashboardType) {
+  const dashboardView = $('#dashboard-view');
+  
+  if (!dashboardView) {
+    console.error('Dashboard view not found');
+    return;
+  }
+  
+  let content = '';
+  
+  switch(dashboardType) {
+    case 'customer':
+      content = getCustomerDashboard();
+      break;
+    case 'technician':
+      content = getTechnicianDashboard();
+      break;
+    case 'admin':
+      content = getAdminDashboard();
+      break;
+    case 'partner':
+      content = getPartnerDashboard();
+      break;
+    case 'security':
+      content = getSecurityDashboard();
+      break;
+    default:
+      content = getCustomerDashboard();
+  }
+  
+  dashboardView.innerHTML = content;
+  
+  // Update dashboard-specific data if needed
+  if (dashboardType === 'customer') {
+    updateDashboard();
+  }
+}
+
+function getCustomerDashboard() {
+  return `
+    <!-- Emergency Banner -->
+    <div class="emergency-banner">
+        <div class="emergency-content">
+            <span class="emergency-icon">🚨</span>
+            <div class="emergency-text">
+                <h3>Emergency Assistance</h3>
+                <p>24/7 immediate response</p>
+            </div>
+            <button class="emergency-btn" onclick="emergencyCall()">SOS</button>
+        </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-section">
+        <h2>Select Service</h2>
+        <div class="services-grid">
+            <div class="service-card" onclick="selectService(1)">
+                <div class="service-icon">🚛</div>
+                <h3>Towing</h3>
+                <p class="service-price">$150</p>
+                <p class="service-time">45 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(2)">
+                <div class="service-icon">🔋</div>
+                <h3>Battery Jump</h3>
+                <p class="service-price">$75</p>
+                <p class="service-time">20 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(3)">
+                <div class="service-icon">🛞</div>
+                <h3>Tire Change</h3>
+                <p class="service-price">$100</p>
+                <p class="service-time">30 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(4)">
+                <div class="service-icon">🔓</div>
+                <h3>Lockout</h3>
+                <p class="service-price">$85</p>
+                <p class="service-time">20 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(5)">
+                <div class="service-icon">⛽</div>
+                <h3>Fuel Delivery</h3>
+                <p class="service-price">$60</p>
+                <p class="service-time">15 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(6)">
+                <div class="service-icon">🪝</div>
+                <h3>Winch Recovery</h3>
+                <p class="service-price">$200</p>
+                <p class="service-time">60 min • 45 min response</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Services -->
+    <div class="recent-section">
+        <h2>Recent Services</h2>
+        <div id="recent-services" class="service-history">
+            <!-- Recent services will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="stats-section">
+        <h2>Your Stats</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="total-services">0</div>
+                <div class="stat-label">Total Services</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="total-spent">$0</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="avg-rating">0.0</div>
+                <div class="stat-label">Avg Rating</div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getTechnicianDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🔧 Technician Dashboard</h1>
+        <p>Manage your service assignments</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>Today's Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">15</div>
+                <div class="stat-label">Completed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value">4.9</div>
+                <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$1,250</div>
+                <div class="stat-label">Earnings Today</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="services-section">
+        <h2>Current Assignments</h2>
+        <div class="assignment-list">
+            <div class="assignment-card urgent">
+                <div class="assignment-header">
+                    <span class="service-type">🚛 Towing</span>
+                    <span class="priority high">HIGH PRIORITY</span>
+                </div>
+                <div class="assignment-details">
+                    <p><strong>Location:</strong> Highway 101, Mile 42</p>
+                    <p><strong>Customer:</strong> Sarah Johnson</p>
+                    <p><strong>Issue:</strong> Engine failure, needs towing</p>
+                    <p><strong>ETA:</strong> 12 minutes</p>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn btn--primary btn--sm" onclick="acceptJob('job-001')">Accept</button>
+                    <button class="btn btn--outline btn--sm" onclick="callCustomer('555-0123')">📞 Call</button>
+                </div>
+            </div>
+            
+            <div class="assignment-card">
+                <div class="assignment-header">
+                    <span class="service-type">🔋 Battery Jump</span>
+                    <span class="priority medium">MEDIUM</span>
+                </div>
+                <div class="assignment-details">
+                    <p><strong>Location:</strong> Downtown Plaza Parking</p>
+                    <p><strong>Customer:</strong> Mike Chen</p>
+                    <p><strong>Issue:</strong> Dead battery after leaving lights on</p>
+                    <p><strong>ETA:</strong> 25 minutes</p>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn btn--primary btn--sm" onclick="acceptJob('job-002')">Accept</button>
+                    <button class="btn btn--outline btn--sm" onclick="callCustomer('555-0456')">📞 Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getAdminDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>⚙️ Admin Dashboard</h1>
+        <p>System management and analytics</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>System Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔧</div>
+                <div class="stat-value">89</div>
+                <div class="stat-label">Active Technicians</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">342</div>
+                <div class="stat-label">Services Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$45,680</div>
+                <div class="stat-label">Revenue Today</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-controls">
+        <h2>System Controls</h2>
+        <div class="control-grid">
+            <div class="control-card" onclick="manageUsers()">
+                <div class="control-icon">👤</div>
+                <h3>User Management</h3>
+                <p>Manage customer accounts and permissions</p>
+            </div>
+            <div class="control-card" onclick="manageTechnicians()">
+                <div class="control-icon">🔧</div>
+                <h3>Technician Management</h3>
+                <p>Monitor and assign technician resources</p>
+            </div>
+            <div class="control-card" onclick="viewAnalytics()">
+                <div class="control-icon">📈</div>
+                <h3>Analytics</h3>
+                <p>View detailed system performance metrics</p>
+            </div>
+            <div class="control-card" onclick="systemSettings()">
+                <div class="control-icon">⚙️</div>
+                <h3>System Settings</h3>
+                <p>Configure system parameters and features</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+            <div class="activity-item">
+                <span class="activity-icon">✅</span>
+                <div class="activity-details">
+                    <p><strong>Service Completed:</strong> Towing service for customer #1247</p>
+                    <span class="activity-time">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <span class="activity-icon">👤</span>
+                <div class="activity-details">
+                    <p><strong>New User:</strong> Jane Smith registered</p>
+                    <span class="activity-time">5 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <span class="activity-icon">🚨</span>
+                <div class="activity-details">
+                    <p><strong>Emergency Alert:</strong> SOS activated by user #892</p>
+                    <span class="activity-time">8 minutes ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getPartnerDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🤝 Partner Dashboard</h1>
+        <p>Business partnerships and integrations</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>Partnership Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Active Partners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value">156</div>
+                <div class="stat-label">Referrals This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$12,450</div>
+                <div class="stat-label">Commission Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Partner Rating</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="partner-management">
+        <h2>Partner Network</h2>
+        <div class="partner-list">
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-logo">🏢</div>
+                    <div class="partner-info">
+                        <h3>AutoCare Plus</h3>
+                        <p>Tier 1 Partner • 156 referrals</p>
+                    </div>
+                    <span class="partner-status active">Active</span>
+                </div>
+                <div class="partner-stats">
+                    <span>Revenue: $45,600</span>
+                    <span>Rating: 4.9★</span>
+                </div>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-logo">🚗</div>
+                    <div class="partner-info">
+                        <h3>QuickFix Motors</h3>
+                        <p>Tier 2 Partner • 89 referrals</p>
+                    </div>
+                    <span class="partner-status active">Active</span>
+                </div>
+                <div class="partner-stats">
+                    <span>Revenue: $28,400</span>
+                    <span>Rating: 4.7★</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="commission-section">
+        <h2>Commission Tracking</h2>
+        <div class="commission-chart">
+            <div class="chart-placeholder">
+                <p>📊 Commission trends and analytics would be displayed here</p>
+                <div class="mini-stats">
+                    <span>This Month: $12,450</span>
+                    <span>Last Month: $11,200</span>
+                    <span>Growth: +11.2%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getSecurityDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🛡️ Security Dashboard</h1>
+        <p>System security and threat monitoring</p>
+    </div>
+
+    <div class="security-alerts">
+        <div class="alert-banner warning">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content">
+                <h3>Security Alert</h3>
+                <p>2 failed login attempts detected from unusual locations</p>
+            </div>
+            <button class="btn btn--outline btn--sm">Investigate</button>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2>Security Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-value">99.8%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔒</div>
+                <div class="stat-value">847</div>
+                <div class="stat-label">Secure Sessions</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Security Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔐</div>
+                <div class="stat-value">0</div>
+                <div class="stat-label">Breaches Detected</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="security-monitoring">
+        <h2>Real-Time Monitoring</h2>
+        <div class="monitoring-grid">
+            <div class="monitor-card">
+                <h3>🌐 Network Traffic</h3>
+                <div class="traffic-indicator normal">Normal</div>
+                <p>2.3k requests/min</p>
+            </div>
+            <div class="monitor-card">
+                <h3>🔑 Authentication</h3>
+                <div class="traffic-indicator normal">Secure</div>
+                <p>All logins verified</p>
+            </div>
+            <div class="monitor-card">
+                <h3>💾 Data Integrity</h3>
+                <div class="traffic-indicator normal">Protected</div>
+                <p>Encryption active</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <h2>Security Log</h2>
+        <div class="security-log">
+            <div class="log-entry">
+                <span class="log-time">14:32:15</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">User authentication successful - ID: 1247</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:30:42</span>
+                <span class="log-level warning">WARN</span>
+                <span class="log-message">Failed login attempt from IP: 192.168.1.100</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:28:33</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">System backup completed successfully</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:25:18</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">Emergency SOS activated - User ID: 892</span>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+// Additional Functions for Dashboard Actions
+function acceptJob(jobId) {
+  showToast(`Job ${jobId} accepted. Customer notified.`, 'success');
+}
+
+function callCustomer(phoneNumber) {
+  alert(`Calling customer: ${phoneNumber}`);
+}
+
+function manageUsers() {
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>👤 User Management</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'active-users')">Active Users</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'user-analytics')">Analytics</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'user-actions')">Actions</div>
+        </div>
+        
+        <div id="active-users" class="admin-tab-content active">
+          <div class="search-bar">
+            <input type="text" placeholder="Search users..." class="form-control" onkeyup="searchUsers(this.value)">
+          </div>
+          <div class="user-list" id="user-management-list">
+            <div class="user-item">
+              <div class="user-avatar">JD</div>
+              <div class="user-details">
+                <h4>John Doe</h4>
+                <p>john.doe@email.com • Member since 2023</p>
+                <span class="status active">Active</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-123')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-123')">Details</button>
+              </div>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar">SM</div>
+              <div class="user-details">
+                <h4>Sarah Miller</h4>
+                <p>sarah.m@email.com • Member since 2023</p>
+                <span class="status active">Active</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-124')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-124')">Details</button>
+              </div>
+            </div>
+            <div class="user-item">
+              <div class="user-avatar">MC</div>
+              <div class="user-details">
+                <h4>Mike Chen</h4>
+                <p>mike.chen@email.com • Member since 2024</p>
+                <span class="status pending">Pending</span>
+              </div>
+              <div class="user-actions">
+                <button class="btn btn--sm btn--outline" onclick="editUser('user-125')">Edit</button>
+                <button class="btn btn--sm btn--primary" onclick="viewUserDetails('user-125')">Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="user-analytics" class="admin-tab-content">
+          <div class="analytics-grid">
+            <div class="metric-card">
+              <h3>1,247</h3>
+              <p>Total Users</p>
+              <span class="trend up">+12% this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>1,156</h3>
+              <p>Active Users</p>
+              <span class="trend up">+8% this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>91</h3>
+              <p>New This Month</p>
+              <span class="trend up">+15% vs last month</span>
+            </div>
+            <div class="metric-card">
+              <h3>4.8</h3>
+              <p>Avg User Rating</p>
+              <span class="trend stable">Stable</span>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <h4>User Growth Trends</h4>
+            <p>📈 User registration and activity trends would be displayed here</p>
+          </div>
+        </div>
+        
+        <div id="user-actions" class="admin-tab-content">
+          <div class="bulk-actions">
+            <h3>Bulk Actions</h3>
+            <div class="action-buttons">
+              <button class="btn btn--primary" onclick="exportUserData()">📄 Export User Data</button>
+              <button class="btn btn--outline" onclick="sendBulkNotification()">📢 Send Notification</button>
+              <button class="btn btn--outline" onclick="generateUserReport()">📊 Generate Report</button>
+            </div>
+          </div>
+          <div class="system-actions">
+            <h3>System Actions</h3>
+            <div class="action-buttons">
+              <button class="btn btn--outline" onclick="purgeInactiveUsers()">🗑️ Purge Inactive Users</button>
+              <button class="btn btn--outline" onclick="resetUserPasswords()">🔑 Bulk Password Reset</button>
+              <button class="btn btn--outline" onclick="auditUserActivity()">🔍 Audit User Activity</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function manageTechnicians() {
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>🔧 Technician Management</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'active-techs')">Active Technicians</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'tech-performance')">Performance</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'tech-scheduling')">Scheduling</div>
+        </div>
+        
+        <div id="active-techs" class="admin-tab-content active">
+          <div class="tech-controls">
+            <button class="btn btn--primary" onclick="addNewTechnician()">➕ Add Technician</button>
+            <div class="filter-controls">
+              <select class="form-control" onchange="filterTechnicians(this.value)">
+                <option value="all">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="busy">Busy</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
+          </div>
+          <div class="technician-list">
+            <div class="tech-item">
+              <div class="tech-status available"></div>
+              <div class="tech-avatar">MR</div>
+              <div class="tech-details">
+                <h4>Mike Rodriguez</h4>
+                <p>Certified Technician • ID: TECH-001</p>
+                <div class="tech-stats">
+                  <span>Rating: 4.9★</span>
+                  <span>Jobs Today: 8</span>
+                  <span>Status: Available</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm btn--outline" onclick="assignJob('TECH-001')">Assign Job</button>
+                <button class="btn btn--sm btn--primary" onclick="viewTechDetails('TECH-001')">Details</button>
+              </div>
+            </div>
+            <div class="tech-item">
+              <div class="tech-status busy"></div>
+              <div class="tech-avatar">SJ</div>
+              <div class="tech-details">
+                <h4>Sarah Johnson</h4>
+                <p>Senior Technician • ID: TECH-002</p>
+                <div class="tech-stats">
+                  <span>Rating: 4.8★</span>
+                  <span>Jobs Today: 6</span>
+                  <span>Status: On Job</span>
+                </div>
+              </div>
+              <div class="tech-actions">
+                <button class="btn btn--sm btn--outline" disabled>Busy</button>
+                <button class="btn btn--sm btn--primary" onclick="viewTechDetails('TECH-002')">Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-performance" class="admin-tab-content">
+          <div class="performance-metrics">
+            <div class="metric-card">
+              <h3>89</h3>
+              <p>Active Technicians</p>
+              <span class="trend up">+3 this week</span>
+            </div>
+            <div class="metric-card">
+              <h3>4.7</h3>
+              <p>Avg Rating</p>
+              <span class="trend up">+0.2 this month</span>
+            </div>
+            <div class="metric-card">
+              <h3>12.5</h3>
+              <p>Avg Response Time (min)</p>
+              <span class="trend down">-1.2 this week</span>
+            </div>
+            <div class="metric-card">
+              <h3>98.2%</h3>
+              <p>Success Rate</p>
+              <span class="trend stable">Stable</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="tech-scheduling" class="admin-tab-content">
+          <div class="schedule-controls">
+            <h3>Shift Management</h3>
+            <div class="schedule-grid">
+              <div class="time-slot">
+                <span class="time">6:00 AM - 2:00 PM</span>
+                <span class="tech-count">24 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+              <div class="time-slot">
+                <span class="time">2:00 PM - 10:00 PM</span>
+                <span class="tech-count">32 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+              <div class="time-slot">
+                <span class="time">10:00 PM - 6:00 AM</span>
+                <span class="tech-count">18 Technicians</span>
+                <button class="btn btn--sm btn--outline">Manage</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function viewAnalytics() {
+  const modal = document.createElement('div');
+  modal.className = 'modal active analytics-modal';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>📈 System Analytics</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'revenue-analytics')">Revenue</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'service-analytics')">Services</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'performance-analytics')">Performance</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'geographic-analytics')">Geographic</div>
+        </div>
+        
+        <div id="revenue-analytics" class="admin-tab-content active">
+          <div class="revenue-summary">
+            <div class="revenue-card">
+              <h3>$45,680</h3>
+              <p>Today's Revenue</p>
+              <span class="trend up">+15.2% vs yesterday</span>
+            </div>
+            <div class="revenue-card">
+              <h3>$1.2M</h3>
+              <p>Monthly Revenue</p>
+              <span class="trend up">+8.7% vs last month</span>
+            </div>
+            <div class="revenue-card">
+              <h3>$13.8M</h3>
+              <p>Annual Revenue</p>
+              <span class="trend up">+22.1% vs last year</span>
+            </div>
+          </div>
+          <div class="chart-section">
+            <h4>Revenue Trends (Last 30 Days)</h4>
+            <div class="chart-placeholder">
+              <p>📊 Interactive revenue charts would be displayed here</p>
+              <div class="mini-chart-data">
+                <span>Peak Day: $52,400 (July 8th)</span>
+                <span>Avg Daily: $41,200</span>
+                <span>Growth Rate: +12.5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="service-analytics" class="admin-tab-content">
+          <div class="service-breakdown">
+            <div class="service-stat">
+              <span class="service-icon">🚛</span>
+              <div class="stat-details">
+                <h4>Towing Services</h4>
+                <p>142 services • $21,300 revenue</p>
+                <span class="percentage">32% of total</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <span class="service-icon">🔋</span>
+              <div class="stat-details">
+                <h4>Battery Jump</h4>
+                <p>98 services • $7,350 revenue</p>
+                <span class="percentage">22% of total</span>
+              </div>
+            </div>
+            <div class="service-stat">
+              <span class="service-icon">🛞</span>
+              <div class="stat-details">
+                <h4>Tire Change</h4>
+                <p>76 services • $7,600 revenue</p>
+                <span class="percentage">18% of total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="performance-analytics" class="admin-tab-content">
+          <div class="performance-grid">
+            <div class="performance-metric">
+              <h4>Response Time</h4>
+              <div class="metric-value">12.3 min</div>
+              <span class="trend down">-8% improvement</span>
+            </div>
+            <div class="performance-metric">
+              <h4>Success Rate</h4>
+              <div class="metric-value">98.2%</div>
+              <span class="trend up">+0.5% this month</span>
+            </div>
+            <div class="performance-metric">
+              <h4>Customer Satisfaction</h4>
+              <div class="metric-value">4.8/5</div>
+              <span class="trend up">+0.2 this month</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="geographic-analytics" class="admin-tab-content">
+          <div class="geographic-data">
+            <h4>Service Distribution by Region</h4>
+            <div class="region-list">
+              <div class="region-item">
+                <span class="region-name">Downtown</span>
+                <span class="region-services">89 services</span>
+                <span class="region-revenue">$13,400</span>
+              </div>
+              <div class="region-item">
+                <span class="region-name">Suburbs North</span>
+                <span class="region-services">67 services</span>
+                <span class="region-revenue">$10,050</span>
+              </div>
+              <div class="region-item">
+                <span class="region-name">Highway Corridor</span>
+                <span class="region-services">124 services</span>
+                <span class="region-revenue">$18,600</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function systemSettings() {
+  const modal = document.createElement('div');
+  modal.className = 'modal active';
+  modal.innerHTML = `
+    <div class="modal-content admin-control-modal">
+      <div class="modal-header">
+        <h2>⚙️ System Settings</h2>
+        <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="switchAdminTab(this, 'general-settings')">General</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'service-settings')">Services</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'notification-settings')">Notifications</div>
+          <div class="admin-tab" onclick="switchAdminTab(this, 'security-settings')">Security</div>
+        </div>
+        
+        <div id="general-settings" class="admin-tab-content active">
+          <div class="settings-section">
+            <h3>System Configuration</h3>
+            <div class="setting-item">
+              <label>System Name</label>
+              <input type="text" class="form-control" value="RoadSide+ Emergency">
+            </div>
+            <div class="setting-item">
+              <label>Maintenance Mode</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="maintenance-mode">
+                <label for="maintenance-mode" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Max Response Time (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            <div class="setting-item">
+              <label>Emergency Contact Number</label>
+              <input type="tel" class="form-control" value="1-800-ROADSIDE">
+            </div>
+          </div>
+        </div>
+        
+        <div id="service-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Service Configuration</h3>
+            <div class="service-pricing">
+              <div class="price-item">
+                <span>🚛 Towing</span>
+                <input type="number" class="form-control price-input" value="150">
+                <span>USD</span>
+              </div>
+              <div class="price-item">
+                <span>🔋 Battery Jump</span>
+                <input type="number" class="form-control price-input" value="75">
+                <span>USD</span>
+              </div>
+              <div class="price-item">
+                <span>🛞 Tire Change</span>
+                <input type="number" class="form-control price-input" value="100">
+                <span>USD</span>
+              </div>
+            </div>
+            <button class="btn btn--primary" onclick="updateServicePricing()">Update Pricing</button>
+          </div>
+        </div>
+        
+        <div id="notification-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Notification Preferences</h3>
+            <div class="notification-item">
+              <label>Email Notifications</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="email-notifications" checked>
+                <label for="email-notifications" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="notification-item">
+              <label>SMS Alerts</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="sms-alerts" checked>
+                <label for="sms-alerts" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="notification-item">
+              <label>Push Notifications</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="push-notifications" checked>
+                <label for="push-notifications" class="toggle-label"></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="security-settings" class="admin-tab-content">
+          <div class="settings-section">
+            <h3>Security Configuration</h3>
+            <div class="setting-item">
+              <label>Session Timeout (minutes)</label>
+              <input type="number" class="form-control" value="30">
+            </div>
+            <div class="setting-item">
+              <label>Two-Factor Authentication</label>
+              <div class="toggle-switch">
+                <input type="checkbox" id="two-factor" checked>
+                <label for="two-factor" class="toggle-label"></label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <label>Password Expiry (days)</label>
+              <input type="number" class="form-control" value="90">
+            </div>
+            <button class="btn btn--primary" onclick="updateSecuritySettings()">Update Security</button>
+          </div>
+        </div>
+        
+        <div class="settings-actions">
+          <button class="btn btn--primary" onclick="saveSystemSettings()">Save All Settings</button>
+          <button class="btn btn--outline" onclick="resetToDefaults()">Reset to Defaults</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+// Helper functions for admin controls
+function switchAdminTab(tabElement, contentId) {
+  // Remove active class from all tabs and content
+  tabElement.parentNode.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+  tabElement.closest('.modal-body').querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+  
+  // Add active class to clicked tab and corresponding content
+  tabElement.classList.add('active');
+  document.getElementById(contentId).classList.add('active');
+}
+
+function searchUsers(query) {
+  const userItems = document.querySelectorAll('.user-item');
+  userItems.forEach(item => {
+    const userName = item.querySelector('h4').textContent.toLowerCase();
+    const userEmail = item.querySelector('p').textContent.toLowerCase();
+    if (userName.includes(query.toLowerCase()) || userEmail.includes(query.toLowerCase())) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function editUser(userId) {
+  showToast(`Opening edit dialog for user ${userId}`, 'info');
+}
+
+function viewUserDetails(userId) {
+  showToast(`Loading detailed view for user ${userId}`, 'info');
+}
+
+function exportUserData() {
+  showToast('Exporting user data to CSV...', 'success');
+}
+
+function sendBulkNotification() {
+  showToast('Opening bulk notification composer...', 'info');
+}
+
+function generateUserReport() {
+  showToast('Generating comprehensive user report...', 'success');
+}
+
+function purgeInactiveUsers() {
+  if (confirm('Are you sure you want to purge inactive users? This cannot be undone.')) {
+    showToast('Purging inactive users...', 'success');
+  }
+}
+
+function resetUserPasswords() {
+  if (confirm('Reset passwords for selected users?')) {
+    showToast('Password reset emails sent to selected users', 'success');
+  }
+}
+
+function auditUserActivity() {
+  showToast('Generating user activity audit report...', 'info');
+}
+
+function addNewTechnician() {
+  showToast('Opening new technician registration form...', 'info');
+}
+
+function filterTechnicians(status) {
+  showToast(`Filtering technicians by status: ${status}`, 'info');
+}
+
+function assignJob(techId) {
+  showToast(`Opening job assignment for technician ${techId}`, 'info');
+}
+
+function viewTechDetails(techId) {
+  showToast(`Loading detailed view for technician ${techId}`, 'info');
+}
+
+function updateServicePricing() {
+  showToast('Service pricing updated successfully', 'success');
+}
+
+function updateSecuritySettings() {
+  showToast('Security settings updated successfully', 'success');
+}
+
+function saveSystemSettings() {
+  showToast('All system settings saved successfully', 'success');
+}
+
+function resetToDefaults() {
+  if (confirm('Reset all settings to defaults? This cannot be undone.')) {
+    showToast('Settings reset to default values', 'success');
+  }
+}
+
+function showControlTab(tabId) {
+  // Remove active class from all tabs and content
+  document.querySelectorAll('.control-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.control-content').forEach(content => content.classList.remove('active'));
+  
+  // Add active class to clicked tab and corresponding content
+  event.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
