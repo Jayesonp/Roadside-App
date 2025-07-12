@@ -3,13 +3,13 @@ import { config } from './index.js';
 import logger from '../utils/logger.js';
 
 // Check if Supabase is configured
-const isSupabaseConfigured = 
+const isSupabaseConfigured = (
   config.supabase.url && 
   config.supabase.serviceRoleKey && 
   config.supabase.url !== 'your_supabase_url_here' && 
   config.supabase.serviceRoleKey !== 'your_supabase_service_role_key_here' &&
-  config.supabase.url.startsWith('https://');
-}
+  config.supabase.url.startsWith('https://')
+);
 
 if (!isSupabaseConfigured) {
   console.log('🔧 Supabase not configured - using demo mode');
@@ -102,3 +102,4 @@ if (!isSupabaseConfigured) {
   };
   
   export default supabase;
+}
