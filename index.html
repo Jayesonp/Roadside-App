@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadSide+ Emergency Assistance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-color-scheme="dark">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo">🚗 RoadSide+</div>
+            <div class="loading-spinner"></div>
+            <p>Emergency Assistance Ready</p>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen hidden">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>🚗 RoadSide+</h1>
+                <p>Emergency Roadside Assistance</p>
+            </div>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" placeholder="Enter your password">
+                </div>
+                <button class="btn btn--primary btn--full-width" onclick="login()">Sign In</button>
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+                <button class="btn btn--outline btn--full-width" onclick="showRegister()">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleNavDrawer()">☰</button>
+                <div class="logo-nav">🚗 RoadSide+</div>
+            </div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <span class="user-name">John Doe</span>
+                    <div class="user-avatar">JD</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Navigation Drawer -->
+        <div id="nav-drawer" class="nav-drawer">
+            <div class="nav-drawer-header">
+                <h3>Navigation</h3>
+                <button class="close-btn" onclick="closeNavDrawer()">×</button>
+            </div>
+            <div class="nav-drawer-content">
+                <div class="nav-item active" onclick="showDashboard('customer')">
+                    <span class="nav-icon">👤</span>
+                    <span>Customer Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('technician')">
+                    <span class="nav-icon">🔧</span>
+                    <span>Technician Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('admin')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Admin Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('partner')">
+                    <span class="nav-icon">🤝</span>
+                    <span>Partner Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showDashboard('security')">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Security Dashboard</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tabs -->
+        <div class="dashboard-tabs">
+            <div class="tab active" onclick="showDashboard('customer')">👤 Customer</div>
+            <div class="tab" onclick="showDashboard('technician')">🔧 Technician</div>
+            <div class="tab" onclick="showDashboard('admin')">⚙️ Admin</div>
+            <div class="tab" onclick="showDashboard('partner')">🤝 Partner</div>
+            <div class="tab" onclick="showDashboard('security')">🛡️ Security</div>
+        </div>
+
+        <!-- Customer Dashboard -->
+        <div id="customer-dashboard" class="dashboard active">
+            <!-- Emergency Banner -->
+            <div class="emergency-banner">
+                <div class="emergency-content">
+                    <span class="emergency-icon">🚨</span>
+                    <div class="emergency-text">
+                        <h3>Emergency Assistance</h3>
+                        <p>24/7 immediate response</p>
+                    </div>
+                    <button class="emergency-btn" onclick="emergencyCall()">SOS</button>
+                </div>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="services-section">
+                <h2>Select Service</h2>
+                <div class="services-grid">
+                    <div class="service-card" onclick="selectService(1, 'Towing', 150)">
+                        <div class="service-icon">🚛</div>
+                        <h3>Towing</h3>
+                        <p class="service-price">$150</p>
+                        <p class="service-time">45 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(2, 'Battery Jump', 75)">
+                        <div class="service-icon">🔋</div>
+                        <h3>Battery Jump</h3>
+                        <p class="service-price">$75</p>
+                        <p class="service-time">20 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(3, 'Tire Change', 100)">
+                        <div class="service-icon">🛞</div>
+                        <h3>Tire Change</h3>
+                        <p class="service-price">$100</p>
+                        <p class="service-time">30 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(4, 'Lockout', 85)">
+                        <div class="service-icon">🔓</div>
+                        <h3>Lockout</h3>
+                        <p class="service-price">$85</p>
+                        <p class="service-time">20 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(5, 'Fuel Delivery', 60)">
+                        <div class="service-icon">⛽</div>
+                        <h3>Fuel Delivery</h3>
+                        <p class="service-price">$60</p>
+                        <p class="service-time">15 min • 30 min response</p>
+                    </div>
+                    <div class="service-card" onclick="selectService(6, 'Winch Recovery', 200)">
+                        <div class="service-icon">🪝</div>
+                        <h3>Winch Recovery</h3>
+                        <p class="service-price">$200</p>
+                        <p class="service-time">60 min • 45 min response</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Services -->
+            <div class="recent-section">
+                <h2>Recent Services</h2>
+                <div class="service-history">
+                    <div class="history-item">
+                        <div class="history-icon">🔋</div>
+                        <div class="history-details">
+                            <h4>Battery Jump</h4>
+                            <p>Yesterday • Main St & 5th Ave</p>
+                            <div class="rating">⭐⭐⭐⭐⭐</div>
+                        </div>
+                        <div class="history-status">
+                            <span class="status status--success">Completed</span>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-icon">🛞</div>
+                        <div class="history-details">
+                            <h4>Tire Change</h4>
+                            <p>3 days ago • Highway 101</p>
+                            <div class="rating">⭐⭐⭐⭐⭐</div>
+                        </div>
+                        <div class="history-status">
+                            <span class="status status--success">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technician Dashboard -->
+        <div id="technician-dashboard" class="dashboard">
+            <!-- Status Toggle -->
+            <div class="status-toggle-section">
+                <div class="status-toggle">
+                    <span>Status:</span>
+                    <button id="tech-status-btn" class="status-btn online" onclick="toggleTechStatus()">🟢 Online</button>
+                </div>
+                <div class="earnings-summary">
+                    <div class="earnings-item">
+                        <span class="earnings-label">Today</span>
+                        <span class="earnings-value">$245</span>
+                    </div>
+                    <div class="earnings-item">
+                        <span class="earnings-label">Week</span>
+                        <span class="earnings-value">$1,420</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Jobs -->
+            <div class="jobs-section">
+                <h2>Available Jobs</h2>
+                <div class="job-queue">
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="job-service">🔋 Battery Jump</div>
+                            <div class="job-distance">2.3 miles</div>
+                        </div>
+                        <div class="job-details">
+                            <p><strong>Customer:</strong> Sarah Johnson</p>
+                            <p><strong>Location:</strong> Walmart Parking Lot</p>
+                            <p><strong>Issue:</strong> Car won't start after shopping</p>
+                        </div>
+                        <div class="job-footer">
+                            <div class="job-earnings">$75</div>
+                            <div class="job-actions">
+                                <button class="btn btn--outline btn--sm" onclick="declineJob(1)">Decline</button>
+                                <button class="btn btn--primary btn--sm" onclick="acceptJob(1)">Accept</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div class="job-service">🛞 Tire Change</div>
+                            <div class="job-distance">4.1 miles</div>
+                        </div>
+                        <div class="job-details">
+                            <p><strong>Customer:</strong> Mike Chen</p>
+                            <p><strong>Location:</strong> Highway 101 Exit 42</p>
+                            <p><strong>Issue:</strong> Flat tire on front right</p>
+                        </div>
+                        <div class="job-footer">
+                            <div class="job-earnings">$100</div>
+                            <div class="job-actions">
+                                <button class="btn btn--outline btn--sm" onclick="declineJob(2)">Decline</button>
+                                <button class="btn btn--primary btn--sm" onclick="acceptJob(2)">Accept</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="dashboard">
+            <!-- Metrics Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-value">1,247</div>
+                    <div class="metric-label">Active Users</div>
+                </div>
+                <div class="metric-card emergency">
+                    <div class="metric-icon">🚨</div>
+                    <div class="metric-value">23</div>
+                    <div class="metric-label">Emergency Requests</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⏱️</div>
+                    <div class="metric-value">28 min</div>
+                    <div class="metric-label">Avg Response Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⭐</div>
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">Satisfaction</div>
+                </div>
+            </div>
+
+            <!-- Emergency Operations -->
+            <div class="emergency-operations">
+                <h2>Emergency Operations</h2>
+                <div class="emergency-list">
+                    <div class="emergency-item high-priority">
+                        <div class="emergency-badge">🚨 HIGH</div>
+                        <div class="emergency-info">
+                            <h4>Vehicle Accident - Highway 101</h4>
+                            <p>Multiple vehicles involved • ETA: 15 min</p>
+                        </div>
+                        <button class="btn btn--primary btn--sm">Manage</button>
+                    </div>
+                    <div class="emergency-item medium-priority">
+                        <div class="emergency-badge">⚠️ MED</div>
+                        <div class="emergency-info">
+                            <h4>Stranded Vehicle - Desert Road</h4>
+                            <p>Family with children • ETA: 25 min</p>
+                        </div>
+                        <button class="btn btn--primary btn--sm">Manage</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partner Dashboard -->
+        <div id="partner-dashboard" class="dashboard">
+            <div class="partner-content">
+                <h2>Partner Network</h2>
+                <div class="partner-metrics">
+                    <div class="metric-card">
+                        <div class="metric-value">156</div>
+                        <div class="metric-label">Active Partners</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">98.5%</div>
+                        <div class="metric-label">Service Level</div>
+                    </div>
+                </div>
+                <div class="partner-list">
+                    <div class="partner-item">
+                        <div class="partner-info">
+                            <h4>Metro Towing Services</h4>
+                            <p>Downtown Coverage • 24/7 Available</p>
+                        </div>
+                        <div class="partner-status">
+                            <span class="status status--success">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Dashboard -->
+        <div id="security-dashboard" class="dashboard">
+            <div class="security-content">
+                <h2>Security Operations</h2>
+                <div class="security-alerts">
+                    <div class="alert-item">
+                        <div class="alert-icon">🛡️</div>
+                        <div class="alert-info">
+                            <h4>System Security Check</h4>
+                            <p>All systems operational • Last scan: 2 min ago</p>
+                        </div>
+                        <span class="status status--success">Secure</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Modal -->
+        <div id="booking-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Book Service</h2>
+                    <button class="close-btn" onclick="closeBookingModal()">×</button>
+                </div>
+                <div class="booking-steps">
+                    <div class="step active" data-step="1">Service</div>
+                    <div class="step" data-step="2">Location</div>
+                    <div class="step" data-step="3">Payment</div>
+                    <div class="step" data-step="4">Confirm</div>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: Service Selection -->
+                    <div id="booking-step-1" class="booking-step active">
+                        <div class="selected-service">
+                            <div class="service-icon" id="selected-service-icon">🚛</div>
+                            <div class="service-details">
+                                <h3 id="selected-service-name">Towing</h3>
+                                <p id="selected-service-price">$150</p>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 2: Location & Description -->
+                    <div id="booking-step-2" class="booking-step">
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" placeholder="Enter your location" value="1234 Main St, City, State">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Describe the problem</label>
+                            <textarea class="form-control" rows="3" placeholder="Tell us what happened..."></textarea>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 3: Payment -->
+                    <div id="booking-step-3" class="booking-step">
+                        <div class="payment-methods">
+                            <div class="payment-method active" onclick="selectPaymentMethod(this)">
+                                <div class="payment-icon">💳</div>
+                                <span>Credit Card ending in 4242</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod(this)">
+                                <div class="payment-icon">💰</div>
+                                <span>Cash Payment</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
+                    </div>
+                    
+                    <!-- Step 4: Confirmation -->
+                    <div id="booking-step-4" class="booking-step">
+                        <div class="booking-summary">
+                            <h3>Booking Summary</h3>
+                            <div class="summary-item">
+                                <span>Service:</span>
+                                <span id="summary-service">Towing</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Location:</span>
+                                <span>1234 Main St, City, State</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Payment:</span>
+                                <span>Credit Card ••••4242</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total:</span>
+                                <span id="summary-total">$150</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="confirmBooking()">Confirm Booking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracking Modal -->
+        <div id="tracking-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Service Tracking</h2>
+                    <button class="close-btn" onclick="closeTrackingModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="tracking-status">
+                        <div class="status-icon">🚗</div>
+                        <h3>Technician En Route</h3>
+                        <p>ETA: 15 minutes</p>
+                    </div>
+                    <div class="tracking-map">
+                        <div class="map-placeholder">
+                            <div class="map-marker">📍</div>
+                            <p>GPS Tracking Active</p>
+                        </div>
+                    </div>
+                    <div class="technician-info">
+                        <div class="tech-avatar">👨‍🔧</div>
+                        <div class="tech-details">
+                            <h4>Mike Rodriguez</h4>
+                            <p>Certified Technician • 4.9★</p>
+                        </div>
+                        <button class="btn btn--outline btn--sm" onclick="callTechnician()">📞 Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showDashboard('customer')">
+                <div class="nav-icon">👤</div>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📋</div>
+                <span>History</span>
+            </div>
+            <div class="emergency-sos" onclick="emergencyCall()">
+                <div class="sos-button">SOS</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">💬</div>
+                <span>Support</span>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
