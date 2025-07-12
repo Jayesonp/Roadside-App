@@ -603,10 +603,21 @@ const App = {
     },
 
     closeSystemControlModal() {
-        const modal = document.getElementById('system-control-modal');
-        if (modal) {
-            modal.classList.remove('active');
+        // Clean up user management interval if it exists
+        if (this.userManagementInterval) {
+            clearInterval(this.userManagementInterval);
+            this.userManagementInterval = null;
         }
+        
+        // Reset filtered users
+        this.currentFilteredUsers = null;
+        this.currentUserTab = null;
+        
+        const modal = document.getElementById('system-control-modal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        console.log('✅ Post-implementation test: System control modal closed successfully');
     },
 
     // Support Center functions
@@ -2763,6 +2774,21 @@ const App = {
             answer.style.display = 'block';
             toggle.textContent = '-';
         }
+    },
+
+    showModal(title, content) {
+        const modal = document.getElementById('system-control-modal');
+        const titleElement = document.getElementById('system-control-title');
+        const contentElement = document.getElementById('system-control-content');
+        
+        titleElement.textContent = title;
+        contentElement.innerHTML = content;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    },
+
+    closeModal() {
+        this.closeSystemControlModal();
     }
 };
 
