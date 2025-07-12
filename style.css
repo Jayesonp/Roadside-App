@@ -449,6 +449,348 @@ select.form-control {
   margin-bottom: var(--space-16);
 }
 
+/* Form Elements - Enhanced Visibility */
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="search"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus,
+input[type="file"]:focus,
+select:focus,
+textarea:focus {
+  background: #fff;
+  border: 2px solid #4CAF50;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+/* Modal Form Elements */
+.modal .form-control,
+.modal input[type="text"],
+.modal input[type="email"],
+.modal input[type="password"],
+.modal input[type="tel"],
+.modal input[type="search"],
+.modal input[type="number"],
+.modal input[type="file"],
+.modal select,
+.modal textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.modal .form-control:focus,
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus {
+  background: #fff;
+  border: 2px solid #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Form Labels */
+.form-label,
+label {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.modal .form-label,
+.modal label {
+  color: #555;
+}
+
+/* Search Inputs */
+.search-input {
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  color: #333 !important;
+  opacity: 1 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.search-input:focus {
+  border: 2px solid #007bff !important;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+}
+
+.search-input::placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+/* Select Dropdowns */
+select {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+}
+
+select:focus {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Textareas */
+textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+textarea:focus {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Form Buttons */
+.btn {
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.btn--primary {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.btn--primary:hover,
+.btn--primary:focus {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn--outline {
+  background: transparent;
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn--outline:hover,
+.btn--outline:focus {
+  background: #007bff;
+  color: #fff;
+}
+
+.btn--danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}
+
+.btn--danger:hover,
+.btn--danger:focus {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+/* Checkbox and Radio Inputs */
+input[type="checkbox"],
+input[type="radio"] {
+  opacity: 1;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 16px;
+}
+
+/* User Management Modal Specific */
+.system-control-modal .form-control,
+.system-control-modal input,
+.system-control-modal select,
+.system-control-modal textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+}
+
+/* Admin Dashboard Form Elements */
+.admin-dashboard .form-control,
+.admin-dashboard input,
+.admin-dashboard select,
+.admin-dashboard textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Support Forms */
+.support-request-form .form-control,
+.support-request-form input,
+.support-request-form select,
+.support-request-form textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Profile Forms */
+.profile-form .form-control,
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Booking Modal Forms */
+.booking-step .form-control,
+.booking-step input,
+.booking-step select,
+.booking-step textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Chat Input */
+.chat-input {
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  color: #333 !important;
+  opacity: 1 !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.chat-input:focus {
+  border: 2px solid #007bff !important;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+}
+
+/* Tab Content Form Elements */
+.tab-content .form-control,
+.tab-content input,
+.tab-content select,
+.tab-content textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Placeholder Text */
+::placeholder {
+  color: #999 !important;
+  opacity: 1 !important;
+}
+
+/* Form Error States */
+.form-control.error,
+input.error,
+select.error,
+textarea.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+}
+
+/* Form Success States */
+.form-control.success,
+input.success,
+select.success,
+textarea.success {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+}
+
+/* Dark Theme Specific Overrides */
+[data-color-scheme="dark"] .form-control,
+[data-color-scheme="dark"] input[type="text"],
+[data-color-scheme="dark"] input[type="email"],
+[data-color-scheme="dark"] input[type="password"],
+[data-color-scheme="dark"] input[type="tel"],
+[data-color-scheme="dark"] input[type="search"],
+[data-color-scheme="dark"] input[type="number"],
+[data-color-scheme="dark"] input[type="file"],
+[data-color-scheme="dark"] select,
+[data-color-scheme="dark"] textarea {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #333;
+  opacity: 1;
+}
+
+[data-color-scheme="dark"] .form-label,
+[data-color-scheme="dark"] label {
+  color: #fff;
+}
+
 /* Card component */
 .card {
   background-color: var(--color-surface);
