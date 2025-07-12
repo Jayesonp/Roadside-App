@@ -3072,6 +3072,112 @@ const App = {
     }
 };
 
+// Initialize stats with error handling
+function initializeStats() {
+  try {
+    // Mock data for demonstration
+    const stats = {
+      totalServices: 42,
+      totalSpent: 1250,
+      avgRating: 4.8
+    };
+    
+    // Update DOM elements safely
+    const elements = {
+      'total-services': stats.totalServices,
+      'total-spent': `$${stats.totalSpent}`,
+      'avg-rating': stats.avgRating,
+      'profile-total-services': stats.totalServices,
+      'profile-total-spent': `$${stats.totalSpent}`,
+      'profile-avg-rating': stats.avgRating
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      }
+    });
+    
+    console.log('✅ Stats initialized successfully');
+    
+  } catch (error) {
+    App.handleError(error, 'Stats Initialization');
+  }
+}
+
+// Load recent services with error handling
+function loadRecentServices() {
+  try {
+    const recentServicesContainer = document.getElementById('recent-services');
+    if (!recentServicesContainer) return;
+    
+    // Mock recent services data
+    const recentServices = [
+      {
+        id: 'svc_001',
+        type: 'Towing',
+        date: '2024-01-15',
+        cost: 150,
+        status: 'completed',
+        technician: 'Mike Rodriguez'
+      },
+      {
+        id: 'svc_002', 
+        type: 'Battery Jump',
+        date: '2024-01-10',
+        cost: 75,
+        status: 'completed',
+        technician: 'Sarah Johnson'
+      }
+    ];
+    
+    const servicesHTML = recentServices.map(service => `
+      <div class="service-item">
+        <div class="service-icon">${getServiceIcon(service.type)}</div>
+        <div class="service-details">
+          <h4>${service.type}</h4>
+          <p>Date: ${formatDate(service.date)}</p>
+          <p>Technician: ${service.technician}</p>
+        </div>
+        <div class="service-cost">$${service.cost}</div>
+      </div>
+    `).join('');
+    
+    recentServicesContainer.innerHTML = servicesHTML;
+    console.log('✅ Recent services loaded successfully');
+    
+  } catch (error) {
+    App.handleError(error, 'Load Recent Services');
+  }
+}
+
+// Helper functions
+function getServiceIcon(type) {
+  const icons = {
+    'Towing': '🚛',
+    'Battery Jump': '🔋', 
+    'Tire Change': '🛞',
+    'Lockout': '🔓',
+    'Fuel Delivery': '⛽',
+    'Winch Recovery': '🪝'
+  };
+  return icons[type] || '🔧';
+}
+
+function formatDate(dateString) {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short', 
+      day: 'numeric'
+    });
+  } catch (error) {
+    return dateString;
+  }
+}
+
 // Global functions for HTML onclick handlers
 function login() {
     document.getElementById('login-screen').classList.add('hidden');
@@ -3174,52 +3280,8 @@ function saveProfile() {
     App.showToast('✅ Profile saved successfully!');
 }
 
-// Dashboard management
 function showDashboard(type) {
-  try {
-    console.log(`🔄 Switching to ${type} dashboard`);
-    
-    // Update tabs
-    const tabs = document.querySelectorAll('.dashboard-tabs .tab');
-    tabs.forEach(tab => {
-      tab.classList.remove('active');
-      if (tab.textContent.toLowerCase().includes(type)) {
-        tab.classList.add('active');
-      }
-    });
-    
-    // Load dashboard-specific content
-    loadDashboardContent(type);
-    
-  } catch (error) {
-    App.handleError(error, 'Dashboard Switch');
-  }
-}
-
-function loadDashboardContent(type) {
-  try {
-    switch (type) {
-      case 'customer':
-        loadCustomerDashboard();
-        break;
-      case 'technician':
-        loadTechnicianDashboard();
-        break;
-      case 'admin':
-        loadAdminDashboard();
-        break;
-      case 'partner':
-        loadPartnerDashboard();
-        break;
-      case 'security':
-        loadSecurityDashboard();
-        break;
-      default:
-        loadCustomerDashboard();
-    }
-  } catch (error) {
-    App.handleError(error, `Load ${type} Dashboard`);
-  }
+    App.showDashboard(type);
 }
 
 function openSystemControl(controlType) {
