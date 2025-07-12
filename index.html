@@ -36,7 +36,7 @@
                 <div class="auth-divider">
                     <span>or</span>
                 </div>
-                <button class="btn btn--outline btn--full-width" onclick="showRegister()">Create Account</button>
+                <button class="btn btn--outline btn--full-width" onclick="App.showRegister()">Create Account</button>
             </div>
         </div>
     </div>
@@ -46,7 +46,7 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-left">
-                <button class="hamburger-btn" onclick="toggleNavDrawer()">☰</button>
+                <button class="hamburger-btn" onclick="App.toggleNavDrawer()">☰</button>
                 <div class="logo-nav">🚗 RoadSide+</div>
             </div>
             <div class="nav-right">
@@ -61,26 +61,26 @@
         <div id="nav-drawer" class="nav-drawer">
             <div class="nav-drawer-header">
                 <h3>Navigation</h3>
-                <button class="close-btn" onclick="closeNavDrawer()">×</button>
+                <button class="close-btn" onclick="App.closeNavDrawer()">×</button>
             </div>
             <div class="nav-drawer-content">
-                <div class="nav-item active" onclick="showDashboard('customer')">
+                <div class="nav-item active" onclick="App.showDashboard('customer')">
                     <span class="nav-icon">👤</span>
                     <span>Customer Dashboard</span>
                 </div>
-                <div class="nav-item" onclick="showDashboard('technician')">
+                <div class="nav-item" onclick="App.showDashboard('technician')">
                     <span class="nav-icon">🔧</span>
                     <span>Technician Dashboard</span>
                 </div>
-                <div class="nav-item" onclick="showDashboard('admin')">
+                <div class="nav-item" onclick="App.showDashboard('admin')">
                     <span class="nav-icon">⚙️</span>
                     <span>Admin Dashboard</span>
                 </div>
-                <div class="nav-item" onclick="showDashboard('partner')">
+                <div class="nav-item" onclick="App.showDashboard('partner')">
                     <span class="nav-icon">🤝</span>
                     <span>Partner Dashboard</span>
                 </div>
-                <div class="nav-item" onclick="showDashboard('security')">
+                <div class="nav-item" onclick="App.showDashboard('security')">
                     <span class="nav-icon">🛡️</span>
                     <span>Security Dashboard</span>
                 </div>
@@ -89,19 +89,19 @@
 
         <!-- Dashboard Tabs -->
         <div class="dashboard-tabs">
-            <div class="tab active" onclick="showDashboard('customer')" role="button" tabindex="0">
+            <div class="tab active" onclick="App.showDashboard('customer')" role="button" tabindex="0">
                 <span>👤</span> Customer
             </div>
-            <div class="tab" onclick="showDashboard('technician')" role="button" tabindex="0">
+            <div class="tab" onclick="App.showDashboard('technician')" role="button" tabindex="0">
                 <span>🔧</span> Technician
             </div>
-            <div class="tab" onclick="showDashboard('admin')" role="button" tabindex="0">
+            <div class="tab" onclick="App.showDashboard('admin')" role="button" tabindex="0">
                 <span>⚙️</span> Admin
             </div>
-            <div class="tab" onclick="showDashboard('partner')" role="button" tabindex="0">
+            <div class="tab" onclick="App.showDashboard('partner')" role="button" tabindex="0">
                 <span>🤝</span> Partner
             </div>
-            <div class="tab" onclick="showDashboard('security')" role="button" tabindex="0">
+            <div class="tab" onclick="App.showDashboard('security')" role="button" tabindex="0">
                 <span>🛡️</span> Security
             </div>
         </div>
@@ -124,37 +124,37 @@
             <div class="services-section">
                 <h2>Select Service</h2>
                 <div class="services-grid">
-                    <div class="service-card" onclick="selectService(1, 'Towing', 150)">
+                    <div class="service-card" onclick="App.selectService(1, 'Towing', 150)">
                         <div class="service-icon">🚛</div>
                         <h3>Towing</h3>
                         <p class="service-price">$150</p>
                         <p class="service-time">45 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="selectService(2, 'Battery Jump', 75)">
+                    <div class="service-card" onclick="App.selectService(2, 'Battery Jump', 75)">
                         <div class="service-icon">🔋</div>
                         <h3>Battery Jump</h3>
                         <p class="service-price">$75</p>
                         <p class="service-time">20 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="selectService(3, 'Tire Change', 100)">
+                    <div class="service-card" onclick="App.selectService(3, 'Tire Change', 100)">
                         <div class="service-icon">🛞</div>
                         <h3>Tire Change</h3>
                         <p class="service-price">$100</p>
                         <p class="service-time">30 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="selectService(4, 'Lockout', 85)">
+                    <div class="service-card" onclick="App.selectService(4, 'Lockout', 85)">
                         <div class="service-icon">🔓</div>
                         <h3>Lockout</h3>
                         <p class="service-price">$85</p>
                         <p class="service-time">20 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="selectService(5, 'Fuel Delivery', 60)">
+                    <div class="service-card" onclick="App.selectService(5, 'Fuel Delivery', 60)">
                         <div class="service-icon">⛽</div>
                         <h3>Fuel Delivery</h3>
                         <p class="service-price">$60</p>
                         <p class="service-time">15 min • 30 min response</p>
                     </div>
-                    <div class="service-card" onclick="selectService(6, 'Winch Recovery', 200)">
+                    <div class="service-card" onclick="App.selectService(6, 'Winch Recovery', 200)">
                         <div class="service-icon">🪝</div>
                         <h3>Winch Recovery</h3>
                         <p class="service-price">$200</p>
