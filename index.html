@@ -8,7 +8,7 @@
 </head>
 <body data-color-scheme="dark">
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen active">
         <div class="loading-content">
             <div class="logo">🚗 RoadSide+</div>
             <div class="loading-spinner"></div>
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="login-screen" class="screen hidden">
+    <div id="login-screen" class="screen">
         <div class="auth-container">
             <div class="auth-header">
                 <h1>🚗 RoadSide+</h1>
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Main App -->
-    <div id="main-app" class="hidden">
+    <div id="main-app" class="main-app">
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-left">
@@ -630,6 +630,15 @@
         </div>
     </div>
 
+    <script>
+        // Ensure DOM is loaded before initializing app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure styles are loaded
+            setTimeout(() => {
+                window.App = new RoadSideApp();
+            }, 100);
+        });
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
