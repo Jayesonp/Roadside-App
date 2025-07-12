@@ -919,4 +919,509 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize the app
 window.addEventListener('load', () => {
   updateUserInfo();
+  showDashboard('customer'); // Initialize with customer dashboard
 });
+
+// Dashboard Management Functions
+function showDashboard(dashboardType) {
+  // Update active tab
+  $all('.dashboard-tabs .tab').forEach(tab => tab.classList.remove('active'));
+  const activeTab = $(`.dashboard-tabs .tab[onclick="showDashboard('${dashboardType}')"]`);
+  if (activeTab) activeTab.classList.add('active');
+  
+  // Update nav drawer active item
+  $all('.nav-drawer .nav-item').forEach(item => item.classList.remove('active'));
+  const activeNavItem = $(`.nav-drawer .nav-item[onclick="showDashboard('${dashboardType}')"]`);
+  if (activeNavItem) activeNavItem.classList.add('active');
+  
+  // Update dashboard content
+  updateDashboardContent(dashboardType);
+  
+  // Store current dashboard type
+  appState.currentDashboard = dashboardType;
+}
+
+function updateDashboardContent(dashboardType) {
+  const dashboardView = $('#dashboard-view');
+  let content = '';
+  
+  switch(dashboardType) {
+    case 'customer':
+      content = getCustomerDashboard();
+      break;
+    case 'technician':
+      content = getTechnicianDashboard();
+      break;
+    case 'admin':
+      content = getAdminDashboard();
+      break;
+    case 'partner':
+      content = getPartnerDashboard();
+      break;
+    case 'security':
+      content = getSecurityDashboard();
+      break;
+    default:
+      content = getCustomerDashboard();
+  }
+  
+  dashboardView.innerHTML = content;
+  
+  // Update dashboard-specific data if needed
+  if (dashboardType === 'customer') {
+    updateDashboard();
+  }
+}
+
+function getCustomerDashboard() {
+  return `
+    <!-- Emergency Banner -->
+    <div class="emergency-banner">
+        <div class="emergency-content">
+            <span class="emergency-icon">🚨</span>
+            <div class="emergency-text">
+                <h3>Emergency Assistance</h3>
+                <p>24/7 immediate response</p>
+            </div>
+            <button class="emergency-btn" onclick="emergencyCall()">SOS</button>
+        </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-section">
+        <h2>Select Service</h2>
+        <div class="services-grid">
+            <div class="service-card" onclick="selectService(1)">
+                <div class="service-icon">🚛</div>
+                <h3>Towing</h3>
+                <p class="service-price">$150</p>
+                <p class="service-time">45 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(2)">
+                <div class="service-icon">🔋</div>
+                <h3>Battery Jump</h3>
+                <p class="service-price">$75</p>
+                <p class="service-time">20 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(3)">
+                <div class="service-icon">🛞</div>
+                <h3>Tire Change</h3>
+                <p class="service-price">$100</p>
+                <p class="service-time">30 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(4)">
+                <div class="service-icon">🔓</div>
+                <h3>Lockout</h3>
+                <p class="service-price">$85</p>
+                <p class="service-time">20 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(5)">
+                <div class="service-icon">⛽</div>
+                <h3>Fuel Delivery</h3>
+                <p class="service-price">$60</p>
+                <p class="service-time">15 min • 30 min response</p>
+            </div>
+            <div class="service-card" onclick="selectService(6)">
+                <div class="service-icon">🪝</div>
+                <h3>Winch Recovery</h3>
+                <p class="service-price">$200</p>
+                <p class="service-time">60 min • 45 min response</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Services -->
+    <div class="recent-section">
+        <h2>Recent Services</h2>
+        <div id="recent-services" class="service-history">
+            <!-- Recent services will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="stats-section">
+        <h2>Your Stats</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="total-services">0</div>
+                <div class="stat-label">Total Services</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="total-spent">$0</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="avg-rating">0.0</div>
+                <div class="stat-label">Avg Rating</div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getTechnicianDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🔧 Technician Dashboard</h1>
+        <p>Manage your service assignments</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>Today's Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">15</div>
+                <div class="stat-label">Completed Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value">4.9</div>
+                <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$1,250</div>
+                <div class="stat-label">Earnings Today</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="services-section">
+        <h2>Current Assignments</h2>
+        <div class="assignment-list">
+            <div class="assignment-card urgent">
+                <div class="assignment-header">
+                    <span class="service-type">🚛 Towing</span>
+                    <span class="priority high">HIGH PRIORITY</span>
+                </div>
+                <div class="assignment-details">
+                    <p><strong>Location:</strong> Highway 101, Mile 42</p>
+                    <p><strong>Customer:</strong> Sarah Johnson</p>
+                    <p><strong>Issue:</strong> Engine failure, needs towing</p>
+                    <p><strong>ETA:</strong> 12 minutes</p>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn btn--primary btn--sm" onclick="acceptJob('job-001')">Accept</button>
+                    <button class="btn btn--outline btn--sm" onclick="callCustomer('555-0123')">📞 Call</button>
+                </div>
+            </div>
+            
+            <div class="assignment-card">
+                <div class="assignment-header">
+                    <span class="service-type">🔋 Battery Jump</span>
+                    <span class="priority medium">MEDIUM</span>
+                </div>
+                <div class="assignment-details">
+                    <p><strong>Location:</strong> Downtown Plaza Parking</p>
+                    <p><strong>Customer:</strong> Mike Chen</p>
+                    <p><strong>Issue:</strong> Dead battery after leaving lights on</p>
+                    <p><strong>ETA:</strong> 25 minutes</p>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn btn--primary btn--sm" onclick="acceptJob('job-002')">Accept</button>
+                    <button class="btn btn--outline btn--sm" onclick="callCustomer('555-0456')">📞 Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getAdminDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>⚙️ Admin Dashboard</h1>
+        <p>System management and analytics</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>System Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔧</div>
+                <div class="stat-value">89</div>
+                <div class="stat-label">Active Technicians</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">342</div>
+                <div class="stat-label">Services Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$45,680</div>
+                <div class="stat-label">Revenue Today</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-controls">
+        <h2>System Controls</h2>
+        <div class="control-grid">
+            <div class="control-card" onclick="manageUsers()">
+                <div class="control-icon">👤</div>
+                <h3>User Management</h3>
+                <p>Manage customer accounts and permissions</p>
+            </div>
+            <div class="control-card" onclick="manageTechnicians()">
+                <div class="control-icon">🔧</div>
+                <h3>Technician Management</h3>
+                <p>Monitor and assign technician resources</p>
+            </div>
+            <div class="control-card" onclick="viewAnalytics()">
+                <div class="control-icon">📈</div>
+                <h3>Analytics</h3>
+                <p>View detailed system performance metrics</p>
+            </div>
+            <div class="control-card" onclick="systemSettings()">
+                <div class="control-icon">⚙️</div>
+                <h3>System Settings</h3>
+                <p>Configure system parameters and features</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+            <div class="activity-item">
+                <span class="activity-icon">✅</span>
+                <div class="activity-details">
+                    <p><strong>Service Completed:</strong> Towing service for customer #1247</p>
+                    <span class="activity-time">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <span class="activity-icon">👤</span>
+                <div class="activity-details">
+                    <p><strong>New User:</strong> Jane Smith registered</p>
+                    <span class="activity-time">5 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <span class="activity-icon">🚨</span>
+                <div class="activity-details">
+                    <p><strong>Emergency Alert:</strong> SOS activated by user #892</p>
+                    <span class="activity-time">8 minutes ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getPartnerDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🤝 Partner Dashboard</h1>
+        <p>Business partnerships and integrations</p>
+    </div>
+
+    <div class="stats-section">
+        <h2>Partnership Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Active Partners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value">156</div>
+                <div class="stat-label">Referrals This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">$12,450</div>
+                <div class="stat-label">Commission Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Partner Rating</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="partner-management">
+        <h2>Partner Network</h2>
+        <div class="partner-list">
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-logo">🏢</div>
+                    <div class="partner-info">
+                        <h3>AutoCare Plus</h3>
+                        <p>Tier 1 Partner • 156 referrals</p>
+                    </div>
+                    <span class="partner-status active">Active</span>
+                </div>
+                <div class="partner-stats">
+                    <span>Revenue: $45,600</span>
+                    <span>Rating: 4.9★</span>
+                </div>
+            </div>
+            
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-logo">🚗</div>
+                    <div class="partner-info">
+                        <h3>QuickFix Motors</h3>
+                        <p>Tier 2 Partner • 89 referrals</p>
+                    </div>
+                    <span class="partner-status active">Active</span>
+                </div>
+                <div class="partner-stats">
+                    <span>Revenue: $28,400</span>
+                    <span>Rating: 4.7★</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="commission-section">
+        <h2>Commission Tracking</h2>
+        <div class="commission-chart">
+            <div class="chart-placeholder">
+                <p>📊 Commission trends and analytics would be displayed here</p>
+                <div class="mini-stats">
+                    <span>This Month: $12,450</span>
+                    <span>Last Month: $11,200</span>
+                    <span>Growth: +11.2%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getSecurityDashboard() {
+  return `
+    <div class="dashboard-header">
+        <h1>🛡️ Security Dashboard</h1>
+        <p>System security and threat monitoring</p>
+    </div>
+
+    <div class="security-alerts">
+        <div class="alert-banner warning">
+            <span class="alert-icon">⚠️</span>
+            <div class="alert-content">
+                <h3>Security Alert</h3>
+                <p>2 failed login attempts detected from unusual locations</p>
+            </div>
+            <button class="btn btn--outline btn--sm">Investigate</button>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2>Security Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-value">99.8%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔒</div>
+                <div class="stat-value">847</div>
+                <div class="stat-label">Secure Sessions</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Security Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔐</div>
+                <div class="stat-value">0</div>
+                <div class="stat-label">Breaches Detected</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="security-monitoring">
+        <h2>Real-Time Monitoring</h2>
+        <div class="monitoring-grid">
+            <div class="monitor-card">
+                <h3>🌐 Network Traffic</h3>
+                <div class="traffic-indicator normal">Normal</div>
+                <p>2.3k requests/min</p>
+            </div>
+            <div class="monitor-card">
+                <h3>🔑 Authentication</h3>
+                <div class="traffic-indicator normal">Secure</div>
+                <p>All logins verified</p>
+            </div>
+            <div class="monitor-card">
+                <h3>💾 Data Integrity</h3>
+                <div class="traffic-indicator normal">Protected</div>
+                <p>Encryption active</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <h2>Security Log</h2>
+        <div class="security-log">
+            <div class="log-entry">
+                <span class="log-time">14:32:15</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">User authentication successful - ID: 1247</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:30:42</span>
+                <span class="log-level warning">WARN</span>
+                <span class="log-message">Failed login attempt from IP: 192.168.1.100</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:28:33</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">System backup completed successfully</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:25:18</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">Emergency SOS activated - User ID: 892</span>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+// Additional Functions for Dashboard Actions
+function acceptJob(jobId) {
+  showToast(`Job ${jobId} accepted. Customer notified.`, 'success');
+}
+
+function callCustomer(phoneNumber) {
+  alert(`Calling customer: ${phoneNumber}`);
+}
+
+function manageUsers() {
+  showToast('Opening user management panel...', 'info');
+}
+
+function manageTechnicians() {
+  showToast('Opening technician management panel...', 'info');
+}
+
+function viewAnalytics() {
+  showToast('Loading detailed analytics...', 'info');
+}
+
+function systemSettings() {
+  showToast('Opening system settings...', 'info');
+}
