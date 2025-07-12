@@ -118,12 +118,8 @@ function selectService(serviceId, serviceName, servicePrice) {
         timestamp: new Date()
     };
     
-    if (typeof bookingWorkflow !== 'undefined') {
-        bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
-    } else {
-        // Fallback booking interface
-        showBookingModal(serviceId, serviceName, servicePrice);
-    }
+    // Always use the built-in booking modal
+    showBookingModal(serviceId, serviceName, servicePrice);
 }
 
 function showBookingModal(serviceId, serviceName, servicePrice) {
@@ -139,9 +135,144 @@ function showBookingModal(serviceId, serviceName, servicePrice) {
         if (serviceIcon) serviceIcon.textContent = getServiceIcon(serviceName);
         if (serviceName_el) serviceName_el.textContent = serviceName;
         if (servicePrice_el) servicePrice_el.textContent = '$' + servicePrice;
+        
+        // Reset to first step
+        resetBookingSteps();
+        
+        // Enable continue button and set up event handler
+        setupBookingStepHandlers();
     }
 }
 
+// Reset booking modal to first step
+function resetBookingSteps() {
+    // Hide all steps
+    const steps = document.querySelectorAll('.booking-step');
+    steps.forEach(step => step.classList.remove('active'));
+    
+    // Show first step
+    const firstStep = document.getElementById('booking-step-1');
+    if (firstStep) {
+        firstStep.classList.add('active');
+    }
+    
+    // Reset step indicators
+    const stepIndicators = document.querySelectorAll('.step');
+    stepIndicators.forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        if (index === 0) {
+            step.classList.add('active');
+        }
+    });
+}
+
+// Setup event handlers for booking step navigation
+function setupBookingStepHandlers() {
+    // Remove any existing handlers to prevent duplicates
+    const continueButtons = document.querySelectorAll('.booking-step .btn--primary');
+    continueButtons.forEach(button => {
+        // Clone button to remove all event listeners
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    // Add event handlers for each step's continue button
+    setupStepHandler('booking-step-1', nextBookingStep);
+    setupStepHandler('booking-step-2', nextBookingStep);
+    setupStepHandler('booking-step-3', nextBookingStep);
+    setupStepHandler('booking-step-4', confirmBooking);
+}
+
+// Setup handler for a specific step
+function setupStepHandler(stepId, handler) {
+    const step = document.getElementById(stepId);
+    if (step) {
+        const continueButton = step.querySelector('.btn--primary');
+        if (continueButton) {
+            continueButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                handler();
+            });
+            
+            // Ensure button is enabled and responsive
+            continueButton.disabled = false;
+            continueButton.style.pointerEvents = 'auto';
+            continueButton.style.opacity = '1';
+        }
+    }
+}
+
+// Navigate to next booking step
+function nextBookingStep() {
+    const currentStep = document.querySelector('.booking-step.active');
+    if (!currentStep) return;
+    
+    const currentStepId = currentStep.id;
+    let nextStepId;
+    
+    // Determine next step
+    switch(currentStepId) {
+        case 'booking-step-1':
+            if (validateStep1()) {
+                nextStepId = 'booking-step-2';
+            }
+            break;
+        case 'booking-step-2':
+            if (validateStep2()) {
+                nextStepId = 'booking-step-3';
+            }
+            break;
+        case 'booking-step-3':
+            if (validateStep3()) {
+                nextStepId = 'booking-step-4';
+            }
+            break;
+    }
+    
+    if (nextStepId) {
+        // Hide current step
+        currentStep.classList.remove('active');
+        
+        // Show next step
+        const nextStep = document.getElementById(nextStepId);
+        if (nextStep) {
+            nextStep.classList.add('active');
+            updateStepIndicators(nextStepId);
+        }
+    }
+}
+
+// Update step progress indicators
+function updateStepIndicators(currentStepId) {
+    const stepNumber = parseInt(currentStepId.split('-').pop());
+    const stepIndicators = document.querySelectorAll('.step');
+    
+    stepIndicators.forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        
+        if (index < stepNumber - 1) {
+            step.classList.add('completed');
+        } else if (index === stepNumber - 1) {
+            step.classList.add('active');
+        }
+    });
+}
+
+// Validation functions for each step
+function validateStep1() {
+    // Service is already selected, always valid
+    return true;
+}
+
+function validateStep2() {
+    // Basic validation - could be enhanced
+    return true;
+}
+
+function validateStep3() {
+    // Payment method validation - could be enhanced
+    return true;
+}
 function getServiceIcon(serviceName) {
     const icons = {
         'Towing': '🚛',
