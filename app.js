@@ -8,6 +8,49 @@ class RoadSideApp {
 
     init() {
         console.log('Initializing RoadSide+ App...');
+        this.technicianStatus = 'online';
+        this.activeJobs = [
+            {
+                id: 1,
+                service: 'Towing',
+                customer: 'John Smith',
+                location: '1234 Main St, Downtown',
+                time: 'Due in 15 mins',
+                priority: 'HIGH',
+                status: 'assigned',
+                description: 'Vehicle breakdown on highway, need immediate towing to nearest garage.',
+                phone: '(555) 123-4567'
+            },
+            {
+                id: 2,
+                service: 'Battery Jump',
+                customer: 'Sarah Johnson',
+                location: '5678 Oak Ave, Midtown',
+                time: 'Due in 25 mins',
+                priority: 'MEDIUM',
+                status: 'en_route',
+                description: 'Car won\'t start, likely dead battery in parking lot.',
+                phone: '(555) 987-6543'
+            },
+            {
+                id: 3,
+                service: 'Tire Change',
+                customer: 'Mike Davis',
+                location: '9012 Pine Rd, Uptown',
+                time: 'Due in 45 mins',
+                priority: 'LOW',
+                status: 'assigned',
+                description: 'Flat tire on residential street, customer has spare.',
+                phone: '(555) 456-7890'
+            }
+        ];
+        
+        this.recentCompletions = [
+            { service: 'Towing', location: 'Downtown Plaza', rating: 5, earnings: 150 },
+            { service: 'Battery Jump', location: 'Shopping Mall', rating: 4, earnings: 75 },
+            { service: 'Lockout', location: 'Office Complex', rating: 5, earnings: 85 },
+            { service: 'Fuel Delivery', location: 'Highway 101', rating: 4, earnings: 60 }
+        ];
         
         // Start app immediately
         setTimeout(() => {
@@ -987,6 +1030,158 @@ class RoadSideApp {
     }
 
     // Technician Dashboard Methods
+    toggleTechnicianStatus() {
+        this.technicianStatus = this.technicianStatus === 'online' ? 'offline' : 'online';
+        this.showToast(`Status changed to ${this.technicianStatus}`, 'success');
+        this.showDashboard('technician');
+    }
+
+    updateLocation() {
+        this.showToast('Location updated successfully', 'success');
+    }
+
+    viewTechProfile() {
+        this.showToast('Opening technician profile...', 'info');
+    }
+
+    acceptNextJob() {
+        const availableJob = this.activeJobs.find(job => job.status === 'assigned');
+        if (availableJob) {
+            availableJob.status = 'en_route';
+            this.showToast(`Accepted job: ${availableJob.service}`, 'success');
+            this.showDashboard('technician');
+        } else {
+            this.showToast('No available jobs to accept', 'info');
+        }
+    }
+
+    reportIssue() {
+        this.showToast('Opening issue report form...', 'info');
+    }
+
+    requestSupport() {
+        this.showToast('Connecting to dispatch support...', 'info');
+    }
+
+    viewSchedule() {
+        this.showToast('Opening schedule view...', 'info');
+    }
+
+    // Admin Dashboard Methods
+    openSystemSettings() {
+        this.showToast('Opening system settings...', 'info');
+    }
+
+    viewActiveUsers() {
+        this.showToast('Loading active users report...', 'info');
+    }
+
+    viewActiveTechnicians() {
+        this.showToast('Loading technician status report...', 'info');
+    }
+
+    viewTodaysJobs() {
+        this.showToast('Loading today\'s job analytics...', 'info');
+    }
+
+    viewRevenue() {
+        this.showToast('Loading revenue analytics...', 'info');
+    }
+
+    addNewTechnician() {
+        this.showToast('Opening technician registration form...', 'info');
+    }
+
+    viewReports() {
+        this.showToast('Loading comprehensive reports...', 'info');
+    }
+
+    manageUsers() {
+        this.showToast('Opening user management panel...', 'info');
+    }
+
+    systemMaintenance() {
+        this.showToast('Opening system maintenance tools...', 'info');
+    }
+
+    // Partner Dashboard Methods
+    inviteNewPartner() {
+        this.showToast('Opening partner invitation form...', 'info');
+    }
+
+    viewPartnerNetwork() {
+        this.showToast('Loading partner network analytics...', 'info');
+    }
+
+    viewReferrals() {
+        this.showToast('Loading referral tracking data...', 'info');
+    }
+
+    viewCommissions() {
+        this.showToast('Loading commission reports...', 'info');
+    }
+
+    viewConversionRate() {
+        this.showToast('Loading conversion analytics...', 'info');
+    }
+
+    generateReferralLink() {
+        this.showToast('Generating new referral link...', 'success');
+    }
+
+    downloadMarketingMaterials() {
+        this.showToast('Preparing marketing materials download...', 'info');
+    }
+
+    trackPerformance() {
+        this.showToast('Loading performance analytics...', 'info');
+    }
+
+    manageCommissions() {
+        this.showToast('Opening commission center...', 'info');
+    }
+
+    // Security Dashboard Methods
+    viewThreatDetails() {
+        this.showToast('Loading threat analysis report...', 'info');
+    }
+
+    viewFailedLogins() {
+        this.showToast('Loading failed login attempts...', 'info');
+    }
+
+    viewActiveSessions() {
+        this.showToast('Loading active session monitor...', 'info');
+    }
+
+    viewSecurityScore() {
+        this.showToast('Loading security score details...', 'info');
+    }
+
+    runSecurityScan() {
+        this.showToast('Initiating comprehensive security scan...', 'info');
+    }
+
+    viewAuditLogs() {
+        this.showToast('Loading system audit logs...', 'info');
+    }
+
+    manageAccessControl() {
+        this.showToast('Opening access control panel...', 'info');
+    }
+
+    configureFirewall() {
+        this.showToast('Opening firewall configuration...', 'info');
+    }
+
+    investigateEvent(eventType) {
+        this.showToast(`Investigating ${eventType} event...`, 'info');
+    }
+
+    viewScanResults() {
+        this.showToast('Loading security scan results...', 'info');
+    }
+
     getTechnicianJobCards() {
         const jobs = [
             {
@@ -1244,6 +1439,35 @@ class RoadSideApp {
         if (jobCard) {
             jobCard.style.opacity = '0';
             setTimeout(() => jobCard.remove(), 300);
+        }
+    }
+
+    getJobActions(job) {
+        switch(job.status) {
+            case 'assigned':
+                return `
+                    <button class="btn btn--primary btn--sm" onclick="App.acceptJob(${job.id})">✅ Accept</button>
+                    <button class="btn btn--outline btn--sm" onclick="App.navigateToJob(${job.id})">🗺️ Navigate</button>
+                    <button class="btn btn--outline btn--sm" onclick="App.callCustomer('${job.phone}')">📞 Call</button>
+                    <button class="btn btn--danger btn--sm" onclick="App.declineJob(${job.id})">❌ Decline</button>
+                `;
+            case 'en_route':
+                return `
+                    <button class="btn btn--success btn--sm" onclick="App.markArrived(${job.id})">📍 Arrived</button>
+                    <button class="btn btn--outline btn--sm" onclick="App.navigateToJob(${job.id})">🗺️ Navigate</button>
+                    <button class="btn btn--outline btn--sm" onclick="App.callCustomer('${job.phone}')">📞 Call</button>
+                    <button class="btn btn--warning btn--sm" onclick="App.reportDelay(${job.id})">⏰ Report Delay</button>
+                `;
+            case 'arriving':
+                return `
+                    <button class="btn btn--success btn--sm" onclick="App.startService(${job.id})">🔧 Start Service</button>
+                    <button class="btn btn--outline btn--sm" onclick="App.callCustomer('${job.phone}')">📞 Call</button>
+                    <button class="btn btn--warning btn--sm" onclick="App.reportIssue(${job.id})">⚠️ Report Issue</button>
+                `;
+            default:
+                return `
+                    <button class="btn btn--primary btn--sm" onclick="App.acceptJob(${job.id})">✅ Accept</button>
+                `;
         }
     }
 }
