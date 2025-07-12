@@ -15,6 +15,8 @@ app.use((req, res, next) => {
     res.setHeader('Content-Type', 'text/css');
   } else if (req.path.endsWith('.js')) {
     res.setHeader('Content-Type', 'application/javascript');
+  } else if (req.path.endsWith('.html')) {
+    res.setHeader('Content-Type', 'text/html');
   }
   
   // Disable caching for development
@@ -33,24 +35,39 @@ app.use(express.static(__dirname, {
 
 // Main route
 app.get('/', (req, res) => {
+  console.log('Serving index.html from:', join(__dirname, 'index.html'));
   res.sendFile(join(__dirname, 'index.html'));
+});
+
+// API health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'RoadSide+ Emergency App is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Handle all other routes (SPA support)
 app.get('*', (req, res) => {
+  console.log('Fallback route for:', req.path);
   res.sendFile(join(__dirname, 'index.html'));
 });
 
 // Error handling
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).send('Internal Server Error');
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: err.message
+  });
 });
 
 // Start server
 const server = app.listen(PORT, () => {
   console.log(`🚗 RoadSide+ Emergency App running at http://localhost:${PORT}`);
   console.log(`📱 Preview available at: http://localhost:${PORT}`);
+  console.log(`🏥 Health check: http://localhost:${PORT}/health`);
 });
 
 // Handle server errors
