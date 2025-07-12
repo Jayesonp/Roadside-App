@@ -4,31 +4,39 @@ class RoadSideApp {
         this.currentView = 'dashboard';
         this.serviceHistory = [];
         this.supportTickets = [];
-        // Don't auto-init, wait for explicit call
     }
 
     init() {
         console.log('Initializing RoadSide+ App...');
         
-        // Force immediate startup
-        this.startApp();
+        // Start app immediately
+        setTimeout(() => {
+            this.startApp();
+        }, 100);
     }
 
     startApp() {
         try {
             console.log('Starting app immediately...');
             
-            // Hide loading screen immediately
+            // Hide loading screen and show main app
             const loadingScreen = document.getElementById('loading-screen');
             const mainApp = document.getElementById('main-app');
             
             if (loadingScreen) {
-                loadingScreen.style.display = 'none';
+                loadingScreen.classList.remove('active');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
             }
             
             if (mainApp) {
                 mainApp.style.display = 'block';
-                mainApp.style.opacity = '1';
+                mainApp.style.visibility = 'visible';
+                setTimeout(() => {
+                    mainApp.style.opacity = '1';
+                }, 100);
             }
             
             // Initialize app features
@@ -49,9 +57,13 @@ class RoadSideApp {
         const loadingScreen = document.getElementById('loading-screen');
         const mainApp = document.getElementById('main-app');
         
-        if (loadingScreen) loadingScreen.style.display = 'none';
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+            loadingScreen.style.opacity = '0';
+        }
         if (mainApp) {
             mainApp.style.display = 'block';
+            mainApp.style.visibility = 'visible';
             mainApp.style.opacity = '1';
         }
         

@@ -634,18 +634,73 @@
         // Initialize app immediately when script loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing app...');
-            window.App = new RoadSideApp();
-            window.App.init();
+            try {
+                window.App = new RoadSideApp();
+                window.App.init();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                // Force show main app if error
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    const mainApp = document.getElementById('main-app');
+                    if (loadingScreen) loadingScreen.style.display = 'none';
+                    if (mainApp) {
+                        mainApp.style.display = 'block';
+                        mainApp.style.opacity = '1';
+                        mainApp.style.visibility = 'visible';
+                    }
+                }, 1000);
+            }
         });
         
         // Fallback initialization
         window.addEventListener('load', function() {
             if (!window.App) {
                 console.log('Fallback app initialization...');
-                window.App = new RoadSideApp();
-                window.App.init();
+                try {
+                    window.App = new RoadSideApp();
+                    window.App.init();
+                } catch (error) {
+                    console.error('Fallback initialization failed:', error);
+                    // Emergency fallback
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loading-screen');
+                        const mainApp = document.getElementById('main-app');
+                        if (loadingScreen) loadingScreen.style.display = 'none';
+                        if (mainApp) {
+                            mainApp.style.display = 'block';
+                            mainApp.style.opacity = '1';
+                            mainApp.style.visibility = 'visible';
+                        }
+                    }, 500);
+                }
             }
         });
+        
+        // Ultimate fallback - show app after 2 seconds no matter what
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainApp = document.getElementById('main-app');
+            
+            if (loadingScreen && loadingScreen.style.display !== 'none') {
+                console.log('Ultimate fallback - forcing app display');
+                loadingScreen.style.display = 'none';
+            }
+            
+            if (mainApp && mainApp.style.opacity !== '1') {
+                mainApp.style.display = 'block';
+                mainApp.style.opacity = '1';
+                mainApp.style.visibility = 'visible';
+                
+                // Initialize basic functionality if app didn't load
+                if (!window.App) {
+                    window.App = new RoadSideApp();
+                    window.App.setupEventListeners();
+                    window.App.loadInitialData();
+                    window.App.showDashboard('customer');
+                }
+            }
+        }, 2000);
     </script>
     <script src="app.js"></script>
 </body>
