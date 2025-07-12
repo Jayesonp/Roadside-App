@@ -8,11 +8,21 @@
 </head>
 <body data-color-scheme="dark">
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen active">
         <div class="loading-content">
             <div class="logo">🚗 RoadSide+</div>
             <div class="loading-spinner"></div>
-            <p>Emergency Assistance Ready</p>
+            <p id="loading-text">Initializing Emergency Assistance...</p>
+        </div>
+    </div>
+
+    <!-- Error Boundary -->
+    <div id="error-boundary" class="error-boundary hidden">
+        <div class="error-content">
+            <div class="error-icon">⚠️</div>
+            <h2>Application Error</h2>
+            <p id="error-message">Something went wrong. Please refresh the page.</p>
+            <button onclick="location.reload()" class="btn btn--primary">Reload Application</button>
         </div>
     </div>
 
