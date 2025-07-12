@@ -1,12 +1,6 @@
 import app from './app.js';
 import { config } from './config/index.js';
 import logger from './utils/logger.js';
-import express from 'express';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Create logs directory if it doesn't exist
 import { mkdirSync } from 'fs';
@@ -15,14 +9,6 @@ try {
 } catch (error) {
   // Directory already exists
 }
-
-// Serve static files from root directory (for the frontend)
-app.use(express.static(join(__dirname, '..')));
-
-// Serve index.html for frontend routes (SPA support)
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, '..', 'index.html'));
-});
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error) => {

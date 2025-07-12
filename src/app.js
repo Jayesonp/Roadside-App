@@ -2,6 +2,11 @@ import express from 'express';
 import compression from 'compression';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Import configurations and middleware
 import { config, validateConfig } from './config/index.js';
@@ -45,6 +50,9 @@ if (config.nodeEnv !== 'test') {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Serve static files from root directory (for the frontend)
+app.use(express.static(join(__dirname, '..')));
+
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
   explorer: true,
@@ -55,14 +63,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
 // API routes
 app.use(`/api/${config.api.version}`, routes);
 
-// Root endpoint
+// Serve index.html for frontend routes (SPA support)
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Task Management API',
-    version: '1.0.0',
-    documentation: '/api-docs',
-    health: `/api/${config.api.version}/health`
-  });
+  res.sendFile(join(__dirname, '..', 'index.html'));
 });
 
 // Error handling middleware (must be last)
