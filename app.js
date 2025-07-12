@@ -1470,6 +1470,218 @@ class RoadSideApp {
                 `;
         }
     }
+
+    // Supabase Authentication Methods
+    async supabaseSignUp(email, password, firstName, lastName) {
+        try {
+            const response = await fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                    firstName,
+                    lastName
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store session info
+                if (data.data.session) {
+                    localStorage.setItem('supabase_session', JSON.stringify(data.data.session));
+                }
+                localStorage.setItem('user_data', JSON.stringify(data.data.user));
+                
+                this.showToast('Account created successfully!', 'success');
+                this.showLogin();
+                return data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            this.showToast(error.message, 'error');
+            throw error;
+        }
+    }
+
+    async supabaseSignIn(email, password) {
+        try {
+            const response = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store session info
+                if (data.data.session) {
+                    localStorage.setItem('supabase_session', JSON.stringify(data.data.session));
+                }
+                localStorage.setItem('user_data', JSON.stringify(data.data.user));
+                
+                this.showToast('Login successful!', 'success');
+                this.showMainApp();
+                return data;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            this.showToast(error.message, 'error');
+            throw error;
+        }
+    }
+
+    async supabaseSignOut() {
+        try {
+            const session = JSON.parse(localStorage.getItem('supabase_session') || '{}');
+            
+            const response = await fetch('/api/v1/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
+
+            // Clear local storage regardless of response
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('user_data');
+            
+            this.showToast('Logged out successfully!', 'success');
+            this.showLogin();
+        } catch (error) {
+            // Still clear local storage on error
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('user_data');
+            this.showToast('Logged out', 'info');
+            this.showLogin();
+        }
+    }
+
+    // Authentication Methods
+    login() {
+        const emailInput = document.querySelector('#login-screen input[type="email"]');
+        const passwordInput = document.querySelector('#login-screen input[type="password"]');
+        
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value?.trim();
+
+        if (!email || !password) {
+            this.showToast('Please enter both email and password', 'error');
+            return;
+        }
+
+        // Use Supabase authentication
+        this.supabaseSignIn(email, password);
+    }
+
+    register() {
+        const emailInput = document.querySelector('#register-screen input[type="email"]');
+        const passwordInput = document.querySelector('#register-screen input[type="password"]');
+        const firstNameInput = document.querySelector('#register-screen input[name="firstName"]');
+        const lastNameInput = document.querySelector('#register-screen input[name="lastName"]');
+        
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value?.trim();
+        const firstName = firstNameInput?.value?.trim();
+        const lastName = lastNameInput?.value?.trim();
+
+        if (!email || !password || !firstName || !lastName) {
+            this.showToast('Please fill in all fields', 'error');
+            return;
+        }
+
+        // Use Supabase authentication
+        this.supabaseSignUp(email, password, firstName, lastName);
+    }
+
+    logout() {
+        // Use Supabase sign out
+        this.supabaseSignOut();
+    }
+
+    showLogin() {
+        // Hide all screens and show login
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.style.display = 'none';
+        });
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'block';
+    }
+
+    showMainApp() {
+        // Hide all screens and show main app
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.style.display = 'none';
+        });
+        const mainApp = document.getElementById('main-app');
+        if (mainApp) mainApp.style.display = 'block';
+    }
+
+    showRegister() {
+        // Create register screen if it doesn't exist
+        let registerScreen = document.getElementById('register-screen');
+        if (!registerScreen) {
+            registerScreen = document.createElement('div');
+            registerScreen.id = 'register-screen';
+            registerScreen.className = 'screen';
+            registerScreen.innerHTML = `
+                <div class="auth-container">
+                    <div class="auth-header">
+                        <h1>🚗 RoadSide+</h1>
+                        <p>Create Your Account</p>
+                    </div>
+                    <div class="auth-form">
+                        <div class="form-group">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="firstName" class="form-control" placeholder="Enter your first name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="lastName" class="form-control" placeholder="Enter your last name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" placeholder="Enter your password">
+                        </div>
+                        <button class="btn btn--primary btn--full-width" onclick="App.register()">Create Account</button>
+                        <div class="auth-divider">
+                            <span>or</span>
+                        </div>
+                        <button class="btn btn--outline btn--full-width" onclick="App.showLogin()">Back to Login</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(registerScreen);
+        }
+
+        // Hide all screens and show register
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.style.display = 'none';
+        });
+        document.getElementById('main-app').style.display = 'none';
+        registerScreen.style.display = 'block';
+    }
+
+    // Emergency and Support Functions
+    emergencyCall() {
+        this.showToast('🚨 Emergency services contacted!', 'error');
+    }
 }
 
 // Global functions for onclick handlers
