@@ -265,47 +265,115 @@ class RoadSideApp {
                 <div class="dashboard-header">
                     <h2>🔧 Technician Dashboard</h2>
                     <p>Manage your service assignments and performance</p>
+                    <div class="tech-status">
+                        <div class="status-indicator online"></div>
+                        <span>On Duty</span>
+                        <button onclick="App.toggleTechnicianStatus()" class="btn btn--sm btn--outline">Toggle Status</button>
+                    </div>
                 </div>
                 
                 <div class="tech-stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="App.viewTechnicianJobs()">
                         <div class="stat-icon">📋</div>
-                        <div class="stat-value">8</div>
+                        <div class="stat-value" id="tech-active-jobs">8</div>
                         <div class="stat-label">Active Jobs</div>
+                        <div class="stat-trend">+2 today</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="App.viewResponseMetrics()">
                         <div class="stat-icon">⚡</div>
-                        <div class="stat-value">12 min</div>
+                        <div class="stat-value" id="tech-avg-response">12 min</div>
                         <div class="stat-label">Avg Response</div>
+                        <div class="stat-trend">-3 min this week</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="App.viewRatings()">
                         <div class="stat-icon">⭐</div>
-                        <div class="stat-value">4.9</div>
+                        <div class="stat-value" id="tech-rating">4.9</div>
                         <div class="stat-label">Rating</div>
+                        <div class="stat-trend">+0.1 this month</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="App.viewEarnings()">
                         <div class="stat-icon">💰</div>
-                        <div class="stat-value">$2,450</div>
+                        <div class="stat-value" id="tech-earnings">$2,450</div>
                         <div class="stat-label">This Week</div>
+                        <div class="stat-trend">+15% vs last week</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions-section">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <button onclick="App.acceptNextJob()" class="action-btn accept">
+                            <div class="action-icon">✅</div>
+                            <span>Accept Next Job</span>
+                        </button>
+                        <button onclick="App.reportIssue()" class="action-btn report">
+                            <div class="action-icon">⚠️</div>
+                            <span>Report Issue</span>
+                        </button>
+                        <button onclick="App.requestSupport()" class="action-btn support">
+                            <div class="action-icon">🆘</div>
+                            <span>Request Support</span>
+                        </button>
+                        <button onclick="App.updateLocation()" class="action-btn location">
+                            <div class="action-icon">📍</div>
+                            <span>Update Location</span>
+                        </button>
                     </div>
                 </div>
 
                 <div class="active-jobs-section">
-                    <h3>Active Assignments</h3>
-                    <div class="job-cards">
-                        <div class="job-card priority-high">
-                            <div class="job-header">
-                                <span class="job-type">🚛 Towing</span>
-                                <span class="priority">High Priority</span>
+                    <div class="section-header">
+                        <h3>Active Assignments</h3>
+                        <div class="job-filters">
+                            <button onclick="App.filterJobs('all')" class="filter-btn active">All</button>
+                            <button onclick="App.filterJobs('high')" class="filter-btn">High Priority</button>
+                            <button onclick="App.filterJobs('medium')" class="filter-btn">Medium</button>
+                            <button onclick="App.filterJobs('low')" class="filter-btn">Low</button>
+                        </div>
+                    </div>
+                    <div class="job-cards" id="technician-job-cards">
+                        ${this.getTechnicianJobCards()}
+                    </div>
+                </div>
+
+                <div class="completed-jobs-section">
+                    <h3>Recent Completions</h3>
+                    <div class="completed-jobs-list">
+                        ${this.getCompletedJobsHTML()}
+                    </div>
+                </div>
+
+                <div class="performance-section">
+                    <h3>Performance Metrics</h3>
+                    <div class="performance-grid">
+                        <div class="metric-card">
+                            <h4>Today's Performance</h4>
+                            <div class="metric-item">
+                                <span>Jobs Completed:</span>
+                                <span class="metric-value">6</span>
                             </div>
-                            <div class="job-details">
-                                <p><strong>Location:</strong> 1234 Main St</p>
-                                <p><strong>Customer:</strong> John Smith</p>
-                                <p><strong>ETA:</strong> 15 minutes</p>
+                            <div class="metric-item">
+                                <span>Customer Rating:</span>
+                                <span class="metric-value">4.8★</span>
                             </div>
-                            <div class="job-actions">
-                                <button class="btn btn--primary btn--sm">Navigate</button>
-                                <button class="btn btn--outline btn--sm">Call Customer</button>
+                            <div class="metric-item">
+                                <span>Response Time:</span>
+                                <span class="metric-value">11 min avg</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>This Week</h4>
+                            <div class="metric-item">
+                                <span>Total Jobs:</span>
+                                <span class="metric-value">34</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Earnings:</span>
+                                <span class="metric-value">$2,450</span>
+                            </div>
+                            <div class="metric-item">
+                                <span>Efficiency:</span>
+                                <span class="metric-value">95%</span>
                             </div>
                         </div>
                     </div>
@@ -984,6 +1052,39 @@ class RoadSideApp {
     closeSystemControlModal() {
         const modal = document.getElementById('system-control-modal');
         if (modal) modal.style.display = 'none';
+    }
+
+    getTechnicianJobCards() {
+        return `
+            <div class="job-card priority-high">
+                <div class="job-header">
+                    <span class="job-type">🚛 Towing</span>
+                    <span class="priority">High Priority</span>
+                </div>
+                <div class="job-details">
+                    <p><strong>Location:</strong> 1234 Main St</p>
+                    <p><strong>Customer:</strong> John Smith</p>
+                    <p><strong>ETA:</strong> 15 minutes</p>
+                </div>
+                <div class="job-actions">
+                    <button class="btn btn--primary btn--sm">Navigate</button>
+                    <button class="btn btn--outline btn--sm">Call Customer</button>
+                </div>
+            </div>
+        `;
+    }
+
+    getCompletedJobsHTML() {
+        return `
+            <div class="completed-job-item">
+                <div class="job-info">
+                    <h4>Battery Jump</h4>
+                    <p>Completed 2 hours ago</p>
+                    <p>Customer: Jane Doe</p>
+                </div>
+                <div class="job-rating">⭐ 5.0</div>
+            </div>
+        `;
     }
 }
 
