@@ -5,6 +5,8 @@ const App = {
     currentUser: null,
     currentView: 'dashboard',
     currentDashboard: 'customer',
+    isNavDrawerOpen: false,
+    lastFocusedElement: null,
     services: [
         { id: 1, name: 'Towing', price: 150, icon: '🚛', time: '45 min', response: '30 min response' },
         { id: 2, name: 'Battery Jump', price: 75, icon: '🔋', time: '20 min', response: '30 min response' },
@@ -20,6 +22,7 @@ const App = {
         this.setupEventListeners();
         this.loadUserData();
         this.showLoadingScreen();
+        this.initializeNavigation();
     },
 
     // Show loading screen and transition to main app
@@ -195,6 +198,11 @@ const App = {
         
         // Load dashboard content
         this.loadDashboardContent(dashboardType);
+        
+        // Close nav drawer when selecting an item (mobile)
+        if (this.isNavDrawerOpen) {
+            this.closeNavDrawer();
+        }
         
         // Show success message
         this.showToast(`Switched to ${dashboardType.charAt(0).toUpperCase() + dashboardType.slice(1)} Dashboard`);
@@ -572,6 +580,181 @@ const App = {
                 </div>
             </div>
         `;
+    },
+
+    // Navigation functions
+    toggleNavDrawer() {
+        const navDrawer = document.getElementById('nav-drawer');
+        const hamburgerBtn = document.getElementById('hamburger-toggle');
+        
+        if (this.isNavDrawerOpen) {
+            this.closeNavDrawer();
+        } else {
+            this.openNavDrawer();
+        }
+    },
+
+    openNavDrawer() {
+        const navDrawer = document.getElementById('nav-drawer');
+        const hamburgerBtn = document.getElementById('hamburger-toggle');
+        const body = document.body;
+        
+        // Store the currently focused element
+        this.lastFocusedElement = document.activeElement;
+        
+        // Open the drawer
+        navDrawer.classList.add('open');
+        hamburgerBtn.classList.add('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
+        body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        this.isNavDrawerOpen = true;
+        
+        // Focus on the first nav item for keyboard users
+        setTimeout(() => {
+            const firstNavItem = navDrawer.querySelector('.nav-item');
+            if (firstNavItem) {
+                firstNavItem.focus();
+            }
+        }, 100);
+        
+        // Add event listeners for closing
+        document.addEventListener('keydown', this.handleNavDrawerKeydown.bind(this));
+        const overlay = navDrawer.querySelector('.nav-drawer-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', this.closeNavDrawer.bind(this));
+        }
+    },
+
+    closeNavDrawer() {
+        const navDrawer = document.getElementById('nav-drawer');
+        const hamburgerBtn = document.getElementById('hamburger-toggle');
+        const body = document.body;
+        
+        if (!this.isNavDrawerOpen) return;
+        
+        // Close the drawer
+        navDrawer.classList.remove('open');
+        hamburgerBtn.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        body.style.overflow = ''; // Restore scrolling
+        
+        this.isNavDrawerOpen = false;
+        
+        // Return focus to the hamburger button
+        if (this.lastFocusedElement) {
+            this.lastFocusedElement.focus();
+            this.lastFocusedElement = null;
+        } else {
+            hamburgerBtn.focus();
+        }
+        
+        // Remove event listeners
+        document.removeEventListener('keydown', this.handleNavDrawerKeydown.bind(this));
+        const overlay = navDrawer.querySelector('.nav-drawer-overlay');
+        if (overlay) {
+            overlay.removeEventListener('click', this.closeNavDrawer.bind(this));
+        }
+    },
+
+    handleNavDrawerKeydown(event) {
+        if (!this.isNavDrawerOpen) return;
+        
+        // Close on Escape key
+        if (event.key === 'Escape') {
+            this.closeNavDrawer();
+            return;
+        }
+        
+        // Handle focus trapping
+        if (event.key === 'Tab') {
+            this.trapFocus(event);
+        }
+    },
+
+    trapFocus(event) {
+        const navDrawer = document.getElementById('nav-drawer');
+        const focusableElements = navDrawer.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        if (event.shiftKey) {
+            // Shift + Tab
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                event.preventDefault();
+            }
+        } else {
+            // Tab
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                event.preventDefault();
+            }
+        }
+    },
+
+    // Handle clicks outside the navigation drawer
+    handleOutsideClick(event) {
+        const navDrawer = document.getElementById('nav-drawer');
+        const hamburgerBtn = document.getElementById('hamburger-toggle');
+        
+        if (!this.isNavDrawerOpen) return;
+        
+        // Check if click is outside the drawer content
+        const drawerContent = navDrawer.querySelector('div:not(.nav-drawer-overlay)');
+        if (!drawerContent.contains(event.target) && !hamburgerBtn.contains(event.target)) {
+            this.closeNavDrawer();
+        }
+    },
+
+    // Initialize navigation event listeners
+    initializeNavigation() {
+        // Mobile hamburger menu
+        const hamburgerBtn = document.getElementById('hamburger-toggle');
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', this.toggleNavDrawer.bind(this));
+            
+            // Handle touch events for better mobile experience
+            hamburgerBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            hamburgerBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                hamburgerBtn.style.transform = '';
+                this.toggleNavDrawer();
+            });
+        }
+        
+        // Close button in nav drawer
+        const closeBtn = document.getElementById('nav-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', this.closeNavDrawer.bind(this));
+        }
+        
+        // Handle keyboard navigation for nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+        
+        // Close drawer when clicking outside (mobile)
+        document.addEventListener('click', this.handleOutsideClick.bind(this));
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768 && this.isNavDrawerOpen) {
+                this.closeNavDrawer();
+            }
+        });
     },
 
     // System control functions
@@ -2778,17 +2961,11 @@ function showRegister() {
 }
 
 function toggleNavDrawer() {
-    const drawer = document.getElementById('nav-drawer');
-    if (drawer) {
-        drawer.classList.toggle('active');
-    }
+    App.toggleNavDrawer();
 }
 
 function closeNavDrawer() {
-    const drawer = document.getElementById('nav-drawer');
-    if (drawer) {
-        drawer.classList.remove('active');
-    }
+    App.closeNavDrawer();
 }
 
 function emergencyCall() {
