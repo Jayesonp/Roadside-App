@@ -366,30 +366,467 @@ function confirmBooking() {
   };
 
   appState.addServiceToHistory(serviceRecord);
-  closeBookingModal();
-  
-  // Start tracking
+    const isEmergency = confirm('🚨 EMERGENCY SERVICE\n\nThis will:\n• Prioritize your request\n• Contact nearest available technician\n• Add emergency surcharge\n• Notify emergency contacts\n\nContinue?');
+    
+    if (isEmergency) {
+        // Trigger emergency booking workflow
+        if (window.bookingWorkflow) {
+            // Pre-fill emergency service
+            window.bookingWorkflow.createBookingInterface('emergency', 'Emergency Service', 250);
+            // Auto-enable emergency toggle
+            setTimeout(() => {
+                const emergencyToggle = document.getElementById('emergency-service');
+                if (emergencyToggle) {
+                    emergencyToggle.checked = true;
+                    window.bookingWorkflow.toggleEmergency();
+                }
+            }, 500);
+        } else {
+            // Fallback emergency response
+            showEmergencyResponse();
+        }
+        
+        // Log emergency request
+        console.log('Emergency service requested at:', new Date());
+        
+        // Show immediate feedback
+        if (window.bookingWorkflow) {
+            window.bookingWorkflow.showNotification('🚨 Emergency service activated! Priority response initiated.', 'error');
+        }
   setTimeout(() => {
     openTrackingModal(serviceRecord);
   }, 500);
+// Show emergency response
+function showEmergencyResponse() {
+    alert('🚨 Emergency service requested!\n\n✅ Priority dispatch activated\n📞 Help is on the way\n⏱️ Estimated response: 10-15 minutes');
 }
 
-function openBookingModal() {
-  $('#booking-modal').classList.add('active');
+// Enhanced booking confirmation
+}
+    if (window.bookingWorkflow) {
+        window.bookingWorkflow.confirmBooking();
+    } else {
+        // Fallback booking confirmation
+        showModal('tracking-modal');
+        closeModal('booking-modal');
+    }
 }
 
+// Enhanced modal functions
 function closeBookingModal() {
-  $('#booking-modal').classList.remove('active');
+    const modal = document.getElementById('booking-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Reset any booking workflow state
+        if (window.bookingWorkflow) {
+            window.bookingWorkflow.currentBooking = null;
+        }
+    }
   appState.currentBooking = null;
 }
 
 // Service Tracking
 function openTrackingModal(service) {
   $('#tracking-modal').classList.add('active');
+// Enhanced tracking functions
   startServiceTracking(service);
-}
+    if (window.bookingWorkflow) {
+        window.bookingWorkflow.callTechnician('+1-555-0123');
+    } else {
+        const phone = '+1-555-0123';
+        if (confirm(`Call technician at ${phone}?`)) {
+            window.open(`tel:${phone}`);
+        }
+    }
 
 function closeTrackingModal() {
+// Enhanced admin system controls
+function openSystemControl(type) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    
+    let content = '';
+    
+    switch(type) {
+        case 'users':
+            content = generateUserManagementInterface();
+            break;
+        case 'technicians':
+            content = generateTechnicianManagementInterface();
+            break;
+        case 'analytics':
+            content = generateAnalyticsInterface();
+            break;
+        case 'settings':
+            content = generateSystemSettingsInterface();
+            break;
+        default:
+            content = '<h3>System Control</h3><p>Feature coming soon...</p>';
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content system-control-modal">
+            <div class="modal-header">
+                <h2>${type.charAt(0).toUpperCase() + type.slice(1)} Management</h2>
+                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Generate management interfaces
+function generateUserManagementInterface() {
+    return `
+        <div class="management-interface">
+            <div class="management-tabs">
+                <button class="tab-btn active" onclick="switchManagementTab(this, 'users-list')">Active Users</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'users-analytics')">Analytics</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'users-actions')">Actions</button>
+            </div>
+            
+            <div id="users-list" class="tab-content active">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search users..." class="search-input">
+                    <button class="btn btn--sm">🔍 Search</button>
+                </div>
+                
+                <div class="user-list">
+                    <div class="user-item">
+                        <div class="user-info">
+                            <div class="user-avatar">JD</div>
+                            <div class="user-details">
+                                <h4>John Doe</h4>
+                                <p>john.doe@email.com</p>
+                                <span class="user-status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="user-actions">
+                            <button class="btn btn--sm btn--outline">Edit</button>
+                            <button class="btn btn--sm btn--outline">Disable</button>
+                        </div>
+                    </div>
+                    <!-- More user items... -->
+                </div>
+            </div>
+            
+            <div id="users-analytics" class="tab-content">
+                <div class="analytics-grid">
+                    <div class="metric-card">
+                        <h4>Total Users</h4>
+                        <div class="metric-value">1,247</div>
+                        <div class="metric-trend">↑ 12% this month</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Active This Month</h4>
+                        <div class="metric-value">892</div>
+                        <div class="metric-trend">↑ 8% this month</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="users-actions" class="tab-content">
+                <div class="action-buttons">
+                    <button class="btn btn--primary">Export User Data</button>
+                    <button class="btn btn--outline">Send Notification</button>
+                    <button class="btn btn--outline">Bulk Actions</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateTechnicianManagementInterface() {
+    return `
+        <div class="management-interface">
+            <div class="management-tabs">
+                <button class="tab-btn active" onclick="switchManagementTab(this, 'tech-list')">Active Technicians</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'tech-performance')">Performance</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'tech-scheduling')">Scheduling</button>
+            </div>
+            
+            <div id="tech-list" class="tab-content active">
+                <div class="technician-grid">
+                    <div class="technician-card">
+                        <div class="tech-status online"></div>
+                        <div class="tech-info">
+                            <h4>Mike Rodriguez</h4>
+                            <p>🔧 Senior Technician</p>
+                            <p>📍 2.3 miles from center</p>
+                            <div class="tech-rating">⭐ 4.9 (127 reviews)</div>
+                        </div>
+                        <div class="tech-actions">
+                            <button class="btn btn--sm">Assign Job</button>
+                            <button class="btn btn--sm btn--outline">Contact</button>
+                        </div>
+                    </div>
+                    <!-- More technician cards... -->
+                </div>
+            </div>
+            
+            <div id="tech-performance" class="tab-content">
+                <div class="performance-metrics">
+                    <div class="metric-card">
+                        <h4>Average Rating</h4>
+                        <div class="metric-value">4.7</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Response Time</h4>
+                        <div class="metric-value">18 min</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Success Rate</h4>
+                        <div class="metric-value">94%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tech-scheduling" class="tab-content">
+                <div class="scheduling-interface">
+                    <h4>Resource Allocation</h4>
+                    <div class="shift-management">
+                        <p>Shift management and scheduling tools</p>
+                        <button class="btn btn--primary">Manage Shifts</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateAnalyticsInterface() {
+    return `
+        <div class="management-interface">
+            <div class="management-tabs">
+                <button class="tab-btn active" onclick="switchManagementTab(this, 'revenue-analytics')">Revenue</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'service-analytics')">Services</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'performance-analytics')">Performance</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'geographic-analytics')">Geographic</button>
+            </div>
+            
+            <div id="revenue-analytics" class="tab-content active">
+                <div class="revenue-dashboard">
+                    <div class="revenue-summary">
+                        <div class="summary-card">
+                            <h4>Today's Revenue</h4>
+                            <div class="revenue-amount">$2,847</div>
+                            <div class="revenue-trend">↑ 15% vs yesterday</div>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Monthly Revenue</h4>
+                            <div class="revenue-amount">$68,234</div>
+                            <div class="revenue-trend">↑ 23% vs last month</div>
+                        </div>
+                    </div>
+                    <div class="revenue-chart">
+                        <h4>Revenue Trend (Last 30 Days)</h4>
+                        <div class="chart-placeholder">📊 Chart would be here</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="service-analytics" class="tab-content">
+                <div class="service-breakdown">
+                    <h4>Service Performance</h4>
+                    <div class="service-stats">
+                        <div class="service-stat">
+                            <span class="service-name">🚛 Towing</span>
+                            <span class="service-count">34%</span>
+                        </div>
+                        <div class="service-stat">
+                            <span class="service-name">🔋 Battery Jump</span>
+                            <span class="service-count">22%</span>
+                        </div>
+                        <div class="service-stat">
+                            <span class="service-name">🛞 Tire Change</span>
+                            <span class="service-count">18%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="performance-analytics" class="tab-content">
+                <div class="performance-dashboard">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <h4>Average Response Time</h4>
+                            <div class="kpi-value">18 min</div>
+                            <div class="kpi-trend">↓ 2 min from last week</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h4>Service Success Rate</h4>
+                            <div class="kpi-value">94.2%</div>
+                            <div class="kpi-trend">↑ 1.3% from last week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="geographic-analytics" class="tab-content">
+                <div class="geographic-dashboard">
+                    <h4>Service Distribution by Area</h4>
+                    <div class="area-stats">
+                        <div class="area-item">
+                            <span class="area-name">Downtown</span>
+                            <span class="area-percentage">45%</span>
+                        </div>
+                        <div class="area-item">
+                            <span class="area-name">Suburbs</span>
+                            <span class="area-percentage">32%</span>
+                        </div>
+                        <div class="area-item">
+                            <span class="area-name">Highway</span>
+                            <span class="area-percentage">23%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateSystemSettingsInterface() {
+    return `
+        <div class="management-interface">
+            <div class="management-tabs">
+                <button class="tab-btn active" onclick="switchManagementTab(this, 'general-settings')">General</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'service-settings')">Services</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'notification-settings')">Notifications</button>
+                <button class="tab-btn" onclick="switchManagementTab(this, 'security-settings')">Security</button>
+            </div>
+            
+            <div id="general-settings" class="tab-content active">
+                <div class="settings-form">
+                    <div class="setting-group">
+                        <h4>System Configuration</h4>
+                        <div class="setting-item">
+                            <label>Service Radius (miles)</label>
+                            <input type="number" value="25" min="1" max="100">
+                        </div>
+                        <div class="setting-item">
+                            <label>Default Response Time (minutes)</label>
+                            <input type="number" value="30" min="5" max="120">
+                        </div>
+                        <div class="setting-item">
+                            <label>Emergency Priority</label>
+                            <select>
+                                <option value="high">High Priority</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="critical" selected>Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h4>Maintenance Mode</h4>
+                        <div class="setting-item">
+                            <label class="toggle-label">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                                Enable maintenance mode
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="service-settings" class="tab-content">
+                <div class="service-pricing">
+                    <h4>Service Pricing Management</h4>
+                    <div class="pricing-list">
+                        <div class="pricing-item">
+                            <span class="service-name">🚛 Towing</span>
+                            <input type="number" value="150" class="price-input">
+                            <button class="btn btn--sm">Update</button>
+                        </div>
+                        <div class="pricing-item">
+                            <span class="service-name">🔋 Battery Jump</span>
+                            <input type="number" value="75" class="price-input">
+                            <button class="btn btn--sm">Update</button>
+                        </div>
+                        <div class="pricing-item">
+                            <span class="service-name">🛞 Tire Change</span>
+                            <input type="number" value="100" class="price-input">
+                            <button class="btn btn--sm">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="notification-settings" class="tab-content">
+                <div class="notification-config">
+                    <h4>Notification Preferences</h4>
+                    <div class="notification-types">
+                        <div class="notification-item">
+                            <span>Email Notifications</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="notification-item">
+                            <span>SMS Alerts</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="notification-item">
+                            <span>Push Notifications</span>
+                            <label class="toggle-label">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="security-settings" class="tab-content">
+                <div class="security-config">
+                    <h4>Security Configuration</h4>
+                    <div class="security-options">
+                        <div class="security-item">
+                            <span>Two-Factor Authentication</span>
+                            <label class="toggle-label">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="security-item">
+                            <span>IP Whitelist</span>
+                            <label class="toggle-label">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="security-item">
+                            <span>Session Timeout (minutes)</span>
+                            <input type="number" value="60" min="15" max="480">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Switch management tabs
+function switchManagementTab(button, tabId) {
+    // Remove active class from all tabs and buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    
+    // Add active class to clicked button and corresponding tab
+    button.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
   $('#tracking-modal').classList.remove('active');
 }
 
@@ -708,19 +1145,101 @@ function sendSupportMessage(ticketId) {
   }, 1000);
   
   input.value = '';
+// Initialize booking workflow when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the booking workflow system
+    if (typeof BookingWorkflow !== 'undefined') {
+        window.bookingWorkflow = new BookingWorkflow();
+    }
+    
+    // Initialize admin dashboard if on admin view
+    if (document.querySelector('[data-view="admin"]')) {
+        initializeAdminDashboard();
+    }
+});
+
+// Enhanced service selection with new booking workflow
   appState.updateSupportTicket(ticketId, ticket);
-  
-  // Update chat display immediately for user message
-  const chatContainer = $(`#chat-messages-${ticketId}`);
-  if (chatContainer) {
-    chatContainer.innerHTML = ticket.messages.map(msg => `
-      <div class="message ${msg.sender === 'user' ? 'user-message' : 'support-message'}">
-        <div class="message-content">${msg.message}</div>
-        <div class="message-time">${formatDate(msg.timestamp)}</div>
-      </div>
-    `).join('');
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
+    // Use the new comprehensive booking workflow
+    if (window.bookingWorkflow) {
+        window.bookingWorkflow.createBookingInterface(id, name, price);
+    } else {
+        // Fallback to basic booking
+        selectedService = { id, name, price };
+        openBasicBookingModal();
+    }
+}
+
+// Enhanced admin dashboard initialization
+function initializeAdminDashboard() {
+    const adminContent = document.querySelector('#admin-dashboard-content');
+    if (!adminContent) return;
+    
+    // Add comprehensive admin monitoring
+    if (window.bookingWorkflow) {
+        const monitoringHtml = window.bookingWorkflow.setupRealTimeMonitoring();
+        if (monitoringHtml) {
+            adminContent.innerHTML += monitoringHtml;
+        }
+    }
+    
+    // Start real-time updates
+    startAdminRealTimeUpdates();
+}
+
+// Start real-time updates for admin dashboard
+function startAdminRealTimeUpdates() {
+    // Update stats every 30 seconds
+    setInterval(() => {
+        updateLiveStats();
+    }, 30000);
+    
+    // Update technician locations every 10 seconds
+    setInterval(() => {
+        updateTechnicianLocations();
+    }, 10000);
+}
+
+// Update live statistics
+function updateLiveStats() {
+    const stats = document.querySelectorAll('.stat-card.live .stat-value');
+    stats.forEach(stat => {
+        // Simulate real-time data updates
+        const currentValue = parseInt(stat.textContent);
+        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+        const newValue = Math.max(0, currentValue + change);
+        
+        if (newValue !== currentValue) {
+            stat.textContent = newValue;
+            stat.parentElement.classList.add('updated');
+            setTimeout(() => {
+                stat.parentElement.classList.remove('updated');
+            }, 2000);
+        }
+    });
+}
+
+// Update technician locations
+function updateTechnicianLocations() {
+    const markers = document.querySelectorAll('.technician-marker.available');
+    markers.forEach(marker => {
+        // Simulate movement
+        const currentTop = parseFloat(marker.style.top) || 20;
+        const currentLeft = parseFloat(marker.style.left) || 30;
+        
+        const newTop = Math.max(10, Math.min(80, currentTop + (Math.random() - 0.5) * 10));
+        const newLeft = Math.max(10, Math.min(80, currentLeft + (Math.random() - 0.5) * 10));
+        
+        marker.style.top = newTop + '%';
+        marker.style.left = newLeft + '%';
+    });
+}
+
+// Fallback basic booking modal
+function openBasicBookingModal() {
+    const modal = document.getElementById('booking-modal');
+    // Basic booking implementation as fallback
+    modal.style.display = 'block';
 }
 
 // Emergency SOS
