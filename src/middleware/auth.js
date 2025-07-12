@@ -1,12 +1,10 @@
-import jwt from 'jsonwebtoken';
-import { config } from '../config/index.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import supabase from '../config/database.js';
+import { SupabaseAuth } from '../utils/supabaseAuth.js';
 import logger from '../utils/logger.js';
 
 /**
- * JWT Authentication Middleware
+ * Supabase Authentication Middleware
  */
 export const authenticate = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -15,35 +13,36 @@ export const authenticate = asyncHandler(async (req, res, next) => {
     return ApiResponse.unauthorized(res, 'Access token required');
   }
 
-  const token = authHeader.substring(7);
+  const accessToken = authHeader.substring(7);
 
   try {
-    // Verify JWT token
-    const decoded = jwt.verify(token, config.jwt.secret);
-    
-    // Get user from database
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('id, email, role, is_active')
-      .eq('id', decoded.userId)
-      .single();
+    // Set the session token for Supabase
+    if (global.supabaseClient) {
+      await global.supabaseClient.auth.setSession({
+        access_token: accessToken,
+        refresh_token: '' // Will be handled by client
+      });
+    }
 
-    if (error || !user) {
-      logger.warn(`Authentication failed for token: ${token.substring(0, 10)}...`);
+    // Get current user from Supabase
+    const user = await SupabaseAuth.getCurrentUser();
+
+    if (!user) {
+      logger.warn(`Authentication failed for token: ${accessToken.substring(0, 10)}...`);
       return ApiResponse.unauthorized(res, 'Invalid token');
     }
 
-    if (!user.is_active) {
-      return ApiResponse.forbidden(res, 'Account is deactivated');
-    }
-
     // Attach user to request object
-    req.user = user;
+    req.user = {
+      id: user.id,
+      email: user.email,
+      role: user.user_metadata?.role || 'user'
+    };
     next();
   } catch (error) {
-    logger.error('JWT verification failed:', error.message);
+    logger.error('Supabase auth verification failed:', error.message);
     
-    if (error.name === 'TokenExpiredError') {
+    if (error.message.includes('expired')) {
       return ApiResponse.unauthorized(res, 'Token expired');
     }
     
