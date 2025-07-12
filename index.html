@@ -46,7 +46,18 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-left">
-                <button class="hamburger-btn" onclick="toggleNavDrawer()">☰</button>
+                <button 
+                    class="hamburger-btn" 
+                    onclick="toggleNavDrawer()" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="nav-drawer"
+                    id="hamburger-toggle"
+                >
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
                 <div class="logo-nav">🚗 RoadSide+</div>
             </div>
             <div class="nav-right">
@@ -58,32 +69,38 @@
         </nav>
 
         <!-- Navigation Drawer -->
-        <div id="nav-drawer" class="nav-drawer">
+        <div id="nav-drawer" class="nav-drawer" role="navigation" aria-label="Main navigation">
+            <div class="nav-drawer-overlay" aria-hidden="true"></div>
             <div class="nav-drawer-header">
                 <h3>Navigation</h3>
-                <button class="close-btn" onclick="closeNavDrawer()">×</button>
+                <button 
+                    class="close-btn" 
+                    onclick="closeNavDrawer()" 
+                    aria-label="Close navigation menu"
+                    id="nav-close-btn"
+                >×</button>
             </div>
             <div class="nav-drawer-content">
-                <div class="nav-item active" onclick="showDashboard('customer')">
+                <button class="nav-item active" onclick="showDashboard('customer')" role="menuitem" tabindex="0">
                     <span class="nav-icon">👤</span>
                     <span>Customer Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showDashboard('technician')">
+                </button>
+                <button class="nav-item" onclick="showDashboard('technician')" role="menuitem" tabindex="0">
                     <span class="nav-icon">🔧</span>
                     <span>Technician Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showDashboard('admin')">
+                </button>
+                <button class="nav-item" onclick="showDashboard('admin')" role="menuitem" tabindex="0">
                     <span class="nav-icon">⚙️</span>
                     <span>Admin Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showDashboard('partner')">
+                </button>
+                <button class="nav-item" onclick="showDashboard('partner')" role="menuitem" tabindex="0">
                     <span class="nav-icon">🤝</span>
                     <span>Partner Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showDashboard('security')">
+                </button>
+                <button class="nav-item" onclick="showDashboard('security')" role="menuitem" tabindex="0">
                     <span class="nav-icon">🛡️</span>
                     <span>Security Dashboard</span>
-                </div>
+                </button>
             </div>
         </div>
 
