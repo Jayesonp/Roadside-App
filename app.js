@@ -428,27 +428,104 @@ class RoadSideApp {
     }
 
     // Service Management
-    selectService(serviceId) {
-        const services = {
-            1: { id: 1, name: 'Towing', price: 150, icon: '🚛', estimatedTime: 45 },
-            2: { id: 2, name: 'Battery Jump', price: 75, icon: '🔋', estimatedTime: 20 },
-            3: { id: 3, name: 'Tire Change', price: 100, icon: '🛞', estimatedTime: 30 },
-            4: { id: 4, name: 'Lockout', price: 85, icon: '🔓', estimatedTime: 20 },
-            5: { id: 5, name: 'Fuel Delivery', price: 60, icon: '⛽', estimatedTime: 25 },
-            6: { id: 6, name: 'Winch Recovery', price: 200, icon: '🪝', estimatedTime: 60 }
+    selectService(serviceId, serviceName, price) {
+        console.log(`Service selected: ${serviceName} - $${price}`);
+        
+        // Store selected service data
+        this.selectedService = {
+            id: serviceId,
+            name: serviceName,
+            price: price,
+            icon: this.getServiceIcon(serviceName),
+            description: this.getServiceDescription(serviceName),
+            estimatedTime: this.getServiceTime(serviceName)
         };
-
-        const service = services[serviceId];
-        if (!service) return;
-
-        this.currentBooking = {
-            service: service,
-            step: 1,
-            details: {},
-            estimatedCost: service.price
+        
+        // Update booking modal with service details
+        this.updateBookingModal();
+        
+        // Show booking modal
+        this.showBookingModal();
+        
+        // Show success toast
+        this.showToast(`${serviceName} selected - $${price}`, 'success');
+    }
+    
+    getServiceIcon(serviceName) {
+        const iconMap = {
+            'Towing': '🚛',
+            'Battery Jump': '🔋',
+            'Tire Change': '🛞',
+            'Lockout': '🔓',
+            'Fuel Delivery': '⛽',
+            'Winch Recovery': '🪝'
         };
-
-        this.openBookingModal();
+        return iconMap[serviceName] || '🔧';
+    }
+    
+    getServiceDescription(serviceName) {
+        const descriptionMap = {
+            'Towing': 'Professional vehicle towing to your preferred location',
+            'Battery Jump': 'Quick battery jump-start service to get you moving',
+            'Tire Change': 'Expert tire replacement with proper equipment',
+            'Lockout': 'Safe vehicle unlock service without damage',
+            'Fuel Delivery': 'Emergency fuel delivery to your location',
+            'Winch Recovery': 'Heavy-duty vehicle recovery from difficult situations'
+        };
+        return descriptionMap[serviceName] || 'Professional roadside assistance';
+    }
+    
+    getServiceTime(serviceName) {
+        const timeMap = {
+            'Towing': '45 min service • 30 min response',
+            'Battery Jump': '20 min service • 30 min response',
+            'Tire Change': '30 min service • 30 min response',
+            'Lockout': '20 min service • 30 min response',
+            'Fuel Delivery': '15 min service • 30 min response',
+            'Winch Recovery': '60 min service • 45 min response'
+        };
+        return timeMap[serviceName] || '30 min service • 30 min response';
+    }
+    
+    updateBookingModal() {
+        if (!this.selectedService) return;
+        
+        // Update service details in booking modal
+        const serviceIcon = document.getElementById('selected-service-icon');
+        const serviceName = document.getElementById('selected-service-name');
+        const servicePrice = document.getElementById('selected-service-price');
+        const serviceDescription = document.getElementById('service-description');
+        const estimatedTime = document.getElementById('estimated-time');
+        const summaryService = document.getElementById('summary-service');
+        const summaryTotal = document.getElementById('summary-total');
+        
+        if (serviceIcon) serviceIcon.textContent = this.selectedService.icon;
+        if (serviceName) serviceName.textContent = this.selectedService.name;
+        if (servicePrice) servicePrice.textContent = `$${this.selectedService.price}`;
+        if (serviceDescription) serviceDescription.textContent = this.selectedService.description;
+        if (estimatedTime) estimatedTime.textContent = this.selectedService.estimatedTime;
+        if (summaryService) summaryService.textContent = this.selectedService.name;
+        if (summaryTotal) summaryTotal.textContent = `$${this.selectedService.price}`;
+    }
+    
+    showBookingModal() {
+        const modal = document.getElementById('booking-modal');
+        if (modal) {
+            modal.classList.add('active');
+            // Reset to first step
+            this.currentBookingStep = 1;
+            this.updateBookingStep();
+        }
+    }
+    
+    closeBookingModal() {
+        const modal = document.getElementById('booking-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            // Reset booking data
+            this.selectedService = null;
+            this.currentBookingStep = 1;
+        }
     }
 
     openBookingModal() {
@@ -456,39 +533,6 @@ class RoadSideApp {
         if (modal) {
             modal.style.display = 'flex';
             this.updateBookingModal();
-        }
-    }
-
-    closeBookingModal() {
-        const modal = document.getElementById('booking-modal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-        this.currentBooking = null;
-    }
-
-    updateBookingModal() {
-        if (!this.currentBooking) return;
-
-        const booking = this.currentBooking;
-        
-        // Update service display
-        const serviceIcon = document.getElementById('selected-service-icon');
-        const serviceName = document.getElementById('selected-service-name');
-        const servicePrice = document.getElementById('selected-service-price');
-        
-        if (serviceIcon) serviceIcon.textContent = booking.service.icon;
-        if (serviceName) serviceName.textContent = booking.service.name;
-        if (servicePrice) servicePrice.textContent = `$${booking.service.price}`;
-
-        // Update steps
-        document.querySelectorAll('.booking-step').forEach(step => {
-            step.classList.remove('active');
-        });
-        
-        const currentStep = document.getElementById(`booking-step-${booking.step}`);
-        if (currentStep) {
-            currentStep.classList.add('active');
         }
     }
 
