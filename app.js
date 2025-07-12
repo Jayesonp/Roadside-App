@@ -2009,3 +2009,43 @@ function resetToDefaults() {
     showToast('Settings reset to default values', 'success');
   }
 }
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeLoadingScreen();
+    initializeBookingWorkflow();
+    initializeBottomNavigation();
+    populateRecentServices();
+    loadRecentServices();
+    updateDashboardStats();
+});
+
+function initializeLoadingScreen() {
+    // Loading screen initialization logic
+    console.log('Loading screen initialized');
+}
+
+function initializeBookingWorkflow() {
+    // Booking workflow initialization logic
+    console.log('Booking workflow initialized');
+}
+
+function initializeBottomNavigation() {
+    // Bottom navigation initialization logic
+    console.log('Bottom navigation initialized');
+}
+
+function populateRecentServices() {
+    // Populate recent services logic
+    console.log('Recent services populated');
+}
+
+function loadRecentServices() {
+    // Load recent services logic
+    console.log('Recent services loaded');
+}
+
+function updateDashboardStats() {
+    // Update dashboard stats logic
+    console.log('Dashboard stats updated');
+}
