@@ -1684,6 +1684,139 @@ class RoadSideApp {
     }
 }
 
+// Edit Profile Modal Functions
+function openEditProfileModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    if (modal) {
+        // Pre-populate with current profile data
+        document.getElementById('edit-profile-name').value = 'John Doe';
+        document.getElementById('edit-profile-email').value = 'john.doe@email.com';
+        document.getElementById('edit-profile-phone').value = '+1 (555) 123-4567';
+        document.getElementById('edit-profile-address').value = '123 Main Street, City, State 12345';
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeEditProfileModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function saveEditProfile() {
+    const name = document.getElementById('edit-profile-name').value;
+    const email = document.getElementById('edit-profile-email').value;
+    const phone = document.getElementById('edit-profile-phone').value;
+    const address = document.getElementById('edit-profile-address').value;
+    
+    if (!name || !email) {
+        showToast('Please fill in required fields', 'error');
+        return;
+    }
+    
+    // Update profile data
+    console.log('Saving profile:', { name, email, phone, address });
+    
+    // Update UI with new data
+    const profileNameElements = document.querySelectorAll('.user-name, .profile-name');
+    profileNameElements.forEach(el => {
+        if (el) el.textContent = name;
+    });
+    
+    showToast('Profile updated successfully!', 'success');
+    closeEditProfileModal();
+}
+
+// Settings Modal Functions
+function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        // Load current settings
+        loadCurrentSettings();
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function loadCurrentSettings() {
+    // Load settings from localStorage or default values
+    const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+    
+    document.getElementById('setting-push-notifications').checked = settings.pushNotifications !== false;
+    document.getElementById('setting-email-notifications').checked = settings.emailNotifications !== false;
+    document.getElementById('setting-sms-notifications').checked = settings.smsNotifications || false;
+    document.getElementById('setting-location-sharing').checked = settings.locationSharing !== false;
+    document.getElementById('setting-data-analytics').checked = settings.dataAnalytics || false;
+    document.getElementById('setting-theme').value = settings.theme || 'dark';
+    document.getElementById('setting-emergency-contact').value = settings.emergencyContact || '';
+}
+
+function saveSettings() {
+    const settings = {
+        pushNotifications: document.getElementById('setting-push-notifications').checked,
+        emailNotifications: document.getElementById('setting-email-notifications').checked,
+        smsNotifications: document.getElementById('setting-sms-notifications').checked,
+        locationSharing: document.getElementById('setting-location-sharing').checked,
+        dataAnalytics: document.getElementById('setting-data-analytics').checked,
+        theme: document.getElementById('setting-theme').value,
+        emergencyContact: document.getElementById('setting-emergency-contact').value
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('userSettings', JSON.stringify(settings));
+    
+    // Apply theme setting
+    document.body.setAttribute('data-color-scheme', settings.theme);
+    
+    console.log('Settings saved:', settings);
+    showToast('Settings saved successfully!', 'success');
+    closeSettingsModal();
+}
+
+// Logout Function
+function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        console.log('User logging out...');
+        
+        // Clear user data
+        localStorage.removeItem('userSession');
+        localStorage.removeItem('userData');
+        sessionStorage.clear();
+        
+        // Show logout message
+        showToast('Logged out successfully', 'success');
+        
+        // Redirect to login screen after a short delay
+        setTimeout(() => {
+            // Hide main app
+            const mainApp = document.getElementById('main-app');
+            const loginScreen = document.getElementById('login-screen');
+            
+            if (mainApp) mainApp.style.display = 'none';
+            if (loginScreen) loginScreen.style.display = 'flex';
+            
+            // Reset login form
+            const loginForm = loginScreen.querySelector('.auth-form');
+            if (loginForm) {
+                const inputs = loginForm.querySelectorAll('input');
+                inputs.forEach(input => input.value = '');
+            }
+        }, 1000);
+    }
+}
+
 // Global functions for onclick handlers
 function login() {
     console.log('Login clicked');
@@ -1740,6 +1873,31 @@ function confirmBooking() {
         App.showToast('Booking confirmed! Technician dispatched.', 'success');
         closeBookingModal();
     }
+}
+
+// Emergency Call Function
+function emergencyCall() {
+    console.log('Emergency SOS activated!');
+    
+    // Show emergency alert
+    const emergencyAlert = document.createElement('div');
+    emergencyAlert.className = 'emergency-alert';
+    emergencyAlert.innerHTML = `
+        <div class="emergency-content">
+            <h2>🚨 EMERGENCY ACTIVATED</h2>
+            <p>Emergency services have been contacted</p>
+            <p>Help is on the way!</p>
+            <button onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>
+    `;
+    document.body.appendChild(emergencyAlert);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (emergencyAlert.parentElement) {
+            emergencyAlert.remove();
+        }
+    }, 5000);
 }
 
 // Initialize app when DOM is ready

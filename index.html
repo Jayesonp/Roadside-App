@@ -281,7 +281,11 @@
                         </label>
                     </div>
                     
-                    <button onclick="saveProfile()" class="btn btn--primary btn--full-width">Save Changes</button>
+                    <div class="profile-actions">
+                        <button onclick="openEditProfileModal()" class="btn btn--primary">Edit Profile</button>
+                        <button onclick="openSettingsModal()" class="btn btn--outline">Settings</button>
+                        <button onclick="handleLogout()" class="btn btn--outline">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
