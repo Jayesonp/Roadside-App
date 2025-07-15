@@ -850,9 +850,6 @@ function closeNavDrawer() {
 
 // Dashboard functions
 function showDashboard(type) {
-    // Test current button state before enhancement
-    console.log(`[PRE-TEST] Switching to ${type} dashboard`);
-    
     // Update active tab
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -888,694 +885,16 @@ function updateDashboardContent(type) {
     }
 }
 
-// ========================================
-// CUSTOMER APP BUTTON FUNCTIONALITY AUDIT
-// ========================================
-
-// BUTTON 1: EMERGENCY SOS BUTTON
+// Emergency function
 function emergencyCall() {
-    console.log('[PRE-TEST] Emergency SOS button clicked');
-    
-    // Show loading state
-    const sosButton = document.querySelector('.emergency-btn, .sos-button');
-    if (sosButton) {
-        const originalText = sosButton.textContent;
-        sosButton.textContent = 'CALLING...';
-        sosButton.disabled = true;
-        sosButton.classList.add('calling');
-        
-        // Simulate emergency call process
+    if (confirm('This will connect you to emergency services. Continue?')) {
+        showNotification('🚨 Connecting to emergency services...', 'emergency');
+        // In real app, this would call emergency services
         setTimeout(() => {
-            showEmergencyInterface();
-            sosButton.textContent = originalText;
-            sosButton.disabled = false;
-            sosButton.classList.remove('calling');
+            showNotification('Emergency services contacted. Help is on the way!', 'success');
         }, 2000);
     }
-    
-    showNotification('🚨 Emergency services contacted! Stay on the line.', 'emergency');
-    console.log('[POST-TEST] Emergency SOS: Navigation to emergency interface successful');
 }
-
-function showEmergencyInterface() {
-    const emergencyModal = document.createElement('div');
-    emergencyModal.className = 'modal emergency-modal';
-    emergencyModal.innerHTML = `
-        <div class="modal-content emergency-content">
-            <div class="modal-header">
-                <h2>🚨 Emergency Assistance Active</h2>
-                <span class="emergency-status">Connected</span>
-            </div>
-            <div class="modal-body">
-                <div class="emergency-info">
-                    <h3>Emergency Services Contacted</h3>
-                    <p>Your location has been shared with emergency responders.</p>
-                    <div class="emergency-details">
-                        <div class="detail-item">
-                            <strong>Location:</strong> <span>Current GPS Position</span>
-                        </div>
-                        <div class="detail-item">
-                            <strong>Time:</strong> <span>${new Date().toLocaleTimeString()}</span>
-                        </div>
-                        <div class="detail-item">
-                            <strong>Emergency ID:</strong> <span>EMG-${Date.now()}</span>
-                        </div>
-                    </div>
-                    <div class="emergency-actions">
-                        <button class="btn btn--primary" onclick="callEmergencyServices()">📞 Call 911</button>
-                        <button class="btn btn--outline" onclick="cancelEmergency()">Cancel Emergency</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(emergencyModal);
-    emergencyModal.style.display = 'block';
-}
-
-function callEmergencyServices() {
-    window.open('tel:911');
-    showNotification('📞 Calling emergency services...', 'info');
-}
-
-function cancelEmergency() {
-    document.querySelector('.emergency-modal')?.remove();
-    showNotification('Emergency call cancelled', 'info');
-}
-
-// BUTTON 2-7: SERVICE SELECTION BUTTONS
-function selectService(serviceId, serviceName, servicePrice) {
-    console.log(`[PRE-TEST] Service button clicked: ${serviceName}`);
-    
-    // Add visual feedback to clicked service card
-    const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach(card => card.classList.remove('selected'));
-    
-    const clickedCard = event.target.closest('.service-card');
-    if (clickedCard) {
-        clickedCard.classList.add('selected');
-        
-        // Show loading state
-        const originalContent = clickedCard.innerHTML;
-        clickedCard.innerHTML = `
-            <div class="service-icon">⏳</div>
-            <h3>Loading...</h3>
-            <p>Preparing booking</p>
-        `;
-        
-        // Restore content and show booking modal
-        setTimeout(() => {
-            clickedCard.innerHTML = originalContent;
-            showBookingModal(serviceId, serviceName, servicePrice);
-        }, 1000);
-    }
-    
-    console.log(`[POST-TEST] Service selection: ${serviceName} - Navigation to booking successful`);
-}
-
-function showBookingModal(serviceId, serviceName, servicePrice) {
-    // Store selected service data
-    window.selectedService = { serviceId, serviceName, servicePrice };
-    
-    // Show booking modal
-    const modal = document.getElementById('booking-modal');
-    if (modal) {
-        // Update modal content with selected service
-        document.getElementById('selected-service-name').textContent = serviceName;
-        document.getElementById('selected-service-price').textContent = `$${servicePrice}`;
-        document.getElementById('summary-service').textContent = serviceName;
-        document.getElementById('summary-total').textContent = `$${servicePrice}`;
-        
-        // Update service icon
-        const serviceIcons = {
-            'Towing': '🚛',
-            'Battery Jump': '🔋',
-            'Tire Change': '🛞',
-            'Lockout': '🔓',
-            'Fuel Delivery': '⛽',
-            'Winch Recovery': '🪝'
-        };
-        document.getElementById('selected-service-icon').textContent = serviceIcons[serviceName] || '🔧';
-        
-        modal.style.display = 'block';
-        resetBookingSteps();
-    }
-}
-
-// BUTTON 8-11: BOTTOM NAVIGATION BUTTONS
-function initializeBottomNavigation() {
-    console.log('[PRE-TEST] Initializing bottom navigation buttons');
-    
-    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            console.log(`[PRE-TEST] Bottom nav button clicked: ${this.dataset.view}`);
-            
-            // Add visual feedback
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show loading state
-            const originalContent = this.innerHTML;
-            this.innerHTML = `
-                <div class="nav-icon">⏳</div>
-                <span>Loading...</span>
-            `;
-            
-            // Navigate to view
-            setTimeout(() => {
-                const view = this.dataset.view;
-                showView(view);
-                this.innerHTML = originalContent;
-                console.log(`[POST-TEST] Bottom nav: ${view} - Navigation successful`);
-            }, 500);
-        });
-    });
-    
-    console.log('[POST-TEST] Bottom navigation initialization complete');
-}
-
-function showView(viewName) {
-    // Hide all views
-    const views = document.querySelectorAll('.view');
-    views.forEach(view => view.classList.remove('active'));
-    
-    // Show selected view
-    const targetView = document.getElementById(`${viewName}-view`);
-    if (targetView) {
-        targetView.classList.add('active');
-        
-        // Load view-specific content
-        switch(viewName) {
-            case 'history':
-                loadServiceHistory();
-                break;
-            case 'support':
-                loadSupportTickets();
-                break;
-            case 'profile':
-                loadProfileData();
-                break;
-            default:
-                // Dashboard is default
-                break;
-        }
-    }
-}
-
-// BUTTON 12: BOOKING MODAL BUTTONS
-function nextBookingStep() {
-    console.log('[PRE-TEST] Next booking step button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Loading...';
-    button.disabled = true;
-    
-    setTimeout(() => {
-        const currentStep = document.querySelector('.booking-step.active');
-        const nextStep = currentStep.nextElementSibling;
-        
-        if (nextStep && nextStep.classList.contains('booking-step')) {
-            currentStep.classList.remove('active');
-            nextStep.classList.add('active');
-            updateBookingProgress();
-        }
-        
-        button.textContent = originalText;
-        button.disabled = false;
-        console.log('[POST-TEST] Booking step navigation successful');
-    }, 800);
-}
-
-function updateBookingProgress() {
-    const steps = document.querySelectorAll('.booking-steps .step');
-    const activeStep = document.querySelector('.booking-step.active');
-    const stepNumber = Array.from(document.querySelectorAll('.booking-step')).indexOf(activeStep) + 1;
-    
-    steps.forEach((step, index) => {
-        if (index < stepNumber) {
-            step.classList.add('completed');
-        } else if (index === stepNumber - 1) {
-            step.classList.add('active');
-        } else {
-            step.classList.remove('active', 'completed');
-        }
-    });
-}
-
-function confirmBooking() {
-    console.log('[PRE-TEST] Confirm booking button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Processing...';
-    button.disabled = true;
-    
-    setTimeout(() => {
-        // Close booking modal
-        closeBookingModal();
-        
-        // Show confirmation
-        showBookingConfirmation();
-        
-        button.textContent = originalText;
-        button.disabled = false;
-        console.log('[POST-TEST] Booking confirmation successful');
-    }, 2000);
-}
-
-function showBookingConfirmation() {
-    const confirmationModal = document.createElement('div');
-    confirmationModal.className = 'modal booking-confirmation-modal';
-    confirmationModal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>✅ Booking Confirmed</h2>
-                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="confirmation-content">
-                    <div class="confirmation-icon">🎉</div>
-                    <h3>Your service has been booked!</h3>
-                    <p>We're finding the best technician for you.</p>
-                    <div class="booking-details">
-                        <div class="detail-item">
-                            <strong>Service:</strong> <span>${window.selectedService?.serviceName || 'Service'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <strong>Price:</strong> <span>$${window.selectedService?.servicePrice || '0'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <strong>Booking ID:</strong> <span>RS-${Date.now()}</span>
-                        </div>
-                    </div>
-                    <div class="confirmation-actions">
-                        <button class="btn btn--primary" onclick="trackService()">📍 Track Service</button>
-                        <button class="btn btn--outline" onclick="this.closest('.modal').remove()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(confirmationModal);
-    confirmationModal.style.display = 'block';
-}
-
-function trackService() {
-    console.log('[PRE-TEST] Track service button clicked');
-    
-    document.querySelector('.booking-confirmation-modal')?.remove();
-    
-    const trackingModal = document.getElementById('tracking-modal');
-    if (trackingModal) {
-        trackingModal.style.display = 'block';
-        startServiceTracking();
-    }
-    
-    console.log('[POST-TEST] Service tracking navigation successful');
-}
-
-function startServiceTracking() {
-    // Simulate real-time tracking
-    const etaElement = document.getElementById('eta-time');
-    if (etaElement) {
-        let eta = 20; // Start with 20 minutes
-        
-        const updateETA = () => {
-            eta = Math.max(1, eta - 1);
-            etaElement.textContent = `${eta} minutes`;
-            
-            if (eta <= 5) {
-                etaElement.parentElement.classList.add('arriving-soon');
-            }
-            
-            if (eta > 1) {
-                setTimeout(updateETA, 30000); // Update every 30 seconds
-            }
-        };
-        
-        updateETA();
-    }
-}
-
-// BUTTON 13: PROFILE BUTTONS
-function saveProfile() {
-    console.log('[PRE-TEST] Save profile button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Saving...';
-    button.disabled = true;
-    
-    // Simulate profile save
-    setTimeout(() => {
-        // Collect form data
-        const profileData = {
-            name: document.getElementById('profile-name')?.value || '',
-            email: document.getElementById('profile-email')?.value || '',
-            phone: document.getElementById('profile-phone')?.value || '',
-            emergencyContact: {
-                name: document.getElementById('emergency-contact-name')?.value || '',
-                phone: document.getElementById('emergency-contact-phone')?.value || '',
-                relationship: document.getElementById('emergency-contact-relationship')?.value || ''
-            },
-            preferences: {
-                notifications: document.getElementById('notifications-enabled')?.checked || false,
-                location: document.getElementById('location-enabled')?.checked || false,
-                darkMode: document.getElementById('dark-mode-enabled')?.checked || false
-            }
-        };
-        
-        // Apply dark mode preference
-        if (profileData.preferences.darkMode) {
-            document.body.setAttribute('data-color-scheme', 'dark');
-        } else {
-            document.body.setAttribute('data-color-scheme', 'light');
-        }
-        
-        showNotification('✅ Profile saved successfully', 'success');
-        
-        button.textContent = originalText;
-        button.disabled = false;
-        console.log('[POST-TEST] Profile save successful');
-    }, 1500);
-}
-
-// BUTTON 14: SUPPORT BUTTONS
-function createSupportTicket() {
-    console.log('[PRE-TEST] Create support ticket button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Loading...';
-    button.disabled = true;
-    
-    setTimeout(() => {
-        showSupportTicketForm();
-        
-        button.textContent = originalText;
-        button.disabled = false;
-        console.log('[POST-TEST] Support ticket form opened successfully');
-    }, 800);
-}
-
-function showSupportTicketForm() {
-    const ticketModal = document.createElement('div');
-    ticketModal.className = 'modal support-ticket-modal';
-    ticketModal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📝 Create Support Ticket</h2>
-                <button class="close-btn" onclick="this.closest('.modal').remove()">×</button>
-            </div>
-            <div class="modal-body">
-                <form class="support-form">
-                    <div class="form-group">
-                        <label class="form-label">Subject</label>
-                        <input type="text" class="form-control" placeholder="Brief description of issue" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Priority</label>
-                        <select class="form-control" required>
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Category</label>
-                        <select class="form-control" required>
-                            <option value="technical">Technical Issue</option>
-                            <option value="billing">Billing Question</option>
-                            <option value="service">Service Quality</option>
-                            <option value="feature">Feature Request</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" rows="4" placeholder="Detailed description of your issue or question" required></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn--primary" onclick="submitSupportTicket(event)">Submit Ticket</button>
-                        <button type="button" class="btn btn--outline" onclick="this.closest('.modal').remove()">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(ticketModal);
-    ticketModal.style.display = 'block';
-}
-
-function submitSupportTicket(event) {
-    event.preventDefault();
-    console.log('[PRE-TEST] Submit support ticket button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Submitting...';
-    button.disabled = true;
-    
-    setTimeout(() => {
-        const ticketId = `TKT-${Date.now()}`;
-        showNotification(`✅ Support ticket ${ticketId} created successfully`, 'success');
-        
-        // Add ticket to support tickets list
-        addSupportTicket(ticketId);
-        
-        document.querySelector('.support-ticket-modal').remove();
-        console.log('[POST-TEST] Support ticket submission successful');
-    }, 1500);
-}
-
-function addSupportTicket(ticketId) {
-    const ticketsContainer = document.getElementById('support-tickets');
-    if (ticketsContainer) {
-        const ticketElement = document.createElement('div');
-        ticketElement.className = 'support-ticket';
-        ticketElement.innerHTML = `
-            <div class="ticket-header">
-                <h4>Support Ticket ${ticketId}</h4>
-                <span class="ticket-status pending">Pending</span>
-            </div>
-            <div class="ticket-body">
-                <p><strong>Created:</strong> ${new Date().toLocaleString()}</p>
-                <p><strong>Status:</strong> Under Review</p>
-                <p><strong>Priority:</strong> Medium</p>
-            </div>
-            <div class="ticket-actions">
-                <button class="btn btn--sm btn--outline" onclick="viewTicket('${ticketId}')">View Details</button>
-            </div>
-        `;
-        
-        if (ticketsContainer.children.length === 0) {
-            ticketsContainer.innerHTML = '';
-        }
-        
-        ticketsContainer.appendChild(ticketElement);
-    }
-}
-
-// UTILITY FUNCTIONS FOR CONTENT LOADING
-function loadServiceHistory() {
-    console.log('[PRE-TEST] Loading service history');
-    
-    const historyContainer = document.getElementById('service-history-list');
-    if (historyContainer) {
-        historyContainer.innerHTML = `
-            <div class="loading-placeholder">
-                <div class="loading-spinner"></div>
-                <p>Loading service history...</p>
-            </div>
-        `;
-        
-        setTimeout(() => {
-            historyContainer.innerHTML = `
-                <div class="history-item">
-                    <div class="history-icon">🚛</div>
-                    <div class="history-details">
-                        <h4>Vehicle Towing</h4>
-                        <p>December 15, 2023 - $150</p>
-                        <span class="history-status completed">Completed</span>
-                    </div>
-                </div>
-                <div class="history-item">
-                    <div class="history-icon">🔋</div>
-                    <div class="history-details">
-                        <h4>Battery Jump Start</h4>
-                        <p>November 28, 2023 - $75</p>
-                        <span class="history-status completed">Completed</span>
-                    </div>
-                </div>
-                <div class="history-item">
-                    <div class="history-icon">🛞</div>
-                    <div class="history-details">
-                        <h4>Tire Change</h4>
-                        <p>October 10, 2023 - $100</p>
-                        <span class="history-status completed">Completed</span>
-                    </div>
-                </div>
-            `;
-            console.log('[POST-TEST] Service history loaded successfully');
-        }, 1000);
-    }
-}
-
-function loadSupportTickets() {
-    console.log('[PRE-TEST] Loading support tickets');
-    
-    const ticketsContainer = document.getElementById('support-tickets');
-    if (ticketsContainer) {
-        ticketsContainer.innerHTML = `
-            <div class="loading-placeholder">
-                <div class="loading-spinner"></div>
-                <p>Loading support tickets...</p>
-            </div>
-        `;
-        
-        setTimeout(() => {
-            ticketsContainer.innerHTML = `
-                <div class="no-tickets">
-                    <p>No support tickets found. Create a new ticket if you need assistance.</p>
-                </div>
-            `;
-            console.log('[POST-TEST] Support tickets loaded successfully');
-        }, 800);
-    }
-}
-
-function loadProfileData() {
-    console.log('[PRE-TEST] Loading profile data');
-    
-    // Simulate loading profile data
-    setTimeout(() => {
-        const profileInputs = {
-            'profile-name': 'John Doe',
-            'profile-email': 'john.doe@example.com',
-            'profile-phone': '+1 (555) 123-4567',
-            'emergency-contact-name': 'Jane Doe',
-            'emergency-contact-phone': '+1 (555) 987-6543',
-            'emergency-contact-relationship': 'Spouse'
-        };
-        
-        Object.entries(profileInputs).forEach(([id, value]) => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.value = value;
-            }
-        });
-        
-        // Load checkboxes
-        document.getElementById('notifications-enabled').checked = true;
-        document.getElementById('location-enabled').checked = true;
-        document.getElementById('dark-mode-enabled').checked = false;
-        
-        // Load profile stats
-        document.getElementById('profile-total-services').textContent = '15';
-        document.getElementById('profile-total-spent').textContent = '$1,250';
-        document.getElementById('profile-avg-rating').textContent = '4.8';
-        document.getElementById('profile-member-since').textContent = '2023';
-        
-        console.log('[POST-TEST] Profile data loaded successfully');
-    }, 600);
-}
-
-// MODAL UTILITY FUNCTIONS
-function closeBookingModal() {
-    const modal = document.getElementById('booking-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        resetBookingSteps();
-    }
-}
-
-function closeTrackingModal() {
-    const modal = document.getElementById('tracking-modal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-function resetBookingSteps() {
-    const steps = document.querySelectorAll('.booking-step');
-    steps.forEach((step, index) => {
-        if (index === 0) {
-            step.classList.add('active');
-        } else {
-            step.classList.remove('active');
-        }
-    });
-    
-    const progressSteps = document.querySelectorAll('.booking-steps .step');
-    progressSteps.forEach((step, index) => {
-        step.classList.remove('active', 'completed');
-        if (index === 0) {
-            step.classList.add('active');
-        }
-    });
-}
-
-function selectPaymentMethod(element) {
-    document.querySelectorAll('.payment-method').forEach(method => {
-        method.classList.remove('active');
-    });
-    element.classList.add('active');
-}
-
-function callTechnician() {
-    console.log('[PRE-TEST] Call technician button clicked');
-    
-    const button = event.target;
-    const originalText = button.textContent;
-    button.textContent = 'Calling...';
-    button.disabled = true;
-    
-    setTimeout(() => {
-        if (confirm('Call technician Mike Rodriguez at (555) 123-4567?')) {
-            window.open('tel:+15551234567');
-            showNotification('📞 Calling technician...', 'info');
-        }
-        
-        button.textContent = originalText;
-        button.disabled = false;
-        console.log('[POST-TEST] Technician call initiated successfully');
-    }, 1000);
-}
-
-// INITIALIZE ENHANCED BUTTON FUNCTIONALITY
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('[SYSTEM] Initializing enhanced customer app button functionality');
-    
-    // Initialize bottom navigation
-    initializeBottomNavigation();
-    
-    // Initialize service cards with enhanced functionality
-    const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const serviceName = this.querySelector('h3').textContent;
-            const servicePrice = this.querySelector('.service-price').textContent.replace('$', '');
-            const serviceId = Array.from(serviceCards).indexOf(this) + 1;
-            
-            selectService(serviceId, serviceName, parseInt(servicePrice));
-        });
-    });
-    
-    // Initialize modal close buttons
-    document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.modal').style.display = 'none';
-        });
-    });
-    
-    // Initialize booking workflow
-    resetBookingSteps();
-    
-    console.log('[SYSTEM] Customer app button functionality initialization complete');
-});
 
 // Service selection
 function selectService(serviceId, serviceName, servicePrice) {
@@ -3575,6 +2894,568 @@ function initializeSecurityButtons() {
   }
 }
 
+// Technician job management functions
+function startJob() {
+  console.log('🔧 TESTING: Start Job button clicked');
+  
+  // Pre-implementation test
+  const startBtn = document.querySelector('.btn:contains("Start Job")') || 
+                  document.querySelector('[onclick="startJob()"]');
+  
+  if (!startBtn) {
+    console.error('❌ Start Job button not found');
+    return;
+  }
+  
+  console.log('✅ Start Job button found:', startBtn);
+  
+  // Show loading state
+  const originalText = startBtn.textContent;
+  startBtn.textContent = 'Starting Job...';
+  startBtn.disabled = true;
+  startBtn.classList.add('btn--loading');
+  
+  // Simulate job start process
+  setTimeout(() => {
+    try {
+      // Update job status
+      const jobItem = document.querySelector('.job-item');
+      if (jobItem) {
+        const jobStatus = jobItem.querySelector('.job-status') || 
+                         document.createElement('div');
+        jobStatus.className = 'job-status in-progress';
+        jobStatus.textContent = 'In Progress';
+        if (!jobItem.querySelector('.job-status')) {
+          jobItem.appendChild(jobStatus);
+        }
+      }
+      
+      // Update button to "Job in Progress"
+      startBtn.textContent = 'Job in Progress';
+      startBtn.classList.remove('btn--loading');
+      startBtn.classList.add('btn--disabled', 'btn--in-progress');
+      
+      // Add complete job button
+      const jobActions = document.querySelector('.job-actions');
+      if (jobActions && !jobActions.querySelector('.complete-job-btn')) {
+        const completeBtn = document.createElement('button');
+        completeBtn.className = 'btn btn--sm btn--success complete-job-btn';
+        completeBtn.textContent = 'Complete Job';
+        completeBtn.onclick = completeJob;
+        jobActions.appendChild(completeBtn);
+      }
+      
+      // Navigate to job tracking interface
+      showJobTrackingInterface();
+      
+      // Show success notification
+      showNotification('Job started successfully! Timer started.', 'success');
+      
+      // Start job timer
+      startJobTimer();
+      
+      console.log('✅ Start Job functionality completed successfully');
+      
+    } catch (error) {
+      console.error('❌ Error starting job:', error);
+      startBtn.textContent = originalText;
+      startBtn.disabled = false;
+      startBtn.classList.remove('btn--loading');
+      showNotification('Error starting job. Please try again.', 'error');
+    }
+  }, 1500);
+}
+
+function showJobTrackingInterface() {
+  console.log('🔧 Opening job tracking interface');
+  
+  // Create job tracking modal
+  const trackingModal = document.createElement('div');
+  trackingModal.className = 'modal job-tracking-modal';
+  trackingModal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🔧 Job Tracking</h2>
+        <button class="close-btn" onclick="closeJobTrackingModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="job-progress">
+          <div class="progress-header">
+            <h3>🚛 Towing Service - Downtown</h3>
+            <span class="job-status-badge in-progress">In Progress</span>
+          </div>
+          
+          <div class="job-timer">
+            <div class="timer-display">
+              <span class="timer-label">Job Duration:</span>
+              <span class="timer-value" id="job-timer">00:00:00</span>
+            </div>
+          </div>
+          
+          <div class="job-location">
+            <h4>📍 Service Location</h4>
+            <p>123 Main St, City, State</p>
+            <div class="location-map">
+              <div class="map-placeholder">
+                <div class="map-marker">📍</div>
+                <p>Live GPS Tracking</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="job-actions-tracking">
+            <button class="btn btn--outline" onclick="updateJobStatus()">
+              📝 Update Status
+            </button>
+            <button class="btn btn--outline" onclick="callCustomerFromTracking()">
+              📞 Call Customer
+            </button>
+            <button class="btn btn--primary" onclick="completeJobFromTracking()">
+              ✅ Complete Job
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(trackingModal);
+  trackingModal.style.display = 'block';
+}
+
+function closeJobTrackingModal() {
+  const modal = document.querySelector('.job-tracking-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+let jobTimerInterval;
+function startJobTimer() {
+  const startTime = Date.now();
+  
+  jobTimerInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const hours = Math.floor(elapsed / 3600000);
+    const minutes = Math.floor((elapsed % 3600000) / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    const timerDisplay = document.getElementById('job-timer');
+    if (timerDisplay) {
+      timerDisplay.textContent = timeString;
+    }
+  }, 1000);
+}
+
+function callCustomer() {
+  console.log('📞 TESTING: Call Customer button clicked');
+  
+  // Pre-implementation test
+  const callBtn = document.querySelector('.btn:contains("Call Customer")') || 
+                 document.querySelector('[onclick="callCustomer()"]');
+  
+  if (!callBtn) {
+    console.error('❌ Call Customer button not found');
+    return;
+  }
+  
+  console.log('✅ Call Customer button found:', callBtn);
+  
+  // Show enhanced call interface
+  showCallCustomerInterface();
+}
+
+function showCallCustomerInterface() {
+  console.log('📞 Opening call customer interface');
+  
+  // Create call interface modal
+  const callModal = document.createElement('div');
+  callModal.className = 'modal call-customer-modal';
+  callModal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📞 Call Customer</h2>
+        <button class="close-btn" onclick="closeCallCustomerModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="customer-info">
+          <div class="customer-avatar">👤</div>
+          <div class="customer-details">
+            <h3>John Doe</h3>
+            <p>Customer ID: #12345</p>
+            <p>Service: Towing</p>
+          </div>
+        </div>
+        
+        <div class="call-options">
+          <div class="phone-number">
+            <span class="phone-label">Primary Phone:</span>
+            <span class="phone-value">+1 (555) 123-4567</span>
+          </div>
+          
+          <div class="call-actions">
+            <button class="btn btn--primary btn--full-width" onclick="initiateCall()">
+              📞 Call Now
+            </button>
+            <button class="btn btn--outline btn--full-width" onclick="sendSMSToCustomer()">
+              💬 Send SMS Update
+            </button>
+          </div>
+        </div>
+        
+        <div class="call-history">
+          <h4>Recent Contact History</h4>
+          <div class="history-item">
+            <span class="history-time">2 min ago</span>
+            <span class="history-action">SMS sent: "On my way"</span>
+          </div>
+          <div class="history-item">
+            <span class="history-time">10 min ago</span>
+            <span class="history-action">Call duration: 1m 23s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(callModal);
+  callModal.style.display = 'block';
+}
+
+function closeCallCustomerModal() {
+  const modal = document.querySelector('.call-customer-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+function initiateCall() {
+  console.log('📞 Initiating call to customer');
+  
+  const callBtn = document.querySelector('.btn:contains("Call Now")');
+  if (callBtn) {
+    callBtn.textContent = 'Calling...';
+    callBtn.disabled = true;
+    callBtn.classList.add('btn--calling');
+  }
+  
+  // Simulate call process
+  setTimeout(() => {
+    showNotification('Call connected! Duration: 2m 15s', 'success');
+    
+    // Update call history
+    const historyContainer = document.querySelector('.call-history');
+    if (historyContainer) {
+      const newHistoryItem = document.createElement('div');
+      newHistoryItem.className = 'history-item';
+      newHistoryItem.innerHTML = `
+        <span class="history-time">Just now</span>
+        <span class="history-action">Call duration: 2m 15s</span>
+      `;
+      historyContainer.insertBefore(newHistoryItem, historyContainer.children[1]);
+    }
+    
+    // Reset button
+    if (callBtn) {
+      callBtn.textContent = '📞 Call Again';
+      callBtn.disabled = false;
+      callBtn.classList.remove('btn--calling');
+    }
+    
+    // Auto-close modal after successful call
+    setTimeout(() => {
+      closeCallCustomerModal();
+    }, 2000);
+    
+  }, 3000);
+}
+
+function sendSMSToCustomer() {
+  console.log('💬 Sending SMS to customer');
+  
+  const smsBtn = document.querySelector('.btn:contains("Send SMS Update")');
+  if (smsBtn) {
+    smsBtn.textContent = 'Sending...';
+    smsBtn.disabled = true;
+  }
+  
+  setTimeout(() => {
+    showNotification('SMS sent: "Will arrive in 10 minutes"', 'success');
+    
+    // Update call history
+    const historyContainer = document.querySelector('.call-history');
+    if (historyContainer) {
+      const newHistoryItem = document.createElement('div');
+      newHistoryItem.className = 'history-item';
+      newHistoryItem.innerHTML = `
+        <span class="history-time">Just now</span>
+        <span class="history-action">SMS sent: "Will arrive in 10 minutes"</span>
+      `;
+      historyContainer.insertBefore(newHistoryItem, historyContainer.children[1]);
+    }
+    
+    // Reset button
+    if (smsBtn) {
+      smsBtn.textContent = '💬 Send Another SMS';
+      smsBtn.disabled = false;
+    }
+    
+  }, 1500);
+}
+
+function completeJob() {
+  console.log('✅ TESTING: Complete Job button clicked');
+  
+  // Pre-implementation test
+  const completeBtn = document.querySelector('.complete-job-btn') || 
+                     document.querySelector('[onclick="completeJob()"]');
+  
+  if (!completeBtn) {
+    console.error('❌ Complete Job button not found');
+    return;
+  }
+  
+  console.log('✅ Complete Job button found:', completeBtn);
+  
+  // Show loading state
+  const originalText = completeBtn.textContent;
+  completeBtn.textContent = 'Completing...';
+  completeBtn.disabled = true;
+  completeBtn.classList.add('btn--loading');
+  
+  // Open job completion form
+  showJobCompletionForm();
+}
+
+function showJobCompletionForm() {
+  console.log('📝 Opening job completion form');
+  
+  // Create job completion modal
+  const completionModal = document.createElement('div');
+  completionModal.className = 'modal job-completion-modal';
+  completionModal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>✅ Complete Job</h2>
+        <button class="close-btn" onclick="closeJobCompletionModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="completion-form">
+          <div class="job-summary">
+            <h3>🚛 Towing Service - Downtown</h3>
+            <p>Customer: John Doe</p>
+            <p>Duration: <span id="completion-duration">45 minutes</span></p>
+          </div>
+          
+          <div class="form-section">
+            <h4>Service Details</h4>
+            <div class="form-group">
+              <label>Service Notes</label>
+              <textarea id="service-notes" placeholder="Describe the service performed..."></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Parts Used</label>
+              <input type="text" id="parts-used" placeholder="List any parts or materials used">
+            </div>
+            
+            <div class="form-group">
+              <label>Additional Charges</label>
+              <input type="number" id="additional-charges" placeholder="0.00" step="0.01">
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h4>Customer Signature</h4>
+            <div class="signature-pad">
+              <canvas id="signature-canvas" width="300" height="150"></canvas>
+              <button class="btn btn--sm btn--outline" onclick="clearSignature()">Clear</button>
+            </div>
+          </div>
+          
+          <div class="completion-actions">
+            <button class="btn btn--outline" onclick="closeJobCompletionModal()">Cancel</button>
+            <button class="btn btn--primary" onclick="submitJobCompletion()">Complete Job</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(completionModal);
+  completionModal.style.display = 'block';
+  
+  // Initialize signature pad
+  initializeSignaturePad();
+}
+
+function closeJobCompletionModal() {
+  const modal = document.querySelector('.job-completion-modal');
+  if (modal) {
+    modal.remove();
+  }
+  
+  // Reset complete button
+  const completeBtn = document.querySelector('.complete-job-btn');
+  if (completeBtn) {
+    completeBtn.textContent = 'Complete Job';
+    completeBtn.disabled = false;
+    completeBtn.classList.remove('btn--loading');
+  }
+}
+
+function initializeSignaturePad() {
+  const canvas = document.getElementById('signature-canvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('touchstart', startDrawing);
+  canvas.addEventListener('touchmove', draw);
+  canvas.addEventListener('touchend', stopDrawing);
+  
+  function startDrawing(e) {
+    isDrawing = true;
+    draw(e);
+  }
+  
+  function draw(e) {
+    if (!isDrawing) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+    
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+  
+  function stopDrawing() {
+    isDrawing = false;
+    ctx.beginPath();
+  }
+}
+
+function clearSignature() {
+  const canvas = document.getElementById('signature-canvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function submitJobCompletion() {
+  console.log('📝 Submitting job completion');
+  
+  const submitBtn = document.querySelector('.btn:contains("Complete Job")');
+  if (submitBtn) {
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+  }
+  
+  // Get form data
+  const serviceNotes = document.getElementById('service-notes')?.value || '';
+  const partsUsed = document.getElementById('parts-used')?.value || '';
+  const additionalCharges = document.getElementById('additional-charges')?.value || '0';
+  
+  // Validate required fields
+  if (!serviceNotes.trim()) {
+    showNotification('Please provide service notes', 'error');
+    submitBtn.textContent = 'Complete Job';
+    submitBtn.disabled = false;
+    return;
+  }
+  
+  // Simulate submission
+  setTimeout(() => {
+    // Clear job timer
+    if (jobTimerInterval) {
+      clearInterval(jobTimerInterval);
+    }
+    
+    // Close all modals
+    closeJobCompletionModal();
+    closeJobTrackingModal();
+    
+    // Update job status in dashboard
+    const jobItem = document.querySelector('.job-item');
+    if (jobItem) {
+      jobItem.style.opacity = '0.5';
+      const statusBadge = jobItem.querySelector('.job-status');
+      if (statusBadge) {
+        statusBadge.textContent = 'Completed';
+        statusBadge.className = 'job-status completed';
+      }
+    }
+    
+    // Show success notification
+    showNotification('Job completed successfully! Payment processed.', 'success');
+    
+    // Navigate back to technician dashboard
+    setTimeout(() => {
+      showDashboard('technician');
+    }, 2000);
+    
+  }, 2000);
+}
+
+// Additional job management functions
+function updateJobStatus() {
+  console.log('📝 Updating job status');
+  showNotification('Job status updated to: En Route', 'info');
+}
+
+function callCustomerFromTracking() {
+  console.log('📞 Calling customer from tracking');
+  showCallCustomerInterface();
+}
+
+function completeJobFromTracking() {
+  console.log('✅ Completing job from tracking');
+  showJobCompletionForm();
+}
+
+// Test all technician job buttons
+function testTechnicianJobButtons() {
+  console.log('🧪 TESTING ALL TECHNICIAN JOB BUTTONS');
+  
+  const buttons = [
+    { name: 'Start Job', selector: '[onclick="startJob()"]' },
+    { name: 'Call Customer', selector: '[onclick="callCustomer()"]' },
+    { name: 'Complete Job', selector: '.complete-job-btn' }
+  ];
+  
+  buttons.forEach(button => {
+    const element = document.querySelector(button.selector);
+    if (element) {
+      console.log(`✅ ${button.name} button found and functional`);
+    } else {
+      console.log(`❌ ${button.name} button not found`);
+    }
+  });
+}
+
+// Initialize technician job button testing
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    testTechnicianJobButtons();
+  }, 1000);
+});
+
+// Continue with existing functions...
+
 // Utility functions
 function formatCurrency(amount) {
     return '$' + amount.toFixed(2);
@@ -3606,11 +3487,4 @@ document.addEventListener('keydown', function(event) {
             modal.style.display = 'none';
         });
     }
-});
-
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        initializeApp();
-    }, 100);
 });
