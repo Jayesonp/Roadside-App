@@ -108,6 +108,8 @@
 
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view active">
+            <!-- Customer Dashboard Content -->
+            <div id="customer-dashboard" class="dashboard-content active">
             <!-- Emergency Banner -->
             <div class="emergency-banner">
                 <div class="emergency-content">
@@ -189,6 +191,203 @@
                         <div class="stat-icon">⭐</div>
                         <div class="stat-value" id="avg-rating">0.0</div>
                         <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Technician Dashboard Content -->
+            <div id="technician-dashboard" class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>🔧 Technician Dashboard</h2>
+                    <p>Manage your service assignments and availability</p>
+                </div>
+                
+                <div class="technician-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Active Jobs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$1,240</div>
+                        <div class="stat-label">Today's Earnings</div>
+                    </div>
+                </div>
+                
+                <div class="availability-controls">
+                    <h3>Availability Status</h3>
+                    <div class="availability-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="availability-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="availability-status">Available</span>
+                    </div>
+                </div>
+                
+                <div class="job-assignments">
+                    <h3>Current Assignments</h3>
+                    <div class="job-list">
+                        <div class="job-item">
+                            <div class="job-info">
+                                <h4>🚛 Towing - Downtown</h4>
+                                <p>📍 123 Main St, City</p>
+                                <p>⏰ ETA: 15 minutes</p>
+                            </div>
+                            <div class="job-actions">
+                                <button class="btn btn--sm btn--primary">Start Job</button>
+                                <button class="btn btn--sm btn--outline">Call Customer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Dashboard Content -->
+            <div id="admin-dashboard" class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>⚙️ Admin Dashboard</h2>
+                    <p>System administration and management</p>
+                </div>
+                
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔧</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Technicians</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">89%</div>
+                        <div class="stat-label">System Health</div>
+                    </div>
+                </div>
+                
+                <div class="admin-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-grid">
+                        <button class="action-btn" onclick="manageUsers()">
+                            <span class="action-icon">👥</span>
+                            <span>Manage Users</span>
+                        </button>
+                        <button class="action-btn" onclick="manageTechnicians()">
+                            <span class="action-icon">🔧</span>
+                            <span>Manage Technicians</span>
+                        </button>
+                        <button class="action-btn" onclick="viewAnalytics()">
+                            <span class="action-icon">📊</span>
+                            <span>View Analytics</span>
+                        </button>
+                        <button class="action-btn" onclick="systemSettings()">
+                            <span class="action-icon">⚙️</span>
+                            <span>System Settings</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Partner Dashboard Content -->
+            <div id="partner-dashboard" class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>🤝 Partner Dashboard</h2>
+                    <p>Business partnership and collaboration tools</p>
+                </div>
+                
+                <div class="partner-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Referrals</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$3,420</div>
+                        <div class="stat-label">Commission</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-value">78%</div>
+                        <div class="stat-label">Conversion Rate</div>
+                    </div>
+                </div>
+                
+                <div class="partner-tools">
+                    <h3>Partner Tools</h3>
+                    <div class="tool-grid">
+                        <div class="tool-card">
+                            <h4>📊 Analytics</h4>
+                            <p>Track performance metrics</p>
+                            <button class="btn btn--sm">View Reports</button>
+                        </div>
+                        <div class="tool-card">
+                            <h4>🔗 Referral Links</h4>
+                            <p>Generate tracking links</p>
+                            <button class="btn btn--sm">Create Link</button>
+                        </div>
+                        <div class="tool-card">
+                            <h4>💼 Resources</h4>
+                            <p>Marketing materials</p>
+                            <button class="btn btn--sm">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Dashboard Content -->
+            <div id="security-dashboard" class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>🛡️ Security Dashboard</h2>
+                    <p>Security monitoring and incident management</p>
+                </div>
+                
+                <div class="security-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔒</div>
+                        <div class="stat-value">99.9%</div>
+                        <div class="stat-label">Security Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Active Alerts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔍</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Incidents</div>
+                    </div>
+                </div>
+                
+                <div class="security-monitoring">
+                    <h3>Security Monitoring</h3>
+                    <div class="monitoring-grid">
+                        <div class="monitor-card">
+                            <h4>🔐 Authentication</h4>
+                            <p>Login attempts and security</p>
+                            <span class="status-badge success">Normal</span>
+                        </div>
+                        <div class="monitor-card">
+                            <h4>🌐 Network</h4>
+                            <p>Traffic and intrusion detection</p>
+                            <span class="status-badge success">Secure</span>
+                        </div>
+                        <div class="monitor-card">
+                            <h4>📊 Data</h4>
+                            <p>Data integrity and backup</p>
+                            <span class="status-badge warning">Monitoring</span>
+                        </div>
                     </div>
                 </div>
             </div>

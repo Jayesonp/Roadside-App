@@ -86,6 +86,17 @@ function showDashboard(type) {
         }
     });
     
+    // Hide all dashboard content
+    document.querySelectorAll('.dashboard-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Show selected dashboard content
+    const targetDashboard = document.getElementById(`${type}-dashboard`);
+    if (targetDashboard) {
+        targetDashboard.classList.add('active');
+    }
+    
     currentView = type;
     updateDashboardContent(type);
     showNotification(`Switched to ${type} dashboard`);
