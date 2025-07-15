@@ -2035,6 +2035,438 @@ function systemSettings() {
     showNotification('System settings would open here');
 }
 
+// === PARTNER DASHBOARD BUTTON FUNCTIONALITY ===
+
+// Button 1: View Reports - Analytics and Performance Reports
+function viewPartnerReports() {
+  console.log('🔍 TESTING: View Reports button clicked');
+  
+  // Create and show reports modal
+  const modal = createModal('partner-reports-modal', 'Partnership Reports');
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 Partnership Reports</h2>
+        <button class="close-btn" onclick="closeModal('partner-reports-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="reports-dashboard">
+          <div class="report-filters">
+            <h3>Report Filters</h3>
+            <div class="filter-group">
+              <label>Date Range:</label>
+              <select id="report-date-range">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last year</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Report Type:</label>
+              <select id="report-type">
+                <option value="referrals" selected>Referrals</option>
+                <option value="revenue">Revenue</option>
+                <option value="conversion">Conversion</option>
+                <option value="customer">Customer Analysis</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="report-content">
+            <div class="report-summary">
+              <h4>Performance Summary</h4>
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Total Referrals</span>
+                  <span class="stat-value">156</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Conversion Rate</span>
+                  <span class="stat-value">78%</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Total Commission</span>
+                  <span class="stat-value">$3,420</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Avg. Commission per Referral</span>
+                  <span class="stat-value">$21.92</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="report-charts">
+              <div class="chart-placeholder">
+                <h5>📈 Referral Trends</h5>
+                <div class="chart-mock">
+                  <div class="chart-bars">
+                    <div class="bar" style="height: 60%"></div>
+                    <div class="bar" style="height: 80%"></div>
+                    <div class="bar" style="height: 45%"></div>
+                    <div class="bar" style="height: 90%"></div>
+                    <div class="bar" style="height: 75%"></div>
+                  </div>
+                  <div class="chart-labels">
+                    <span>Week 1</span>
+                    <span>Week 2</span>
+                    <span>Week 3</span>
+                    <span>Week 4</span>
+                    <span>Week 5</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="report-actions">
+              <button class="btn btn--primary" onclick="exportReport()">📊 Export Report</button>
+              <button class="btn btn--outline" onclick="scheduleReport()">📅 Schedule Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  showModal('partner-reports-modal');
+  console.log('✅ SUCCESS: View Reports functionality implemented');
+  showNotification('📊 Partnership reports opened', 'success');
+}
+
+// Button 2: Create Link - Referral Link Generator
+function createReferralLink() {
+  console.log('🔍 TESTING: Create Link button clicked');
+  
+  const modal = createModal('referral-link-modal', 'Create Referral Link');
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🔗 Create Referral Link</h2>
+        <button class="close-btn" onclick="closeModal('referral-link-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="link-generator">
+          <div class="form-group">
+            <label class="form-label">Campaign Name</label>
+            <input type="text" id="campaign-name" class="form-control" placeholder="Enter campaign name">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Target Service</label>
+            <select id="target-service" class="form-control">
+              <option value="all">All Services</option>
+              <option value="towing">Towing</option>
+              <option value="battery">Battery Jump</option>
+              <option value="tire">Tire Change</option>
+              <option value="lockout">Lockout</option>
+              <option value="fuel">Fuel Delivery</option>
+              <option value="winch">Winch Recovery</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Commission Rate</label>
+            <select id="commission-rate" class="form-control">
+              <option value="5">5% - Standard</option>
+              <option value="7">7% - Premium</option>
+              <option value="10">10% - VIP</option>
+              <option value="custom">Custom Rate</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Expiration Date</label>
+            <input type="date" id="expiration-date" class="form-control">
+          </div>
+          
+          <div class="generated-link-section" id="generated-link-section" style="display: none;">
+            <h4>Generated Referral Link</h4>
+            <div class="link-display">
+              <input type="text" id="generated-link" class="form-control" readonly>
+              <button class="btn btn--primary" onclick="copyReferralLink()">📋 Copy</button>
+            </div>
+            
+            <div class="link-stats">
+              <div class="stat-item">
+                <span class="stat-label">Expected Commission</span>
+                <span class="stat-value" id="expected-commission">$0.00</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Link ID</span>
+                <span class="stat-value" id="link-id">-</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="link-actions">
+            <button class="btn btn--primary" onclick="generateLink()">🔗 Generate Link</button>
+            <button class="btn btn--outline" onclick="previewLink()">👀 Preview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  showModal('referral-link-modal');
+  console.log('✅ SUCCESS: Create Link functionality implemented');
+  showNotification('🔗 Referral link generator opened', 'success');
+}
+
+// Button 3: Download - Marketing Resources Download
+function downloadMarketingResources() {
+  console.log('🔍 TESTING: Download button clicked');
+  
+  const modal = createModal('download-resources-modal', 'Marketing Resources');
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>💼 Marketing Resources</h2>
+        <button class="close-btn" onclick="closeModal('download-resources-modal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="resources-library">
+          <div class="resource-categories">
+            <h3>Available Resources</h3>
+            
+            <div class="resource-category">
+              <h4>📊 Brochures & Flyers</h4>
+              <div class="resource-list">
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">Service Overview Brochure</span>
+                    <span class="resource-size">PDF - 2.5MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('brochure-overview')">📥 Download</button>
+                </div>
+                
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">Emergency Services Flyer</span>
+                    <span class="resource-size">PDF - 1.8MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('flyer-emergency')">📥 Download</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="resource-category">
+              <h4>🎨 Logo & Brand Assets</h4>
+              <div class="resource-list">
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">RoadSide+ Logo Pack</span>
+                    <span class="resource-size">ZIP - 5.2MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('logo-pack')">📥 Download</button>
+                </div>
+                
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">Brand Guidelines</span>
+                    <span class="resource-size">PDF - 3.1MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('brand-guidelines')">📥 Download</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="resource-category">
+              <h4>📱 Digital Assets</h4>
+              <div class="resource-list">
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">Social Media Kit</span>
+                    <span class="resource-size">ZIP - 12.4MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('social-media-kit')">📥 Download</button>
+                </div>
+                
+                <div class="resource-item">
+                  <div class="resource-info">
+                    <span class="resource-name">Email Templates</span>
+                    <span class="resource-size">ZIP - 2.9MB</span>
+                  </div>
+                  <button class="btn btn--sm btn--primary" onclick="downloadResource('email-templates')">📥 Download</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="download-actions">
+            <button class="btn btn--primary" onclick="downloadAllResources()">📦 Download All</button>
+            <button class="btn btn--outline" onclick="requestCustomResource()">🎨 Request Custom</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  showModal('download-resources-modal');
+  console.log('✅ SUCCESS: Download functionality implemented');
+  showNotification('💼 Marketing resources opened', 'success');
+}
+
+// === SUPPORTING FUNCTIONS FOR PARTNER BUTTONS ===
+
+// Helper function to create modal
+function createModal(modalId, title) {
+  // Remove existing modal if present
+  const existingModal = document.getElementById(modalId);
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = modalId;
+  modal.className = 'modal';
+  modal.style.display = 'none';
+  document.body.appendChild(modal);
+  
+  return modal;
+}
+
+// Helper function to show modal
+function showModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.style.display = 'block';
+  }
+}
+
+// Helper function to close modal
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.style.display = 'none';
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+// Generate referral link function
+function generateLink() {
+  const campaignName = document.getElementById('campaign-name').value;
+  const targetService = document.getElementById('target-service').value;
+  const commissionRate = document.getElementById('commission-rate').value;
+  
+  if (!campaignName) {
+    showNotification('❌ Please enter a campaign name', 'error');
+    return;
+  }
+  
+  const linkId = 'REF-' + Date.now().toString(36).toUpperCase();
+  const baseUrl = 'https://roadside.app/ref/';
+  const generatedLink = `${baseUrl}${linkId}?service=${targetService}&rate=${commissionRate}`;
+  
+  document.getElementById('generated-link').value = generatedLink;
+  document.getElementById('link-id').textContent = linkId;
+  document.getElementById('expected-commission').textContent = `$${(commissionRate * 15).toFixed(2)}`;
+  document.getElementById('generated-link-section').style.display = 'block';
+  
+  showNotification('🔗 Referral link generated successfully', 'success');
+}
+
+// Copy referral link function
+function copyReferralLink() {
+  const linkInput = document.getElementById('generated-link');
+  linkInput.select();
+  document.execCommand('copy');
+  showNotification('📋 Referral link copied to clipboard', 'success');
+}
+
+// Preview link function
+function previewLink() {
+  showNotification('👀 Link preview functionality coming soon', 'info');
+}
+
+// Export report function
+function exportReport() {
+  showNotification('📊 Report export started - download will begin shortly', 'success');
+  // Simulate download
+  setTimeout(() => {
+    showNotification('✅ Report exported successfully', 'success');
+  }, 2000);
+}
+
+// Schedule report function
+function scheduleReport() {
+  showNotification('📅 Report scheduling functionality coming soon', 'info');
+}
+
+// Download resource function
+function downloadResource(resourceId) {
+  showNotification(`📥 Downloading ${resourceId}...`, 'info');
+  // Simulate download
+  setTimeout(() => {
+    showNotification(`✅ ${resourceId} downloaded successfully`, 'success');
+  }, 1500);
+}
+
+// Download all resources function
+function downloadAllResources() {
+  showNotification('📦 Preparing download package...', 'info');
+  // Simulate bulk download
+  setTimeout(() => {
+    showNotification('✅ All resources downloaded successfully', 'success');
+  }, 3000);
+}
+
+// Request custom resource function
+function requestCustomResource() {
+  showNotification('🎨 Custom resource request form coming soon', 'info');
+}
+
+// === PARTNER DASHBOARD BUTTON TESTING FUNCTIONS ===
+
+// Test all partner buttons
+function testPartnerButtons() {
+  console.log('🧪 TESTING: Partner dashboard buttons');
+  
+  // Test button existence
+  const buttons = {
+    'viewReports': document.querySelector('.tool-card button[onclick*="View Reports"]'),
+    'createLink': document.querySelector('.tool-card button[onclick*="Create Link"]'),
+    'download': document.querySelector('.tool-card button[onclick*="Download"]')
+  };
+  
+  Object.keys(buttons).forEach(buttonName => {
+    if (buttons[buttonName]) {
+      console.log(`✅ ${buttonName} button found`);
+    } else {
+      console.log(`❌ ${buttonName} button missing`);
+    }
+  });
+  
+  return buttons;
+}
+
+// Initialize partner button functionality
+function initializePartnerButtons() {
+  console.log('🔧 INITIALIZING: Partner dashboard buttons');
+  
+  // Update button onclick handlers
+  setTimeout(() => {
+    const toolCards = document.querySelectorAll('#partner-dashboard .tool-card');
+    
+    toolCards.forEach((card, index) => {
+      const button = card.querySelector('button');
+      if (button) {
+        switch(index) {
+          case 0: // Analytics button
+            button.onclick = viewPartnerReports;
+            break;
+          case 1: // Referral Links button
+            button.onclick = createReferralLink;
+            break;
+          case 2: // Resources button
+            button.onclick = downloadMarketingResources;
+            break;
+        }
+      }
+    });
+    
+    console.log('✅ Partner buttons initialized');
+  }, 100);
+}
 // Utility functions
 function formatCurrency(amount) {
     return '$' + amount.toFixed(2);

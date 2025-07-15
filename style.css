@@ -2442,57 +2442,182 @@ input[type="checkbox"]:checked + .toggle-slider::before {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: white;
-  border: 1px solid #e0e0e0;
+  padding: 15px 20px;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  min-width: 300px;
   max-width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   animation: slideIn 0.3s ease-out;
+  /* High contrast base styling */
+  background-color: #FFFFFF !important;
+  border: 2px solid #000000;
 }
 
 .notification-message {
-  color: #000000;
+  flex: 1;
+  margin-right: 10px;
+  font-weight: 500;
+  /* High contrast text */
+  color: #000000 !important;
   font-size: 14px;
   line-height: 1.4;
-  margin: 0;
-  padding-right: 20px;
 }
 
 .notification-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   background: none;
   border: none;
-  color: #000000;
   font-size: 18px;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 0;
+  margin-left: 10px;
+  /* High contrast close button */
+  color: #000000 !important;
+  opacity: 1;
+  font-weight: bold;
 }
 
 .notification-close:hover {
-  background: #f0f0f0;
-  color: #000000;
+  opacity: 0.7;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+/* High contrast notification types */
+.notification.info {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #3498db;
 }
 
 .notification.success {
-  border-left: 4px solid var(--success-color);
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #2ecc71;
 }
 
 .notification.error {
-  border-left: 4px solid var(--error-color);
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #e74c3c;
 }
 
-.notification.info {
-  border-left: 4px solid var(--info-color);
+.notification.emergency {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border: 2px solid #ff0000;
+  border-left: 4px solid #ff0000;
+}
+
+/* Warning notification type for high visibility */
+.notification.warning {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #f39c12;
+}
+
+/* Additional notification elements */
+.chat-interface .message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.chat-interface .message.customer {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: 1px solid #ddd;
+  align-self: flex-end;
+}
+
+.chat-interface .message.technician {
+  background-color: #f8f9fa;
+  color: #000000;
+  border: 1px solid #ddd;
+  align-self: flex-start;
+}
+
+.chat-interface .message-time {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+/* Status badges with high contrast */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000000 !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #000000;
+}
+
+.status-badge.success {
+  border-color: #2ecc71;
+  background-color: #d4edda !important;
+}
+
+.status-badge.warning {
+  border-color: #f39c12;
+  background-color: #fff3cd !important;
+}
+
+.status-badge.error {
+  border-color: #e74c3c;
+  background-color: #f8d7da !important;
+}
+
+/* Location permission dialog */
+.location-permission-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.location-permission-dialog .dialog-content {
+  background-color: #FFFFFF;
+  color: #000000;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
+  border: 2px solid #000000;
+}
+
+.location-permission-dialog h3 {
+  color: #000000;
+  margin-bottom: 15px;
+}
+
+.location-permission-dialog p {
+  color: #000000;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Responsive Design */
