@@ -1227,9 +1227,15 @@ function startTechnicianTracking(technician) {
         technician.eta = eta;
         
         // Update ETA display
-        const etaDisplay = document.querySelector('.technician-info p:contains("ETA")');
-        if (etaDisplay) {
-            etaDisplay.textContent = `⏱️ ETA: ${eta} minutes`;
+        const etaParagraphs = document.querySelectorAll('.technician-info p');
+        let currentETA = null;
+        etaParagraphs.forEach(p => {
+            if (p.textContent.includes('ETA')) {
+                currentETA = p;
+            }
+        });
+        if (currentETA) {
+            currentETA.textContent = `⏱️ ETA: ${eta} minutes`;
         }
         
         // Stop tracking when technician arrives
