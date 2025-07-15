@@ -972,6 +972,479 @@ body {
   margin-bottom: 10px;
 }
 
+/* Real-time workflow styles */
+.location-permission-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+.dialog-content {
+    background: var(--surface);
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.dialog-content h3 {
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.dialog-content p {
+    margin-bottom: 24px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.service-requirements {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--surface-variant);
+    border-radius: 8px;
+}
+
+.service-requirements h4 {
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.technician-assignment {
+    text-align: center;
+    padding: 20px;
+}
+
+.technician-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--border);
+}
+
+.technician-info h4 {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.technician-info .rating {
+    margin-bottom: 12px;
+    color: #ffd700;
+}
+
+.technician-info p {
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+}
+
+.technician-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.tracking-map {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--surface-variant);
+    border-radius: 8px;
+}
+
+#service-map {
+    height: 200px;
+    background: var(--surface);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.chat-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+.chat-interface {
+    background: var(--surface);
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-variant);
+}
+
+.chat-header h4 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.message {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    max-width: 80%;
+}
+
+.message.customer {
+    background: var(--primary);
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.message.technician {
+    background: var(--surface-variant);
+    color: var(--text-primary);
+}
+
+.message-time {
+    font-size: 0.8em;
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.message p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+.chat-input {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-variant);
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-primary);
+}
+
+.chat-input input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.price-calculator {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--surface-variant);
+    border-radius: 8px;
+}
+
+.price-breakdown {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.price-breakdown.total {
+    font-weight: bold;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+}
+
+.live-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ff4444;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+    margin-right: 8px;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.status-indicator {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-indicator.active {
+    background: #4CAF50;
+    color: white;
+}
+
+.status-indicator.pending {
+    background: #FFC107;
+    color: black;
+}
+
+.status-indicator.offline {
+    background: #9E9E9E;
+    color: white;
+}
+
+.admin-live-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.live-stat-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+}
+
+.live-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #4CAF50;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.live-stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.live-stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+.live-stat-change {
+    font-size: 0.8em;
+    margin-top: 4px;
+}
+
+.live-stat-change.positive {
+    color: #4CAF50;
+}
+
+.live-stat-change.negative {
+    color: #f44336;
+}
+
+.technician-map {
+    height: 300px;
+    background: var(--surface);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.technician-marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.technician-marker:hover {
+    transform: scale(1.2);
+}
+
+.technician-marker.available {
+    background: #4CAF50;
+    color: white;
+}
+
+.technician-marker.busy {
+    background: #FF9800;
+    color: white;
+}
+
+.technician-marker.offline {
+    background: #9E9E9E;
+    color: white;
+}
+
+.service-coverage {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--surface-variant);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    color: var(--text-secondary);
+}
+
+.eta-display {
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.eta-display.arriving-soon {
+    background: #FF9800;
+    animation: pulse 1s infinite;
+}
+
+.route-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: var(--surface-variant);
+    border-radius: 6px;
+    margin-top: 8px;
+    font-size: 0.9em;
+}
+
+.traffic-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.traffic-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.traffic-indicator.light {
+    background: #4CAF50;
+}
+
+.traffic-indicator.moderate {
+    background: #FF9800;
+}
+
+.traffic-indicator.heavy {
+    background: #f44336;
+}
+
+.emergency-priority {
+    border-left: 4px solid #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.priority-high {
+    border-left: 4px solid #FF9800;
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.priority-normal {
+    border-left: 4px solid #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.test-results {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--surface-variant);
+    border-radius: 8px;
+}
+
+.test-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.test-item:last-child {
+    border-bottom: none;
+}
+
+.test-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.test-status.passed {
+    background: #4CAF50;
+    color: white;
+}
+
+.test-status.failed {
+    background: #f44336;
+    color: white;
+}
+
+.test-status.pending {
+    background: #FF9800;
+    color: white;
+}
+
 .map-controls {
   position: absolute;
   top: 10px;
@@ -4893,6 +5366,25 @@ input:checked + .toggle-label:before {
     .action-grid,
     .tool-grid,
     .monitoring-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chat-interface {
+        width: 95%;
+        height: 80%;
+    }
+    
+    .dialog-content {
+        width: 95%;
+        margin: 16px;
+    }
+    
+    .technician-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .admin-live-stats {
         grid-template-columns: 1fr;
     }
 }
