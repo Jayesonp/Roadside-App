@@ -98,17 +98,6 @@
   --container-md: 768px;
   --container-lg: 1024px;
   --container-xl: 1280px;
-
-  /* Primary brand color */
-  --primary-color: #dc2625;
-  --primary-hover: #535bf2;
-  --secondary-color: #f9f9f9;
-  --background-color: #242424;
-  --text-color: #ffffff;
-  --border-color: #404040;
-  --brand-red: #dc2625;
-  --brand-red-hover: #b91c1c;
-  --brand-red-light: #fecaca;
 }
 
 /* Dark mode colors */
@@ -340,15 +329,12 @@ pre code {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
-  color: white;
-  border: none;
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
 }
 
 .btn--primary:hover {
-  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  background: var(--color-primary-hover);
 }
 
 .btn--primary:active {
@@ -448,8 +434,8 @@ select.form-control {
 }
 
 .form-control:focus {
-  border-color: #dc2625;
-  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.1);
+  border-color: var(--color-primary);
+  outline: var(--focus-outline);
 }
 
 .form-label {
@@ -461,6 +447,321 @@ select.form-control {
 
 .form-group {
   margin-bottom: var(--space-16);
+}
+
+/* Form Elements - Brand Color Application */
+
+/* Form Controls Base Styling */
+.form-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+  outline: none;
+}
+
+.form-control:hover {
+  border-color: rgba(220, 38, 37, 0.5);
+}
+
+/* Form Labels */
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-label.required::after {
+  content: ' *';
+  color: #dc2625;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group.focused .form-label {
+  color: #dc2625;
+}
+
+/* Input Field Styling */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #dc2625 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2) !important;
+}
+
+/* Checkbox and Radio Button Styling */
+input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  background: #dc2625;
+  border-color: #dc2625;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="radio"]:checked {
+  border-color: #dc2625;
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #dc2625;
+  border-radius: 50%;
+}
+
+input[type="radio"]:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+/* Select Dropdown Styling */
+select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+/* Textarea Styling */
+textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #fff;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+}
+
+textarea:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+/* Form Validation Styling */
+.form-control.valid {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.form-control.invalid {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+.form-error {
+  color: #dc2625;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.form-success {
+  color: #10b981;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Toggle Switch Styling */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: #dc2625;
+}
+
+input:focus + .toggle-slider {
+  box-shadow: 0 0 1px #dc2625;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+/* Form Button Specific Styling */
+.form-group .btn--primary {
+  background: linear-gradient(135deg, #dc2625, #b91c1c);
+}
+
+.form-group .btn--primary:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+}
+
+/* Booking Form Specific Styling */
+.booking-step .form-control:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+/* Payment Method Selection */
+.payment-method.active {
+  border-color: #dc2625;
+  background: rgba(220, 38, 37, 0.1);
+}
+
+.payment-method:hover {
+  border-color: rgba(220, 38, 37, 0.5);
+}
+
+/* Profile Form Styling */
+.profile-form .form-control:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
+}
+
+/* Checkbox Labels */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.checkbox-label:hover {
+  color: #dc2625;
+}
+
+.checkbox-label input[type="checkbox"]:checked + span {
+  color: #dc2625;
+}
+
+/* Form Section Accents */
+.form-section-header {
+  border-left: 4px solid #dc2625;
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+
+.form-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #dc2625, transparent);
+  margin: 30px 0;
+}
+
+/* File Input Styling */
+input[type="file"] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="file"]:hover {
+  border-color: rgba(220, 38, 37, 0.5);
+}
+
+input[type="file"]:focus {
+  border-color: #dc2625;
+  box-shadow: 0 0 0 3px rgba(220, 38, 37, 0.2);
 }
 
 /* Card component */
@@ -725,7 +1026,7 @@ body {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-24);
-  color: #dc2625;
+  color: var(--color-primary);
 }
 
 .loading-spinner {
@@ -764,8 +1065,6 @@ body {
 
 .booking-step.active {
   display: block;
-  border-left: 4px solid #dc2625;
-  background: rgba(220, 38, 37, 0.05);
 }
 
 @keyframes slideIn {
@@ -986,10 +1285,6 @@ body {
 .map-marker {
   font-size: 2rem;
   margin-bottom: 10px;
-}
-
-.map-marker.customer {
-  color: #dc2625;
 }
 
 /* Real-time workflow styles */
@@ -1712,7 +2007,7 @@ body {
 }
 
 input[type="checkbox"]:checked + .toggle-slider {
-  background: #dc2625;
+  background: var(--primary-color);
 }
 
 input[type="checkbox"]:checked + .toggle-slider::before {
@@ -1742,7 +2037,7 @@ input[type="checkbox"]:checked + .toggle-slider::before {
 
 /* Emergency Button Styles */
 .btn--emergency {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
   animation: emergency-pulse 2s infinite;
 }
 
@@ -2509,8 +2804,9 @@ input[type="checkbox"]:checked + .toggle-slider::before {
 
 /* High contrast notification types */
 .notification.info {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
-  color: white;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #3498db;
 }
 
 .notification.success {
@@ -2589,8 +2885,8 @@ input[type="checkbox"]:checked + .toggle-slider::before {
 }
 
 .status-badge.error {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
-  color: white;
+  border-color: #e74c3c;
+  background-color: #f8d7da !important;
 }
 
 /* Location permission dialog */
@@ -2724,7 +3020,7 @@ input[type="checkbox"]:checked + .toggle-slider::before {
 }
 
 input:checked + .toggle-slider {
-    background-color: #dc2625;
+    background-color: var(--primary-color);
 }
 
 input:focus + .toggle-slider {
@@ -3090,7 +3386,7 @@ input:checked + .toggle-slider:before {
 }
 
 .auth-header h1 {
-  color: #dc2625;
+  color: var(--color-primary);
   font-size: var(--font-size-3xl);
   margin-bottom: var(--space-8);
 }
@@ -3124,11 +3420,11 @@ input:checked + .toggle-slider:before {
 
 /* Navigation */
 .navbar {
-  background: linear-gradient(90deg, #1a1a1a 0%, #dc2625 100%);
-  padding: 1rem 2rem;
+  background: var(--color-surface);
+  padding: var(--space-12) var(--space-16);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
@@ -3153,9 +3449,9 @@ input:checked + .toggle-slider:before {
 }
 
 .logo-nav {
-  color: #dc2625;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
 }
 
 .nav-right {
@@ -3249,7 +3545,7 @@ input:checked + .toggle-slider:before {
 
 .nav-item.active {
   background: var(--color-secondary);
-  color: #dc2625;
+  color: var(--color-primary);
 }
 
 .nav-icon {
@@ -3285,10 +3581,7 @@ input:checked + .toggle-slider:before {
 
 /* Emergency Banner */
 .emergency-banner {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
-  color: white;
-  padding: 1rem;
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--color-emergency) 0%, var(--color-emergency-hover) 100%);
   border-radius: var(--radius-lg);
   padding: var(--space-16);
   margin-bottom: var(--space-24);
@@ -3377,14 +3670,14 @@ input:checked + .toggle-slider:before {
 }
 
 .service-card:hover {
-  transform: translateY(-5px);
-  border-color: #dc2625;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
 }
 
 .service-card.selected {
-  border-color: #dc2625;
-  background: rgba(220, 38, 37, 0.1);
+  border-color: var(--color-primary);
+  background: rgba(33, 128, 141, 0.1);
   transform: scale(1.02);
 }
 
@@ -4730,7 +5023,7 @@ input:checked + .toggle-slider:before {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-16);
-  border-bottom: 2px solid #dc2625;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .modal-header h2 {
@@ -4763,9 +5056,8 @@ input:checked + .toggle-slider:before {
 }
 
 .step.active {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
+  background: var(--color-primary);
   color: white;
-  border-bottom: 3px solid transparent;
 }
 
 .booking-step {
@@ -4823,12 +5115,12 @@ input:checked + .toggle-slider:before {
 }
 
 .payment-method:hover {
-  border-color: #dc2625;
+  border-color: var(--color-primary);
 }
 
 .payment-method.active {
-  border-color: #dc2625;
-  background: rgba(220, 38, 37, 0.1);
+  border-color: var(--color-primary);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .payment-icon {
@@ -5219,13 +5511,11 @@ input:checked + .toggle-slider:before {
 }
 
 .bottom-nav .nav-item.active {
-  color: #dc2625;
+  color: var(--color-primary);
 }
 
 .bottom-nav .nav-item .nav-icon {
   font-size: var(--font-size-lg);
-  background: rgba(220, 38, 37, 0.2);
-  color: #dc2625;
 }
 
 .bottom-nav .nav-item span {
@@ -5234,7 +5524,7 @@ input:checked + .toggle-slider:before {
 }
 
 .bottom-nav .nav-item.active span {
-  color: #dc2625;
+  color: var(--color-primary);
 }
 
 .emergency-sos {
@@ -5245,7 +5535,7 @@ input:checked + .toggle-slider:before {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, var(--color-emergency) 0%, var(--color-emergency-hover) 100%);
   color: white;
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-sm);
@@ -5295,15 +5585,13 @@ input:checked + .toggle-slider:before {
 }
 
 .dashboard-tabs .tab:hover {
-  background: rgba(220, 38, 37, 0.1);
-  color: #dc2625;
+  color: var(--primary-color);
+  background: rgba(var(--primary-rgb), 0.1);
   transform: translateY(-1px);
 }
 
 .dashboard-tabs .tab.active {
-  background: linear-gradient(135deg, #dc2625 0%, #b91c1c 100%);
-  color: white;
-  border-bottom: 3px solid transparent;
+  color: var(--primary-color);
   border-bottom-color: var(--primary-color);
   background: rgba(var(--primary-rgb), 0.1);
   font-weight: 600;
@@ -6364,7 +6652,6 @@ input:checked + .toggle-label:before {
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 20px;
-    border-left-color: #dc2625;
 }
 
 @keyframes spin {
@@ -6465,82 +6752,6 @@ input:checked + .toggle-label:before {
 
 .confirmation-actions .btn {
     margin: 0 10px;
-}
-
-/* Links and accents */
-a {
-  color: #dc2625;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #b91c1c;
-}
-
-/* Toggle switches */
-.toggle-slider {
-  background-color: #ccc;
-  border-radius: 34px;
-  transition: 0.4s;
-}
-
-.toggle-slider:before {
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.4s;
-}
-
-input:checked + .toggle-slider {
-  background-color: #dc2625;
-}
-
-/* Progress indicators */
-.progress-bar {
-  background: #333;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  background: linear-gradient(90deg, #dc2625 0%, #b91c1c 100%);
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-/* Brand specific elements */
-.logo, .brand-text {
-  color: #dc2625;
-}
-
-.brand-accent {
-  color: #dc2625;
-}
-
-.highlight {
-  background: rgba(220, 38, 37, 0.2);
-  color: #dc2625;
-}
-
-/* Active states */
-.active, .selected {
-  color: #dc2625 !important;
-  border-color: #dc2625 !important;
-}
-
-/* Interactive elements */
-.interactive:hover {
-  color: #dc2625;
-  cursor: pointer;
-}
-
-/* Technician specific */
-.technician-available {
-  color: #dc2625;
-}
-
-/* Rating stars */
-.rating-star.active {
-  color: #dc2625;
 }
 
 /* Responsive Design */
