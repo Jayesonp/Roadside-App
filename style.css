@@ -2966,12 +2966,25 @@ input[type="checkbox"]:checked + .toggle-slider::before {
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-standard);
   min-height: 140px;
+  position: relative;
+  overflow: hidden;
 }
 
 .service-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-primary);
+}
+
+.service-card.selected {
+  border-color: var(--color-primary);
+  background: rgba(33, 128, 141, 0.1);
+  transform: scale(1.02);
+}
+
+.service-card:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .service-icon {
@@ -3641,6 +3654,12 @@ input:checked + .toggle-slider:before {
   padding: var(--space-16);
   border-radius: var(--radius-base);
   border: 1px solid var(--color-card-border);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.history-item:hover {
+  background-color: #f8f9fa;
 }
 
 .service-item {
@@ -3669,6 +3688,11 @@ input:checked + .toggle-slider:before {
   border-radius: var(--radius-base);
 }
 
+.history-icon {
+  font-size: 2rem;
+  margin-right: 15px;
+}
+
 .service-details, .history-details {
   flex: 1;
 }
@@ -3690,6 +3714,15 @@ input:checked + .toggle-slider:before {
 
 .service-status, .history-status {
   text-align: right;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.history-status.completed {
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .location {
@@ -3880,6 +3913,18 @@ input:checked + .toggle-slider:before {
   color: var(--color-text);
 }
 
+.ticket-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.ticket-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
 .ticket-preview p {
   margin: 0 0 var(--space-4) 0;
   color: var(--color-text-secondary);
@@ -3889,6 +3934,22 @@ input:checked + .toggle-slider:before {
 .ticket-date {
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
+}
+
+.ticket-body p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.ticket-actions {
+  margin-top: 10px;
+}
+
+.no-tickets {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
 }
 
 /* Empty States */
@@ -5821,6 +5882,177 @@ input:checked + .toggle-label:before {
     .admin-live-stats {
         grid-template-columns: 1fr;
     }
+}
+
+.emergency-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+.emergency-btn.calling {
+    background-color: #28a745;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.emergency-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.sos-button:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+.sos-button.calling {
+    background-color: #28a745;
+    animation: pulse 1s infinite;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn--outline:hover {
+    background-color: #007bff;
+}
+
+.loading-placeholder {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.eta-time {
+    transition: color 0.3s ease;
+}
+
+.arriving-soon .eta-time {
+    color: #dc3545;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+.support-form .form-group {
+    margin-bottom: 20px;
+}
+
+.support-form .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.support-form .form-actions .btn {
+    margin: 0;
+}
+
+.emergency-modal .modal-content {
+    background-color: #fff;
+    border: 3px solid #dc3545;
+    border-radius: 10px;
+}
+
+.emergency-modal .modal-header {
+    background-color: #dc3545;
+    color: white;
+    padding: 20px;
+    border-radius: 7px 7px 0 0;
+}
+
+.emergency-status {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+.emergency-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.emergency-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.detail-item {
+    margin-bottom: 10px;
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.emergency-actions {
+    margin-top: 20px;
+}
+
+.emergency-actions .btn {
+    margin: 0 10px;
+}
+
+.booking-confirmation-modal .confirmation-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.booking-details {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.confirmation-actions {
+    margin-top: 20px;
+}
+
+.confirmation-actions .btn {
+    margin: 0 10px;
 }
 
 /* Responsive Design */
