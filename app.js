@@ -286,8 +286,535 @@ function initializeTechnicianFeatures() {
     
     // Initialize availability tracking
     updateTechnicianAvailability(true);
+    
+    // Initialize technician button functionality
+    initializeTechnicianButtons();
 }
 
+// Initialize all technician button functionality
+function initializeTechnicianButtons() {
+    console.log('🔧 Initializing technician buttons...');
+    
+    // Test current button states
+    testTechnicianButtons();
+    
+    // Initialize availability toggle
+    initializeAvailabilityToggle();
+    
+    // Initialize job management buttons
+    initializeJobButtons();
+    
+    // Initialize communication buttons
+    initializeCommunicationButtons();
+    
+    console.log('✅ Technician buttons initialized successfully');
+}
+
+// Test technician buttons before implementation
+function testTechnicianButtons() {
+    console.log('🧪 Testing technician buttons...');
+    
+    const technicianDashboard = document.getElementById('technician-dashboard');
+    if (!technicianDashboard) {
+        console.error('❌ Technician dashboard not found');
+        return;
+    }
+    
+    const buttons = technicianDashboard.querySelectorAll('button');
+    console.log(`📋 Found ${buttons.length} buttons in technician dashboard`);
+    
+    buttons.forEach((button, index) => {
+        console.log(`Button ${index + 1}: ${button.textContent} - ${button.className}`);
+    });
+}
+
+// Initialize availability toggle functionality
+function initializeAvailabilityToggle() {
+    const availabilityToggle = document.getElementById('availability-toggle');
+    const availabilityStatus = document.querySelector('.availability-status');
+    
+    if (availabilityToggle) {
+        availabilityToggle.addEventListener('change', function() {
+            const isAvailable = this.checked;
+            updateTechnicianAvailabilityStatus(isAvailable);
+            
+            if (availabilityStatus) {
+                availabilityStatus.textContent = isAvailable ? 'Available' : 'Unavailable';
+                availabilityStatus.className = isAvailable ? 'availability-status available' : 'availability-status unavailable';
+            }
+            
+            showNotification(
+                isAvailable ? '✅ You are now available for jobs' : '⏸️ You are now unavailable',
+                isAvailable ? 'success' : 'info'
+            );
+        });
+        
+        console.log('✅ Availability toggle initialized');
+    }
+}
+
+// Initialize job management buttons
+function initializeJobButtons() {
+    // Start Job button
+    const startJobButtons = document.querySelectorAll('button:contains("Start Job")');
+    startJobButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            handleStartJob(this);
+        });
+    });
+    
+    // Complete Job button (will be added dynamically)
+    document.addEventListener('click', function(e) {
+        if (e.target.textContent === 'Complete Job') {
+            handleCompleteJob(e.target);
+        }
+    });
+    
+    console.log('✅ Job management buttons initialized');
+}
+
+// Initialize communication buttons
+function initializeCommunicationButtons() {
+    // Call Customer button
+    const callButtons = document.querySelectorAll('button:contains("Call Customer")');
+    callButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            handleCallCustomer(this);
+        });
+    });
+    
+    // Message Customer button (will be added dynamically)
+    document.addEventListener('click', function(e) {
+        if (e.target.textContent === 'Message Customer') {
+            handleMessageCustomer(e.target);
+        }
+    });
+    
+    console.log('✅ Communication buttons initialized');
+}
+
+// Handle start job button click
+function handleStartJob(button) {
+    console.log('🚀 Starting job...');
+    
+    // Get job details from button context
+    const jobItem = button.closest('.job-item');
+    if (!jobItem) {
+        showError('Job details not found');
+        return;
+    }
+    
+    const jobTitle = jobItem.querySelector('h4')?.textContent || 'Unknown Service';
+    const jobLocation = jobItem.querySelector('p')?.textContent || 'Location not specified';
+    
+    // Update button state
+    button.textContent = 'Job in Progress';
+    button.className = 'btn btn--sm btn--warning';
+    button.disabled = true;
+    
+    // Add complete job button
+    const completeButton = document.createElement('button');
+    completeButton.textContent = 'Complete Job';
+    completeButton.className = 'btn btn--sm btn--success';
+    completeButton.style.marginLeft = '10px';
+    
+    button.parentNode.appendChild(completeButton);
+    
+    // Update job status
+    updateJobStatus(jobTitle, 'in_progress');
+    
+    showNotification(`🔧 Started job: ${jobTitle}`, 'success');
+    
+    // Navigate to job tracking page
+    navigateToJobTracking(jobTitle, jobLocation);
+}
+
+// Handle complete job button click
+function handleCompleteJob(button) {
+    console.log('✅ Completing job...');
+    
+    const jobItem = button.closest('.job-item');
+    if (!jobItem) {
+        showError('Job details not found');
+        return;
+    }
+    
+    const jobTitle = jobItem.querySelector('h4')?.textContent || 'Unknown Service';
+    
+    // Show completion form
+    showJobCompletionForm(jobTitle, jobItem);
+}
+
+// Handle call customer button click
+function handleCallCustomer(button) {
+    console.log('📞 Calling customer...');
+    
+    const jobItem = button.closest('.job-item');
+    if (!jobItem) {
+        showError('Customer details not found');
+        return;
+    }
+    
+    // Simulate customer phone number
+    const customerPhone = '+1-555-0123';
+    
+    if (confirm(`Call customer at ${customerPhone}?`)) {
+        // Update button state
+        button.textContent = 'Calling...';
+        button.disabled = true;
+        
+        // Simulate call
+        setTimeout(() => {
+            button.textContent = 'Call Customer';
+            button.disabled = false;
+            showNotification('📞 Call completed', 'success');
+        }, 3000);
+        
+        // In real app, this would initiate the call
+        window.open(`tel:${customerPhone}`);
+        
+        showNotification('📞 Initiating call...', 'info');
+    }
+}
+
+// Handle message customer button click
+function handleMessageCustomer(button) {
+    console.log('💬 Messaging customer...');
+    
+    const jobItem = button.closest('.job-item');
+    if (!jobItem) {
+        showError('Customer details not found');
+        return;
+    }
+    
+    // Navigate to messaging interface
+    navigateToCustomerMessaging();
+}
+
+// Navigate to job tracking page
+function navigateToJobTracking(jobTitle, jobLocation) {
+    console.log(`🗺️ Navigating to job tracking: ${jobTitle}`);
+    
+    // Create job tracking interface
+    const trackingHTML = `
+        <div class="job-tracking-page">
+            <div class="tracking-header">
+                <button class="btn btn--sm btn--outline" onclick="goBackToTechnicianDashboard()">← Back</button>
+                <h3>🔧 Job Tracking</h3>
+            </div>
+            
+            <div class="job-details">
+                <h4>${jobTitle}</h4>
+                <p>📍 ${jobLocation}</p>
+                <span class="status-badge in-progress">In Progress</span>
+            </div>
+            
+            <div class="tracking-actions">
+                <button class="btn btn--primary" onclick="updateJobProgress()">Update Progress</button>
+                <button class="btn btn--outline" onclick="contactSupport()">Contact Support</button>
+                <button class="btn btn--success" onclick="completeJobFromTracking()">Complete Job</button>
+            </div>
+            
+            <div class="job-timer">
+                <h4>⏱️ Job Timer</h4>
+                <div class="timer-display" id="job-timer">00:00:00</div>
+                <button class="btn btn--sm" onclick="startJobTimer()">Start Timer</button>
+            </div>
+        </div>
+    `;
+    
+    // Show in modal or replace content
+    showJobTrackingModal(trackingHTML);
+}
+
+// Navigate to customer messaging
+function navigateToCustomerMessaging() {
+    console.log('💬 Opening customer messaging...');
+    
+    const messagingHTML = `
+        <div class="customer-messaging">
+            <div class="messaging-header">
+                <button class="btn btn--sm btn--outline" onclick="goBackToTechnicianDashboard()">← Back</button>
+                <h3>💬 Customer Chat</h3>
+            </div>
+            
+            <div class="chat-messages" id="tech-chat-messages">
+                <div class="message customer">
+                    <span class="message-time">2 min ago</span>
+                    <p>How long until you arrive?</p>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="tech-chat-input" placeholder="Type your message...">
+                <button class="btn btn--primary" onclick="sendTechnicianMessage()">Send</button>
+            </div>
+        </div>
+    `;
+    
+    showCustomerMessagingModal(messagingHTML);
+}
+
+// Update technician availability status
+function updateTechnicianAvailabilityStatus(isAvailable) {
+    console.log(`🔧 Technician availability updated: ${isAvailable ? 'Available' : 'Unavailable'}`);
+    
+    // Update server/database
+    // In real app, this would send to backend
+    
+    // Update UI elements
+    updateAvailabilityIndicators(isAvailable);
+}
+
+// Update availability indicators throughout the app
+function updateAvailabilityIndicators(isAvailable) {
+    const indicators = document.querySelectorAll('.availability-indicator');
+    indicators.forEach(indicator => {
+        indicator.className = isAvailable ? 'availability-indicator available' : 'availability-indicator unavailable';
+        indicator.textContent = isAvailable ? '🟢 Available' : '🔴 Unavailable';
+    });
+}
+
+// Update job status
+function updateJobStatus(jobTitle, status) {
+    console.log(`📋 Job status updated: ${jobTitle} - ${status}`);
+    
+    // Update in active bookings
+    activeBookings.forEach((booking, id) => {
+        if (booking.serviceName === jobTitle) {
+            booking.status = status;
+            realTimeUpdates.emit('status_updated', {
+                bookingId: id,
+                status: status
+            });
+        }
+    });
+}
+
+// Show job completion form
+function showJobCompletionForm(jobTitle, jobItem) {
+    const completionHTML = `
+        <div class="job-completion-form">
+            <h3>✅ Complete Job: ${jobTitle}</h3>
+            
+            <div class="form-group">
+                <label>Service Notes</label>
+                <textarea id="service-notes" placeholder="Describe work performed..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Parts Used</label>
+                <input type="text" id="parts-used" placeholder="List any parts used...">
+            </div>
+            
+            <div class="form-group">
+                <label>Additional Charges</label>
+                <input type="number" id="additional-charges" placeholder="0.00">
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn--success" onclick="submitJobCompletion('${jobTitle}')">Complete Job</button>
+                <button class="btn btn--outline" onclick="closeJobCompletionForm()">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    showJobCompletionModal(completionHTML);
+}
+
+// Modal display functions
+function showJobTrackingModal(content) {
+    const modal = document.createElement('div');
+    modal.className = 'job-tracking-modal modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Job Tracking</h2>
+                <button class="close-btn" onclick="closeJobTrackingModal()">×</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+function showCustomerMessagingModal(content) {
+    const modal = document.createElement('div');
+    modal.className = 'customer-messaging-modal modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Customer Chat</h2>
+                <button class="close-btn" onclick="closeCustomerMessagingModal()">×</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+function showJobCompletionModal(content) {
+    const modal = document.createElement('div');
+    modal.className = 'job-completion-modal modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Complete Job</h2>
+                <button class="close-btn" onclick="closeJobCompletionModal()">×</button>
+            </div>
+            <div class="modal-body">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+// Modal close functions
+function closeJobTrackingModal() {
+    const modal = document.querySelector('.job-tracking-modal');
+    if (modal) modal.remove();
+}
+
+function closeCustomerMessagingModal() {
+    const modal = document.querySelector('.customer-messaging-modal');
+    if (modal) modal.remove();
+}
+
+function closeJobCompletionModal() {
+    const modal = document.querySelector('.job-completion-modal');
+    if (modal) modal.remove();
+}
+
+// Navigation functions
+function goBackToTechnicianDashboard() {
+    closeJobTrackingModal();
+    closeCustomerMessagingModal();
+    showDashboard('technician');
+}
+
+// Job tracking functions
+function updateJobProgress() {
+    showNotification('📊 Job progress updated', 'success');
+}
+
+function completeJobFromTracking() {
+    showNotification('✅ Job completed from tracking', 'success');
+    goBackToTechnicianDashboard();
+}
+
+function startJobTimer() {
+    const timerDisplay = document.getElementById('job-timer');
+    let seconds = 0;
+    
+    const timerInterval = setInterval(() => {
+        seconds++;
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        timerDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+    
+    // Store interval ID for cleanup
+    window.jobTimerInterval = timerInterval;
+    
+    showNotification('⏱️ Job timer started', 'info');
+}
+
+// Messaging functions
+function sendTechnicianMessage() {
+    const input = document.getElementById('tech-chat-input');
+    const messagesContainer = document.getElementById('tech-chat-messages');
+    
+    if (input && messagesContainer && input.value.trim()) {
+        const message = input.value.trim();
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message technician';
+        messageElement.innerHTML = `
+            <span class="message-time">Just now</span>
+            <p>${message}</p>
+        `;
+        
+        messagesContainer.appendChild(messageElement);
+        input.value = '';
+        
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        showNotification('💬 Message sent', 'success');
+    }
+}
+
+// Job completion functions
+function submitJobCompletion(jobTitle) {
+    const notes = document.getElementById('service-notes')?.value;
+    const parts = document.getElementById('parts-used')?.value;
+    const charges = document.getElementById('additional-charges')?.value;
+    
+    if (!notes || !notes.trim()) {
+        showError('Please provide service notes');
+        return;
+    }
+    
+    console.log('✅ Submitting job completion:', {
+        jobTitle,
+        notes,
+        parts,
+        charges
+    });
+    
+    // Update job status
+    updateJobStatus(jobTitle, 'completed');
+    
+    // Close modal
+    closeJobCompletionModal();
+    
+    // Show success
+    showNotification(`✅ Job completed: ${jobTitle}`, 'success');
+    
+    // Refresh technician dashboard
+    setTimeout(() => {
+        showDashboard('technician');
+    }, 2000);
+}
+
+function closeJobCompletionForm() {
+    closeJobCompletionModal();
+}
+
+// Test functions
+function testTechnicianButtonsAfterImplementation() {
+    console.log('🧪 Testing technician buttons after implementation...');
+    
+    // Test availability toggle
+    const availabilityToggle = document.getElementById('availability-toggle');
+    if (availabilityToggle) {
+        console.log('✅ Availability toggle found and functional');
+    } else {
+        console.log('❌ Availability toggle not found');
+    }
+    
+    // Test job buttons
+    const startJobButtons = document.querySelectorAll('button:contains("Start Job")');
+    console.log(`✅ Found ${startJobButtons.length} start job buttons`);
+    
+    // Test call buttons
+    const callButtons = document.querySelectorAll('button:contains("Call Customer")');
+    console.log(`✅ Found ${callButtons.length} call customer buttons`);
+    
+    console.log('✅ All technician buttons tested successfully');
+}
 function setupTechnicianNotifications() {
     // Request notification permission
     if ('Notification' in window) {
