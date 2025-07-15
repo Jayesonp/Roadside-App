@@ -3322,6 +3322,305 @@ input:checked + .toggle-slider:before {
     color: var(--warning);
 }
 
+/* Security Dashboard Button Enhancements */
+.monitor-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.monitor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color);
+}
+
+.monitor-card:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Security Details Modal Styles */
+.security-details {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.security-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.security-section:last-child {
+  border-bottom: none;
+}
+
+.security-section h3 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Log Entries Styles */
+.log-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.log-entry.success {
+  border-left-color: #28a745;
+}
+
+.log-entry.warning {
+  border-left-color: #ffc107;
+}
+
+.log-entry.error {
+  border-left-color: #dc3545;
+}
+
+.log-time {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-right: 1rem;
+  min-width: 140px;
+}
+
+.log-message {
+  flex: 1;
+  color: var(--text-color);
+}
+
+.log-location {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Metrics Grid Styles */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.metric-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.metric-value {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* Traffic Stats Styles */
+.traffic-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.traffic-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.traffic-label {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.traffic-value {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-right: 1rem;
+}
+
+.traffic-trend {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Threat Alerts Styles */
+.threat-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border-left: 4px solid var(--border-color);
+}
+
+.alert-item.low {
+  border-left-color: #ffc107;
+}
+
+.alert-item.resolved {
+  border-left-color: #28a745;
+}
+
+.alert-type {
+  min-width: 120px;
+  font-weight: 600;
+  margin-right: 1rem;
+}
+
+.alert-message {
+  flex: 1;
+  color: var(--text-color);
+}
+
+.alert-time {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Integrity Stats Styles */
+.integrity-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.integrity-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.integrity-label {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.integrity-value {
+  color: var(--text-color);
+  font-weight: 600;
+  margin-right: 1rem;
+}
+
+.integrity-status {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Backup Log Styles */
+.backup-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.backup-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.backup-entry.success {
+  border-left-color: #28a745;
+}
+
+.backup-entry.warning {
+  border-left-color: #ffc107;
+}
+
+.backup-time {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-right: 1rem;
+  min-width: 140px;
+}
+
+.backup-type {
+  flex: 1;
+  color: var(--text-color);
+}
+
+.backup-status {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Security Actions Styles */
+.security-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.security-actions .btn {
+  flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .traffic-item,
+  .integrity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .log-entry,
+  .backup-entry {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .log-time,
+  .backup-time {
+    min-width: unset;
+  }
+  
+  .security-actions {
+    flex-direction: column;
+  }
+}
 /* Recent Services */
 .recent-section h2 {
   color: var(--color-text);
@@ -4883,299 +5182,6 @@ input:checked + .toggle-slider:before {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: 0.9rem;
-}
-
-.monitor-card .status-badge.warning {
-  background-color: #ff9800;
-}
-
-/* === PARTNER DASHBOARD BUTTON STYLES === */
-
-.tool-card {
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.tool-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.tool-card button {
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.tool-card button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.tool-card button:active {
-  transform: translateY(0);
-}
-
-/* === MODAL STYLES FOR PARTNER FUNCTIONS === */
-
-.reports-dashboard {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.report-filters {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.filter-group {
-  margin-bottom: 15px;
-}
-
-.filter-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #333;
-}
-
-.filter-group select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.report-summary {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 20px;
-}
-
-.summary-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 4px;
-}
-
-.stat-label {
-  font-weight: 500;
-  color: #666;
-}
-
-.stat-value {
-  font-weight: 700;
-  color: #333;
-  font-size: 16px;
-}
-
-.report-charts {
-  margin-bottom: 20px;
-}
-
-.chart-placeholder {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-.chart-mock {
-  margin-top: 15px;
-}
-
-.chart-bars {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  height: 150px;
-  margin-bottom: 10px;
-}
-
-.bar {
-  width: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px 2px 0 0;
-  transition: all 0.3s ease;
-}
-
-.bar:hover {
-  opacity: 0.8;
-}
-
-.chart-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #666;
-}
-
-.report-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-/* === REFERRAL LINK GENERATOR STYLES === */
-
-.link-generator {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.generated-link-section {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  border: 2px solid #28a745;
-}
-
-.link-display {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.link-display input {
-  flex: 1;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 14px;
-  background: #fff;
-}
-
-.link-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.link-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-/* === MARKETING RESOURCES STYLES === */
-
-.resources-library {
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.resource-category {
-  margin-bottom: 25px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.resource-category h4 {
-  margin-bottom: 15px;
-  color: #333;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 8px;
-}
-
-.resource-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.resource-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background: #fff;
-  border-radius: 4px;
-  border: 1px solid #e0e0e0;
-  transition: all 0.3s ease;
-}
-
-.resource-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.resource-info {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.resource-name {
-  font-weight: 600;
-  color: #333;
-}
-
-.resource-size {
-  font-size: 12px;
-  color: #666;
-}
-
-.download-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #ddd;
-}
-
-/* === RESPONSIVE DESIGN FOR PARTNER MODALS === */
-
-@media (max-width: 768px) {
-  .reports-dashboard,
-  .link-generator,
-  .resources-library {
-    padding: 10px;
-  }
-  
-  .summary-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .link-display {
-    flex-direction: column;
-  }
-  
-  .link-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .resource-item {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-  
-  .report-actions,
-  .link-actions,
-  .download-actions {
-    flex-direction: column;
-  }
 }
 
 /* Security Log */
