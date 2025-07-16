@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="24/7 Emergency Roadside Assistance - Towing, Battery Jump, Tire Change, and More">
+    <meta name="theme-color" content="#dc2625">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RoadSide+">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiNkYzI2MjUiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmZmZmIj4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlV2lkdGg9IjEuNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIGNsYXNzPSJzaXplLTYiPgogIDxwYXRoIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTguMjUgMTguNzVhMS4xMjUgMS4xMjUgMCAwIDEtMi4yNSAwQTEuMTI1IDEuMTI1IDAgMCAxIDQuNSAxNy42MjVIMy4zNzVhMS4xMjUgMS4xMjUgMCAwIDEtMS4xMjUtMS4xMjVWMTQuMjVBMi4yNSAyLjI1IDAgMCAxIDQuNSAxMmgxLjM3MmEyLjI1IDIuMjUgMCAwIDAgMS42MDktLjY2NiAyLjI1IDIuMjUgMCAwIDAgLjY2Ni0xLjY4NlY5LjVhMi4yNSAyLjI1IDAgMCAxIDIuMjUtMi4yNWg0LjEyNmEyLjI1IDIuMjUgMCAwIDEgMi4yNSAyLjI1di4zNzhhMi4yNSAyLjI1IDAgMCAwIC42NjYgMS42ODZBMi4yNSAyLjI1IDAgMCAxIDIwLjEyNSAxMkgyMS41YTIuMjUgMi4yNSAwIDAgMSAyLjI1IDIuMjV2Mi4yNWExLjEyNSAxLjEyNSAwIDAgMS0xLjEyNSAxLjEyNUgxOS41YTEuMTI1IDEuMTI1IDAgMCAxLTEuMTI1IDEuMTI1IDEuMTI1IDEuMTI1IDAgMCAxLTIuMjUgMCAxLjEyNSAxLjEyNSAwIDAgMS0xLjEyNS0xLjEyNWg0LjEyNmEyLjI1IDIuMjUgMCAwIDEgMi4yNS0yLjI1VjkuNWEyLjI1IDIuMjUgMCAwIDEgMi4yNSAyLjI1djEuMTI1eiIvPgo8L3N2Zz4KPC9zdmc+Cjwvc3ZnPgo=">
     <title>RoadSide+ Emergency Assistance</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </head>
 <body data-color-scheme="dark">
     <!-- Loading Screen -->
