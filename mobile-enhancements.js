@@ -311,12 +311,19 @@ class MobileEnhancements {
 
     // Push Notifications
     async subscribeToPushNotifications() {
+        // Skip push notification subscription if no valid VAPID key is configured
+        const vapidKey = 'your-vapid-public-key';
+        if (vapidKey === 'your-vapid-public-key') {
+            console.log('Push notifications not configured - VAPID key needed');
+            return;
+        }
+        
         if ('serviceWorker' in navigator) {
             try {
                 const registration = await navigator.serviceWorker.ready;
                 const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: this.urlBase64ToUint8Array('your-vapid-public-key')
+                    applicationServerKey: this.urlBase64ToUint8Array(vapidKey)
                 });
                 
                 console.log('Push subscription created:', subscription);
