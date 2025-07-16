@@ -945,7 +945,9 @@ function emergencyCall() {
 // Service selection
 function selectService(serviceId, serviceName, servicePrice) {
     currentBooking = {
-    window.bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
+    if (window.bookingWorkflow) {
+        window.bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
+    }
         serviceName: serviceName,
         servicePrice: servicePrice,
         timestamp: new Date(),
