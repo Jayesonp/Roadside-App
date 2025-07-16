@@ -1084,3 +1084,16 @@ class BookingWorkflow {
 
 // Initialize the booking workflow system
 const bookingWorkflow = new BookingWorkflow();
+
+// Select service function - expose to global scope
+function selectService(serviceId, serviceName, servicePrice) {
+  if (typeof bookingWorkflow !== 'undefined' && bookingWorkflow.createBookingInterface) {
+    bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
+  } else {
+    console.error('Booking workflow not available');
+    alert('Booking system is currently unavailable. Please try again later.');
+  }
+}
+
+// Expose to global scope for HTML onclick handlers
+window.selectService = selectService;

@@ -787,16 +787,6 @@
             });
         }
         
-        // Select service function
-        function selectService(serviceId, serviceName, servicePrice) {
-            if (typeof bookingWorkflow !== 'undefined' && bookingWorkflow.createBookingInterface) {
-                bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
-            } else {
-                console.error('Booking workflow not available');
-                alert('Booking system is currently unavailable. Please try again later.');
-            }
-        }
-        
         // Navigation drawer functions
         function toggleNavDrawer() {
             const navDrawer = document.getElementById('nav-drawer');
