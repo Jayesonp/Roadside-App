@@ -1,8 +1,3 @@
-// Import mock API for bolt.new compatibility
-import { mockAPI } from './mock-api.js';
-
-// RoadSide+ Emergency App - Main Application JavaScript
-
 // Global variables
 let currentUser = null;
 let currentView = 'dashboard';
@@ -64,22 +59,19 @@ const serviceConfig = {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide loading screen and show main app after a brief delay
+    // Initialize mock API if available
+    if (typeof mockAPI !== 'undefined') {
+        window.mockAPI = mockAPI;
+    }
+    
+    // Hide loading screen after 2 seconds
     setTimeout(() => {
-        const loadingScreen = document.getElementById('loading-screen');
-        const mainApp = document.getElementById('main-app');
-        
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-        }
-        
-        if (mainApp) {
-            mainApp.classList.remove('hidden');
-        }
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
         
         // Initialize app components
         initializeApp();
-    }, 2000); // 2 second loading delay
+    }, 2000);
 });
 
 function initializeApp() {
@@ -264,32 +256,30 @@ function stopLocationTracking() {
     }
 }
 
-// Authentication functions
+// Mock API calls (replace with actual API calls)
+async function makeAPICall(endpoint, options = {}) {
+    if (typeof mockAPI !== 'undefined') {
+        return await mockAPI.healthCheck();
+    }
+    return { success: true, message: 'API not available' };
+}
+
+// Login function
 async function login() {
-    // Simulate login
     const email = document.querySelector('#login-screen input[type="email"]').value;
     const password = document.querySelector('#login-screen input[type="password"]').value;
     
-    if (!email || !password) {
-        showError('Please enter email and password');
-        return;
-    }
+    const response = typeof mockAPI !== 'undefined' 
+        ? await mockAPI.login(email, password)
+        : { success: true, data: { user: { firstName: 'Demo', lastName: 'User' } } };
     
-    showNotification('🔄 Logging you in...');
-    
-    // Use mock API for bolt.new
-    try {
-        const response = await mockAPI.login(email, password);
-        if (response.success) {
-            currentUser = response.data.user;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            showNotification('✅ Login successful!');
-            showMainApp();
-        } else {
-            showNotification('❌ ' + response.message);
-        }
-    } catch (error) {
-        showNotification('❌ Login failed. Please try again.');
+    if (response.success) {
+        currentUser = response.data.user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        showNotification('✅ Login successful!');
+        showMainApp();
+    } else {
+        showNotification('❌ ' + response.message);
     }
 }
 
