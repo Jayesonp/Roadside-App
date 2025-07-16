@@ -64,34 +64,52 @@ const serviceConfig = {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
+    // Hide loading screen and show main app after a brief delay
+    setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainApp = document.getElementById('main-app');
+        
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+        }
+        
+        if (mainApp) {
+            mainApp.classList.remove('hidden');
+        }
+        
+        // Initialize app components
+        initializeApp();
+    }, 2000); // 2 second loading delay
 });
 
 function initializeApp() {
-    // Initialize real-time services
-    initializeRealTimeServices();
+    // Initialize dashboard
+    showDashboard('customer');
     
-    // Request location permissions
-    requestLocationPermissions();
-    
-    // Hide loading screen after 2 seconds
-    setTimeout(() => {
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('login-screen').classList.remove('hidden');
-    }, 2000);
-
     // Initialize bottom navigation
     initializeBottomNav();
     
-    // Load service history
-    loadServiceHistory();
-    
-    // Update stats
-    updateStats();
-    
-    // Initialize admin monitoring if admin user
-    if (currentUser && currentUser.role === 'admin') {
-        initializeAdminMonitoring();
+    // Load user data
+    loadUserData();
+}
+
+function initializeBottomNav() {
+    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const viewName = this.dataset.view;
+            if (viewName) {
+                showView(viewName);
+            }
+        });
+    });
+}
+
+function loadUserData() {
+    // Load user profile data
+    const userName = document.querySelector('.user-name');
+    if (userName) {
+        userName.textContent = 'John Doe';
     }
 }
 
@@ -2012,24 +2030,6 @@ function saveProfile() {
 // Support functions
 function createSupportTicket() {
     showNotification('Support ticket system would open here');
-}
-
-// Bottom navigation
-function initializeBottomNav() {
-    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-    
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const view = this.getAttribute('data-view');
-            if (view) {
-                showView(view);
-                
-                // Update active state
-                navItems.forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-            }
-        });
-    });
 }
 
 function showView(viewName) {
