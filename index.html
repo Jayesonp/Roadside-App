@@ -620,5 +620,129 @@
     <script type="module" src="booking-workflow.js"></script>
     <script type="module" src="mock-api.js"></script>
     <script type="module" src="mobile-enhancements.js"></script>
+    <script>
+        // Loading screen transition logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const loginScreen = document.getElementById('login-screen');
+            const mainApp = document.getElementById('main-app');
+            
+            // Simulate loading process
+            setTimeout(() => {
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+                
+                // Check if user is already logged in (mock check)
+                const isLoggedIn = localStorage.getItem('currentUser');
+                
+                if (isLoggedIn) {
+                    if (mainApp) {
+                        mainApp.classList.remove('hidden');
+                        // Initialize app functions
+                        if (typeof initializeApp === 'function') {
+                            initializeApp();
+                        }
+                    }
+                } else {
+                    if (loginScreen) {
+                        loginScreen.classList.remove('hidden');
+                    }
+                }
+            }, 2000); // 2 second loading delay
+        });
+        
+        // Initialize app function
+        function initializeApp() {
+            // Add any app initialization code here
+            console.log('App initialized');
+            
+            // Initialize navigation
+            if (typeof initializeNavigation === 'function') {
+                initializeNavigation();
+            }
+            
+            // Initialize service workers
+            if (typeof registerServiceWorker === 'function') {
+                registerServiceWorker();
+            }
+        }
+        
+        // Basic login function
+        function login() {
+            const emailInput = document.querySelector('#login-screen input[type="email"]');
+            const passwordInput = document.querySelector('#login-screen input[type="password"]');
+            
+            if (emailInput && passwordInput) {
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                
+                if (email && password) {
+                    // Mock successful login
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        email: email,
+                        name: 'Demo User'
+                    }));
+                    
+                    // Hide login screen and show main app
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+                    
+                    initializeApp();
+                } else {
+                    alert('Please enter both email and password');
+                }
+            }
+        }
+        
+        // Show register screen
+        function showRegister() {
+            alert('Registration feature coming soon!');
+        }
+        
+        // Emergency call function
+        function emergencyCall() {
+            if (confirm('This will call emergency services. Continue?')) {
+                window.open('tel:911');
+            }
+        }
+        
+        // Initialize navigation
+        function initializeNavigation() {
+            const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const viewName = this.dataset.view;
+                    if (viewName) {
+                        showView(viewName);
+                    }
+                });
+            });
+        }
+        
+        // Show specific view
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show selected view
+            const targetView = document.getElementById(viewName + '-view');
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+            
+            // Update navigation active state
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const activeNavItem = document.querySelector(`[data-view="${viewName}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
