@@ -535,73 +535,7 @@
                     <div class="step" data-step="4">Confirm</div>
                 </div>
                 <div class="modal-body">
-                    <!-- Step 1: Service Selection -->
-                    <div id="booking-step-1" class="booking-step active">
-                        <div class="selected-service">
-                            <div class="service-icon" id="selected-service-icon">🚛</div>
-                            <div class="service-details">
-                                <h3 id="selected-service-name">Towing</h3>
-                                <p id="selected-service-price">$150</p>
-                            </div>
-                        </div>
-                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
-                    </div>
-                    
-                    <!-- Step 2: Location & Description -->
-                    <div id="booking-step-2" class="booking-step">
-                        <div class="form-group">
-                            <label class="form-label">Location</label>
-                            <input type="text" id="location-input" class="form-control" placeholder="Enter your location" value="1234 Main St, City, State">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Describe the problem</label>
-                            <textarea id="problem-description" class="form-control" rows="3" placeholder="Tell us what happened..."></textarea>
-                        </div>
-                        <div class="service-info">
-                            <p><strong>Service:</strong> <span id="service-description">Professional roadside assistance</span></p>
-                            <p><strong>Estimated Time:</strong> <span id="estimated-time">30 min</span></p>
-                        </div>
-                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
-                    </div>
-                    
-                    <!-- Step 3: Payment -->
-                    <div id="booking-step-3" class="booking-step">
-                        <div class="payment-methods">
-                            <div class="payment-method active" onclick="selectPaymentMethod(this)">
-                                <div class="payment-icon">💳</div>
-                                <span>Credit Card ending in 4242</span>
-                            </div>
-                            <div class="payment-method" onclick="selectPaymentMethod(this)">
-                                <div class="payment-icon">💰</div>
-                                <span>Cash Payment</span>
-                            </div>
-                        </div>
-                        <button class="btn btn--primary btn--full-width" onclick="nextBookingStep()">Continue</button>
-                    </div>
-                    
-                    <!-- Step 4: Confirmation -->
-                    <div id="booking-step-4" class="booking-step">
-                        <div class="booking-summary">
-                            <h3>Booking Summary</h3>
-                            <div class="summary-item">
-                                <span>Service:</span>
-                                <span id="summary-service">Towing</span>
-                            </div>
-                            <div class="summary-item">
-                                <span>Location:</span>
-                                <span>1234 Main St, City, State</span>
-                            </div>
-                            <div class="summary-item">
-                                <span>Payment:</span>
-                                <span>Credit Card ••••4242</span>
-                            </div>
-                            <div class="summary-item total">
-                                <span>Total:</span>
-                                <span id="summary-total">$150</span>
-                            </div>
-                        </div>
-                        <button class="btn btn--primary btn--full-width" onclick="confirmBooking()">Confirm Booking</button>
-                    </div>
+                    <!-- Dynamic content will be populated by booking-workflow.js -->
                 </div>
             </div>
         </div>
@@ -661,7 +595,7 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="booking-workflow.js"></script>
     <script type="module" src="app.js"></script>
     <script type="module" src="mock-api.js"></script>
 </body>
