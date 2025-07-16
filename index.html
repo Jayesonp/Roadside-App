@@ -743,6 +743,133 @@
                 activeNavItem.classList.add('active');
             }
         }
+        
+        // Show dashboard function
+        function showDashboard(dashboardType) {
+            // Ensure dashboard view is active
+            showView('dashboard');
+            
+            // Hide all dashboard content
+            document.querySelectorAll('.dashboard-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected dashboard
+            const targetDashboard = document.getElementById(dashboardType + '-dashboard');
+            if (targetDashboard) {
+                targetDashboard.classList.add('active');
+            }
+            
+            // Update dashboard tabs active state
+            document.querySelectorAll('.dashboard-tabs .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Update navigation drawer active state
+            document.querySelectorAll('.nav-drawer .nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding tab and nav item
+            const tabElements = document.querySelectorAll('.dashboard-tabs .tab');
+            const navItems = document.querySelectorAll('.nav-drawer .nav-item');
+            
+            tabElements.forEach(tab => {
+                if (tab.onclick && tab.onclick.toString().includes(dashboardType)) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            navItems.forEach(item => {
+                if (item.onclick && item.onclick.toString().includes(dashboardType)) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Select service function
+        function selectService(serviceId, serviceName, servicePrice) {
+            if (typeof bookingWorkflow !== 'undefined' && bookingWorkflow.createBookingInterface) {
+                bookingWorkflow.createBookingInterface(serviceId, serviceName, servicePrice);
+            } else {
+                console.error('Booking workflow not available');
+                alert('Booking system is currently unavailable. Please try again later.');
+            }
+        }
+        
+        // Navigation drawer functions
+        function toggleNavDrawer() {
+            const navDrawer = document.getElementById('nav-drawer');
+            if (navDrawer) {
+                navDrawer.classList.toggle('active');
+            }
+        }
+        
+        function closeNavDrawer() {
+            const navDrawer = document.getElementById('nav-drawer');
+            if (navDrawer) {
+                navDrawer.classList.remove('active');
+            }
+        }
+        
+        // Booking modal functions
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function closeTrackingModal() {
+            const modal = document.getElementById('tracking-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Profile and support functions
+        function saveProfile() {
+            alert('Profile saved successfully!');
+        }
+        
+        function createSupportTicket() {
+            alert('Support ticket system coming soon!');
+        }
+        
+        // Admin functions
+        function manageUsers() {
+            alert('User management interface coming soon!');
+        }
+        
+        function manageTechnicians() {
+            alert('Technician management interface coming soon!');
+        }
+        
+        function viewAnalytics() {
+            alert('Analytics dashboard coming soon!');
+        }
+        
+        function systemSettings() {
+            alert('System settings interface coming soon!');
+        }
+        
+        // Partner functions
+        function viewPartnerReports() {
+            alert('Partner reports coming soon!');
+        }
+        
+        function createReferralLink() {
+            alert('Referral link generator coming soon!');
+        }
+        
+        function downloadMarketingResources() {
+            alert('Marketing resources download coming soon!');
+        }
+        
+        // Technician functions
+        function callTechnician() {
+            alert('Calling technician...');
+        }
     </script>
 </body>
 </html>
