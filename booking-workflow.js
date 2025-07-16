@@ -1085,6 +1085,9 @@ class BookingWorkflow {
 // Initialize the booking workflow system
 const bookingWorkflow = new BookingWorkflow();
 
+// Expose to global scope for HTML onclick handlers
+window.bookingWorkflow = bookingWorkflow;
+
 // Select service function - expose to global scope
 function selectService(serviceId, serviceName, servicePrice) {
   if (typeof bookingWorkflow !== 'undefined' && bookingWorkflow.createBookingInterface) {
