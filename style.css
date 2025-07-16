@@ -1858,6 +1858,194 @@ input[type="checkbox"]:checked + .toggle-slider::before {
   transform: translateX(25px);
 }
 
+/* Terms and Conditions Agreement Section */
+.terms-agreement-section {
+  background: rgba(220, 38, 37, 0.1);
+  border: 1px solid rgba(220, 38, 37, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.terms-agreement {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.terms-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  line-height: 1.4;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.terms-checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.terms-checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  background: var(--surface-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.terms-checkbox-label input[type="checkbox"]:checked + .terms-checkmark {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.terms-checkbox-label input[type="checkbox"]:checked + .terms-checkmark::after {
+  content: "✓";
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.terms-checkbox-label:hover .terms-checkmark {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(220, 38, 37, 0.2);
+}
+
+.terms-checkbox-label a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.terms-checkbox-label a:hover {
+  color: var(--primary-color-dark);
+}
+
+/* Focus states for accessibility */
+.terms-checkbox-label input[type="checkbox"]:focus + .terms-checkmark {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .terms-checkbox-label {
+    font-size: 0.85rem;
+  }
+  
+  .terms-checkmark {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Terms and Privacy Content Modals */
+.terms-modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.terms-modal-content {
+  background-color: #1f2937;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.terms-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--primary-color);
+  color: white;
+}
+
+.terms-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close-terms {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.close-terms:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.terms-modal-body {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.terms-content {
+  color: #e5e7eb;
+  line-height: 1.6;
+}
+
+.terms-content h4 {
+  color: white;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.terms-content h4:first-child {
+  margin-top: 0;
+}
+
+.terms-content p {
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+/* Responsive terms modal */
+@media (max-width: 768px) {
+  .terms-modal-content {
+    width: 95%;
+    margin: 2% auto;
+    max-height: 90vh;
+  }
+  
+  .terms-modal-header {
+    padding: 1rem;
+  }
+  
+  .terms-modal-body {
+    padding: 1rem;
+  }
+}
+
 /* Terms and Conditions Styling */
 .terms-agreement {
   margin-top: 1rem;
