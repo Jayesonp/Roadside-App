@@ -489,6 +489,118 @@ select.form-control {
   margin-bottom: var(--space-16);
 }
 
+/* Modern Contact Method Styling */
+.contact-preferences {
+  margin: 2rem 0;
+}
+
+.contact-preferences h5 {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.contact-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-color);
+}
+
+.contact-option.selected {
+  background: rgba(220, 38, 37, 0.1);
+  border-color: var(--primary-color);
+}
+
+.contact-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contact-option-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.contact-option-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.contact-option-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.contact-option-radio::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.contact-option.selected .contact-option-radio {
+  border-color: var(--primary-color);
+}
+
+.contact-option.selected .contact-option-radio::before {
+  opacity: 1;
+}
+
+.contact-option input[type="radio"] {
+  display: none;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .contact-preferences {
+    margin: 1.5rem 0;
+  }
+  
+  .contact-option {
+    padding: 1.25rem;
+  }
+  
+  .contact-option-title {
+    font-size: 1.1rem;
+  }
+}
+
 /* Card component */
 .card {
   background-color: var(--color-surface);
@@ -4832,6 +4944,52 @@ input:checked + .toggle-slider:before {
 }
 
 /* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  padding: var(--space-16);
+}
+
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--color-card-border);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-16);
+  border-bottom: 2px solid #dc2625;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: var(--space-16);
+}
+
+/* Booking Modal Styles */
 .modal {
   display: none;
   position: fixed;

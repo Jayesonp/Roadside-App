@@ -258,6 +258,10 @@ class BookingWorkflow {
                   <span id="summary-customer">John Doe</span>
                 </div>
                 <div class="detail-row">
+                  <span>📞 Contact Method:</span>
+                  <span id="summary-contact-method">Phone Call</span>
+                </div>
+                <div class="detail-row">
                   <span>💳 Payment:</span>
                   <span id="summary-payment">Credit Card</span>
                 </div>
