@@ -281,11 +281,14 @@ class BookingWorkflow {
                 </label>
               </div>
               
-              <div class="terms-agreement">
-                <label>
-                  <input type="checkbox" id="terms-agreement" required>
-                  I agree to the <a href="#" onclick="bookingWorkflow.showTerms()">Terms of Service</a> and <a href="#" onclick="bookingWorkflow.showPrivacy()">Privacy Policy</a>
-                </label>
+              <div class="terms-agreement-section">
+                <div class="terms-agreement">
+                  <label class="terms-checkbox-label">
+                    <input type="checkbox" id="terms-agreement" required>
+                    <span class="terms-checkmark"></span>
+                    I agree to the <a href="javascript:void(0)" onclick="bookingWorkflow.showTerms()">Terms of Service</a> and <a href="javascript:void(0)" onclick="bookingWorkflow.showPrivacy()">Privacy Policy</a>
+                  </label>
+                </div>
               </div>
             </div>
             
