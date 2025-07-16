@@ -1,3 +1,6 @@
+// Import mock API for bolt.new compatibility
+import { mockAPI } from './mock-api.js';
+
 // RoadSide+ Emergency App - Main Application JavaScript
 
 // Global variables
@@ -244,31 +247,31 @@ function stopLocationTracking() {
 }
 
 // Authentication functions
-function login() {
+async function login() {
     // Simulate login
     const email = document.querySelector('#login-screen input[type="email"]').value;
     const password = document.querySelector('#login-screen input[type="password"]').value;
     
-    if (email && password) {
-        currentUser = {
-            name: 'John Doe',
-            email: email,
-            id: 'user123',
-            role: 'customer' // Default role
-        };
-        
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        
-        // Start location tracking after login
-        startLocationTracking();
-        
-        showSuccess('Welcome back, ' + currentUser.name + '!');
-        
-        // Initialize role-specific features
-        initializeRoleFeatures();
-    } else {
+    if (!email || !password) {
         showError('Please enter email and password');
+        return;
+    }
+    
+    showNotification('🔄 Logging you in...');
+    
+    // Use mock API for bolt.new
+    try {
+        const response = await mockAPI.login(email, password);
+        if (response.success) {
+            currentUser = response.data.user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showNotification('✅ Login successful!');
+            showMainApp();
+        } else {
+            showNotification('❌ ' + response.message);
+        }
+    } catch (error) {
+        showNotification('❌ Login failed. Please try again.');
     }
 }
 
@@ -828,6 +831,31 @@ function setupTechnicianNotifications() {
 
 function showRegister() {
     showNotification('Registration form would open here');
+}
+
+// Handle registration
+async function register() {
+  showNotification('📝 Creating your account...');
+  
+  // Simulate registration API call
+  try {
+    const response = await mockAPI.register({
+      email: 'newuser@example.com',
+      firstName: 'New',
+      lastName: 'User'
+    });
+    
+    if (response.success) {
+      currentUser = response.data.user;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      showNotification('✅ Registration successful!');
+      showMainApp();
+    } else {
+      showNotification('❌ Registration failed');
+    }
+  } catch (error) {
+    showNotification('❌ Registration failed. Please try again.');
+  }
 }
 
 function logout() {
@@ -1663,7 +1691,7 @@ function showModal(modalId) {
 }
 
 // Booking functions
-function confirmBooking() {
+async function confirmBooking() {
     if (currentBooking) {
         // Validate all booking data
         if (!validateBookingData()) {
@@ -1707,12 +1735,36 @@ function confirmBooking() {
         // Close modal and show tracking
         closeBookingModal();
         
-        showSuccess('Booking confirmed! Finding technician...');
+        showNotification('🎉 Booking confirmed! Finding technician...');
         
-        // Start technician matching process
-        setTimeout(() => {
-            initiateTechnicianMatching();
-        }, 3000);
+        // Use mock API for booking
+        try {
+            const response = await mockAPI.createBooking({
+                serviceType: currentBooking.serviceName,
+                price: currentBooking.servicePrice,
+                location: '1234 Main St, City, State',
+                description: 'Emergency roadside assistance'
+            });
+            
+            if (response.success) {
+                showNotification('✅ Booking created! Finding technician...');
+                
+                // Simulate technician assignment
+                setTimeout(async () => {
+                    const assignResponse = await mockAPI.assignTechnician(
+                        response.data.booking.id,
+                        'tech-001'
+                    );
+                    
+                    if (assignResponse.success) {
+                        showNotification('✅ Technician assigned! Mike is on the way.');
+                        showModal('tracking-modal');
+                    }
+                }, 2000);
+            }
+        } catch (error) {
+            showNotification('❌ Booking failed. Please try again.');
+        }
     }
 }
 
@@ -3494,3 +3546,22 @@ document.addEventListener('keydown', function(event) {
         });
     }
 });
+
+// Initialize the app with mock API
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check if mock API is available
+  if (window.mockAPI) {
+    const health = await mockAPI.healthCheck();
+    console.log('Mock API Status:', health);
+  }
+  
+  // Initialize app as normal
+  initializeApp();
+});
+
+// Initialize app on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
