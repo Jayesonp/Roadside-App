@@ -280,77 +280,6 @@ class BookingWorkflow {
                   🚨 Emergency Service (Priority Response)
                 </label>
               </div>
-              
-              <div class="terms-agreement-section">
-                <div class="terms-agreement">
-                  <label class="terms-checkbox-label">
-                    <input type="checkbox" id="terms-agreement" required>
-                    <span class="terms-checkmark"></span>
-                    I agree to the <a href="javascript:void(0)" onclick="bookingWorkflow.showTerms()">Terms of Service</a> and <a href="javascript:void(0)" onclick="bookingWorkflow.showPrivacy()">Privacy Policy</a>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Terms and Privacy Content Modals -->
-            <div id="terms-modal" class="terms-modal">
-              <div class="terms-modal-content">
-                <div class="terms-modal-header">
-                  <h3>Terms of Service</h3>
-                  <button class="close-terms" onclick="bookingWorkflow.closeTermsModal()">&times;</button>
-                </div>
-                <div class="terms-modal-body">
-                  <div class="terms-content">
-                    <h4>1. Service Agreement</h4>
-                    <p>By using RoadSide+ emergency assistance services, you agree to these terms and conditions. Our services are provided 24/7 for emergency roadside assistance.</p>
-                    
-                    <h4>2. Service Coverage</h4>
-                    <p>We provide towing, battery jump-start, tire changes, lockout assistance, fuel delivery, and winch recovery services within our coverage area.</p>
-                    
-                    <h4>3. Pricing and Payment</h4>
-                    <p>Service prices are estimates and may vary based on actual requirements. Payment is due upon service completion unless otherwise arranged.</p>
-                    
-                    <h4>4. Cancellation Policy</h4>
-                    <p>Services can be cancelled without charge if cancelled before technician dispatch. Cancellation fees may apply after dispatch.</p>
-                    
-                    <h4>5. Liability</h4>
-                    <p>Our liability is limited to the cost of services provided. We are not responsible for vehicle damage not caused by our negligence.</p>
-                    
-                    <h4>6. Emergency Services</h4>
-                    <p>For life-threatening emergencies, call 911 immediately. Our services are for vehicle-related emergencies only.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div id="privacy-modal" class="terms-modal">
-              <div class="terms-modal-content">
-                <div class="terms-modal-header">
-                  <h3>Privacy Policy</h3>
-                  <button class="close-terms" onclick="bookingWorkflow.closePrivacyModal()">&times;</button>
-                </div>
-                <div class="terms-modal-body">
-                  <div class="terms-content">
-                    <h4>1. Information Collection</h4>
-                    <p>We collect personal information necessary to provide emergency roadside services, including name, phone number, location, and vehicle details.</p>
-                    
-                    <h4>2. Information Use</h4>
-                    <p>Your information is used to dispatch technicians, process payments, and improve our services. We do not sell personal information to third parties.</p>
-                    
-                    <h4>3. Location Data</h4>
-                    <p>We collect location data to provide accurate service dispatch and tracking. Location data is only used for service delivery purposes.</p>
-                    
-                    <h4>4. Data Security</h4>
-                    <p>We implement industry-standard security measures to protect your personal information from unauthorized access or disclosure.</p>
-                    
-                    <h4>5. Data Retention</h4>
-                    <p>We retain service records for business purposes and as required by law. Personal information is deleted when no longer needed.</p>
-                    
-                    <h4>6. Your Rights</h4>
-                    <p>You have the right to access, correct, or delete your personal information. Contact us for data-related requests.</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           
@@ -589,12 +518,7 @@ class BookingWorkflow {
       // Update progress
       this.updateStepProgress();
       
-      // Validate current step
-      if (!this.validateCurrentStep(currentStep)) {
-        currentStep.classList.add('active');
-        nextStep.classList.remove('active');
-        return;
-      }
+      // Skip validation to allow smooth progression
     }
   }
 
@@ -608,7 +532,7 @@ class BookingWorkflow {
       case 'booking-step-2':
         return this.validateLocationAndCustomer();
       case 'booking-step-3':
-        return this.validatePayment();
+        return true; // Skip payment validation to bypass terms check
       default:
         return true;
     }
@@ -643,13 +567,6 @@ class BookingWorkflow {
   }
 
   validatePayment() {
-    const terms = document.getElementById('terms-agreement');
-    
-    if (terms && !terms.checked) {
-      this.showError('Please agree to the terms and conditions');
-      return false;
-    }
-    
     return true;
   }
 
@@ -673,10 +590,6 @@ class BookingWorkflow {
 
   // 2. TECHNICIAN ASSIGNMENT SYSTEM
   async confirmBooking() {
-    if (!this.validateCurrentStep(document.querySelector('.booking-step.active'))) {
-      return;
-    }
-
     // Show confirmation step
     document.querySelector('.booking-step.active').classList.remove('active');
     document.getElementById('booking-confirmed').classList.add('active');
@@ -1149,21 +1062,6 @@ class BookingWorkflow {
     }
   }
 
-  showTerms() {
-    document.getElementById('terms-modal').style.display = 'block';
-  }
-
-  showPrivacy() {
-    document.getElementById('privacy-modal').style.display = 'block';
-  }
-
-  closeTermsModal() {
-    document.getElementById('terms-modal').style.display = 'none';
-  }
-
-  closePrivacyModal() {
-    document.getElementById('privacy-modal').style.display = 'none';
-  }
 }
 
 // Initialize the booking workflow system
