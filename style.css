@@ -5798,6 +5798,175 @@ input:checked + .toggle-slider:before {
   color: var(--color-info);
 }
 
+/* Live Map Styles */
+.live-map {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.live-map.booking-map {
+  height: 250px;
+  margin: 1rem 0;
+}
+
+.live-map.tracking-map {
+  height: 200px;
+}
+
+.live-map.admin-map {
+  height: 400px;
+}
+
+.map-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.map-btn {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.map-btn:hover {
+  background: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.location-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 38, 37, 0.9);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.location-error button {
+  background: white;
+  color: var(--primary-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.arriving-now {
+  animation: pulse 1s infinite;
+  color: #10b981 !important;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Enhanced tracking display */
+.tracking-display {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.route-map {
+  background: #f5f5f5;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.route-map.live-map {
+  border: none;
+  background: none;
+}
+
+.tracking-info {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.tracking-info p {
+  margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Admin technician map */
+.technician-map {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.technician-map h4 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.legend-item .marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
+.legend-item .marker.available {
+  background: #10b981;
+}
+
+.legend-item .marker.busy {
+  background: #dc2625;
+}
+
+.legend-item .marker.offline {
+  background: #6b7280;
+}
+
 /* Bottom Navigation */
 .bottom-nav {
   position: fixed;
